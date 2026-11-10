@@ -54,6 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
     continue-on-error: true   # Pages deploy 在 token 沒有 Pages 權限時會 404，不阻擋 CI gate
+    environment: github-pages
     permissions:
       contents: read
       pages: write
