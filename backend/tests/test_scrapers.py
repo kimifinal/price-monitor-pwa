@@ -1,7 +1,13 @@
 """Tests for the real scraper + its offline fallback."""
 import json
 from unittest.mock import patch, MagicMock
-from scrapers import fetch_crypto_price, fetch_price, simulate, fetch_price_from_page
+from scrapers import (
+    fetch_crypto_price,
+    fetch_crypto_prices,
+    fetch_price,
+    simulate,
+    fetch_price_from_page,
+)
 
 
 def _fake_response(payload: dict):
@@ -32,6 +38,22 @@ def test_fetch_password_missing_currency_raises():
             assert False, "expected ValueError when currency missing"
         except ValueError:
             pass
+
+
+
+
+def test_fetch_crypto_prices_bulk_one_request_parses_all_assets():
+    with patch(
+        "scrapers._http_get_json",
+        return_value={"bitcoin": {"twd": 2453399}, "ethereum": {"twd": 69615}},
+    ):
+        out = fetch_crypto_prices(["bitcoin", "ethereum"], "twd")
+        assert out["bitcoin"] == 2453399.0
+        assert out["ethereum"] == 69615.0
+
+
+def test_fetch_crypto_prices_empty_assets():
+    assert fetch_crypto_prices([]) == {}
 
 
 def test_fetch_price_dispatches_crypto_prefix_and_falls_back():
