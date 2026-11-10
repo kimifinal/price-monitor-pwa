@@ -54,3 +54,14 @@ def test_check_item_alerts_when_below_target(monkeypatch):
 def test_check_missing_item_raises():
     r = client.post("/api/items/does-not-exist/check")
     assert r.status_code == 404  # missing item -> clean 404
+
+
+def test_costco_basket_endpoint_returns_snapshot():
+    """GET /api/costco/basket returns the offline snapshot (DEMO_BASKET)."""
+    r = client.get("/api/costco/basket")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["count"] == 25
+    assert body["3C"] == 10
+    assert body["家電"] == 15
+    assert len(body["items"]) == 25

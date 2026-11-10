@@ -143,3 +143,18 @@ def test_crawl_appliances_grows_basket_via_mocked_fetch(monkeypatch):
     assert basket[0]["name"] == "飛利浦 55吋 4K Google TV 智慧顯示器"
     assert basket[0]["tag"] == "家電"
     assert basket[0]["price"] == 12599.0
+
+
+def test_basket_offline_returns_snapshot():
+    """basket(live=False) returns the pre-snapshotted DEMO_BASKET without network."""
+    from costco import basket
+    items = basket(live=False)
+    assert len(items) == 25
+    c3 = [p for p in items if p.get("tag") == "3C"]
+    ca = [p for p in items if p.get("tag") == "家電"]
+    assert len(c3) == 10
+    assert len(ca) == 15
+    # 每筆都有 name / price / sku / tag / url
+    for p in items:
+        assert p["name"] and p["price"] and p["sku"] and p["tag"] in ("3C", "家電")
+        assert p["url"].startswith("https://www.costco.com.tw/")

@@ -16,6 +16,8 @@ import uuid
 from models import Item, PriceResult
 from scrapers import fetch_price
 from alerts import send_telegram_alert
+from costco import basket as costco_basket
+
 
 app = FastAPI(title="Price Monitor", version="1.0.0")
 
@@ -75,3 +77,21 @@ def check_item(item_id: str) -> PriceResult:
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)
+
+
+@app.get("/api/costco/basket")
+def get_costco_basket(live: bool = False) -> dict:
+    """Return today's 3C + 家電 basket.
+
+    live=False: today's pre-snapshotted DEMO_BASKET (fast, offline, CI-safe).
+    live=True:  real live scrape + BFS crawl (~30s, needs internet).
+    """
+    items = costco_basket(live=live)
+    c3 = [p for p in items if p.get("tag") == "3C"]
+    ca = [p for p in items if p.get("tag") == "家電"]
+    return {
+        "count": len(items),
+        "3C": len(c3),
+        "家電": len(ca),
+        "items": items,
+    }

@@ -247,42 +247,54 @@ def crawl_appliances(
     return basket
 
 
-if __name__ == "__main__":
-    # 3C/家電 一籃。
-    # 家電的 landing 分頁 (/c/301 /c/305 /c/308) 是 lazy render，HTTP 只填出 3 筆。
-    # 因此用 bounded BFS crawl 從那 3 筆 家電 PDP 的「相關推薦」往外長，
-    # 把家電籃補到 15 筆。3C 仍是 server-render 的 landing pool。
+# ---- 3C + 家電 合併一籃 -----------------------------------------------------------
 
-    # 3C 一籃：landing pool（server-render，10 筆）
-    seen, basket = set(), []
-    for pg in ["/c/1", "/c/3"]:
+from costco_data import DEMO_BASKET
+
+
+def basket(live: bool = False,
+           max_appliance_items: int = 15, delay: float = 0.3) -> list[dict]:
+    """Return a combined 3C + 家電 basket.
+
+    live=False (default): returns today's pre-snapshotted `DEMO_BASKET` —
+        fast, offline, safe for tests and CI.
+    live=True: real scrape + BFS crawl; ~30s, needs internet.
+    """
+    if not live:
+        return DEMO_BASKET
+
+    seen: set = set()
+    out: list[dict] = []
+
+    for pg in ("/c/1", "/c/3"):
         for p in scrape_category(f"{BASE}{pg}"):
-            if p["sku"] and p["sku"] not in seen and p["price"] and p["name"] != "（無名）":
-                if _tag_for(p.get("category_path", "") or p.get("url", "")) == "3C":
+            if p["sku"] and p["sku"] not in seen and p.get("price") and p["name"] != "（無名）":
+                if _tag_for(p.get("category_path", "") or "") == "3C":
                     seen.add(p["sku"])
-                    basket.append(p)
+                    out.append(p)
 
-    # 家電一籃：從已知 3 家電 PDP BFS crawl「相關推薦」往外長
-    seed_appliance_urls = [
+    seed_urls = [
         f"{BASE}/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/BOSE-Solo-Soundbar-TV-Speaker-II/p/3062725",
         f"{BASE}/Televisions-Appliances/TV-Home-Entertainment/Television/Philips-55-inch-4K-UHD-Smart-TV/p/153526",
         f"{BASE}/Televisions-Appliances/Air-Conditioners-Fans/Coolers-Humidifiers/Honeywell-Air-Purifier-AC1025D/p/157137",
     ]
-    for p in crawl_appliances(seed_appliance_urls, max_items=15, max_requests=50, timeout=15, delay=0.3):
+    for p in crawl_appliances(seed_urls, max_items=max_appliance_items,
+                                max_requests=50, delay=delay):
         if p["sku"] not in seen:
             seen.add(p["sku"])
-            basket.append(p)
+            out.append(p)
+    return out
 
-    basket.sort(key=lambda p: (p["tag"], -(p["price"] or 0)))
-    c3 = [p for p in basket if p["tag"] == "3C"]
-    ca = [p for p in basket if p["tag"] == "家電"]
-    print(f"3C/家電 一籃 — 3C {len(c3)} 筆（landing pool）+ 家電 {len(ca)} 筆（BFS crawl）")
-    for t, items in (("3C", c3), ("家電", ca)):
-        print(f"\n【{t}】{len(items)} 筆")
-        for p in sorted(items, key=lambda x: -x["price"]):
-            print(f'  NT${p["price"]:>10,.2f}  {p["name"][:48]:<48}  sku {p["sku"]}')
-    if basket:
-        hi = max(basket, key=lambda p: p["price"])
-        lo = min(basket, key=lambda p: p["price"])
-        print(f"\n最貴: {hi['name']}  NT${hi['price']:,.2f}")
-        print(f"最平: {lo['name']}  NT${lo['price']:,.2f}")
+
+if __name__ == "__main__":
+    import sys
+    live = "--live" in sys.argv
+    items = basket(live=live)
+    c3 = [p for p in items if p.get("tag") == "3C"]
+    ca = [p for p in items if p.get("tag") == "家電"]
+    mode = "live" if live else "DEMO_BASKET (offline)"
+    print(f"3C/家電 一籃 [{mode}] — 3C {len(c3)} + 家電 {len(ca)} = {len(items)} 筆")
+    for t, items_t in (("3C", c3), ("家電", ca)):
+        print(f"\n【{t}】{len(items_t)} 筆")
+        for p in sorted(items_t, key=lambda x: -(x.get('price') or 0)):
+            print(f'  NT${p["price"]:>10,.2f}  {p["name"][:44]:<44}  sku {p["sku"]}')
