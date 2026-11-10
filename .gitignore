@@ -1,0 +1,21 @@
+# Node
+node_modules/
+dist/
+coverage/
+.npm/
+*.log
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# PWA generated
+frontend/sw.js
+frontend/sw.js.map
+frontend/workbox-*.js
+
+# OS
+.DS_Store
