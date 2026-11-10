@@ -61,7 +61,7 @@ def test_costco_basket_endpoint_returns_snapshot():
     r = client.get("/api/costco/basket")
     assert r.status_code == 200
     body = r.json()
-    assert body["count"] == 25
+    assert body["count"] == 30
     assert body["3C"] == 10
-    assert body["家電"] == 15
-    assert len(body["items"]) == 25
+    assert body["家電"] == 20
+    assert len(body["items"]) == 30

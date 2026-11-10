@@ -149,11 +149,11 @@ def test_basket_offline_returns_snapshot():
     """basket(live=False) returns the pre-snapshotted DEMO_BASKET without network."""
     from costco import basket
     items = basket(live=False)
-    assert len(items) == 25
+    assert len(items) == 30
     c3 = [p for p in items if p.get("tag") == "3C"]
     ca = [p for p in items if p.get("tag") == "家電"]
     assert len(c3) == 10
-    assert len(ca) == 15
+    assert len(ca) == 20
     # 每筆都有 name / price / sku / tag / url
     for p in items:
         assert p["name"] and p["price"] and p["sku"] and p["tag"] in ("3C", "家電")
