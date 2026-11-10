@@ -5,6 +5,7 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  workflow_dispatch: {}
 
 # Mirrors the mini-calculator pipeline you've been learning, but with TWO
 # job streams (frontend + backend) joined by `needs:`. A later step only runs
