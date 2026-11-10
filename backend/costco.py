@@ -153,39 +153,136 @@ def filter_basket(products: list[dict], tags=None) -> list[dict]:
     return [p for p in products if p["tag"] in tags]
 
 
+# ---- 家電 basket via bounded BFS crawl of PDP "相關推薦" links ----------------
+# Costco's rendered catalog caps at ~30 featured items (家电 only ~3). But each
+# 家電 PDP lists "相關推薦" links to MORE 家電 PDPs. A bounded BFS crawl of those
+# links grows the 家電 basket. This is the standard technique when a listing
+# page is intentionally sparse: crawl outward through the product graph.
+#
+# `scrape_costco` is imported lazily inside crawl_appliances so that
+# `import costco` does NOT pull in the `requests` dependency at module load time.
+
+
+def pdp_name(html: str) -> str | None:
+    """Pull the human product name from a single PDP's og:title, stripping the
+    ' | Costco 好市多' suffix."""
+    m = re.search(r'property="og:title"[^>]*content="([^"]+)"', html)
+    if not m:
+        return None
+    name = m.group(1)
+    for suf in ("| Costco 好市多", " | Costco", "| 好市多", " | "):
+        if name.endswith(suf):
+            name = name[: -len(suf)]
+            break
+    return name.strip() or None
+
+
+def related_appliance_urls(html: str) -> list[str]:
+    """Extract 家電-tagged related-PDP URLs from a PDP's 相關推薦 links.
+
+    Only returns URLs whose breadcrumb path the tagger classifies as 家電, so
+    the crawl stays on the 家電 subtree.
+    """
+    urls, seen = [], set()
+    for path in re.findall(r'(/(?:[A-Za-z0-9._-]+/)*p/[0-9A-Za-z]+)', html):
+        if _tag_for(path) == "家電":
+            u = BASE + path
+            if u not in seen:
+                seen.add(u)
+                urls.append(u)
+    return urls
+
+
+def crawl_appliances(
+    seed_urls: list[str],
+    max_items: int = 15,
+    max_requests: int = 40,
+    timeout: int = 20,
+    delay: float = 0.3,
+) -> list[dict]:
+    """BFS crawl 家電 PDPs outward through their 相關推薦 links.
+
+    Returns up to `max_items` 家電 products (each with name, price, sku, url,
+    path). Bounded by `max_requests` + a polite delay between requests.
+    """
+    import time
+    from collections import deque
+    from scrapers import scrape_costco  # lazy: import costco shouldn't need requests
+
+    queue = deque(seed_urls)
+    seen = set()
+    basket: list[dict] = []
+    requests = 0
+
+    while queue and len(basket) < max_items and requests < max_requests:
+        url = queue.popleft()
+        if url in seen:
+            continue
+        seen.add(url)
+        html = fetch(url, timeout=timeout)
+        requests += 1
+        time.sleep(delay)
+        if not html:
+            continue
+        info = scrape_costco(url, timeout=timeout)  # {price, sku, currency, ...}
+        sku = info.get("sku") if info else None
+        name = pdp_name(html)
+        # Enqueue related 家電 PDPs before consuming the basket cap.
+        for ru in related_appliance_urls(html):
+            if ru not in seen:
+                queue.append(ru)
+        if sku and info.get("price") and name:
+            if sku and sku not in {b["sku"] for b in basket}:
+                basket.append(
+                    {
+                        "name": name,
+                        "price": info["price"],
+                        "currency": info.get("currency", "TWD"),
+                        "sku": sku,
+                        "url": url,
+                        "tag": "家電",
+                        "category_path": url.lstrip("/"),
+                    }
+                )
+    return basket
+
+
 if __name__ == "__main__":
     # 3C/家電 一籃。
-    # NOTE(follow-up): 家電分頁 /c/301 /c/305 /c/308 是 lazy/JS render，
-    #   抓到的卡片是空骨架（pin 正確但 name/price 要 JS 才填）。
-    #   要補齊家電籃，下一步需 browser_exec 渲染該分頁後回寫解析。
-    #   目前 3C 是 server-side render，HTTP 直抓即可；家電暫缺。
-    pages = ["/c/1", "/c/3", "/c/301", "/c/305", "/c/308"]  # 3C + 各類家電 landing
-    seen, products = set(), []
-    for pg in pages:
+    # 家電的 landing 分頁 (/c/301 /c/305 /c/308) 是 lazy render，HTTP 只填出 3 筆。
+    # 因此用 bounded BFS crawl 從那 3 筆 家電 PDP 的「相關推薦」往外長，
+    # 把家電籃補到 15 筆。3C 仍是 server-render 的 landing pool。
+
+    # 3C 一籃：landing pool（server-render，10 筆）
+    seen, basket = set(), []
+    for pg in ["/c/1", "/c/3"]:
         for p in scrape_category(f"{BASE}{pg}"):
-            key = p["sku"]
-            if key and key not in seen:
-                seen.add(key)
-                products.append(p)
+            if p["sku"] and p["sku"] not in seen and p["price"] and p["name"] != "（無名）":
+                if _tag_for(p.get("category_path", "") or p.get("url", "")) == "3C":
+                    seen.add(p["sku"])
+                    basket.append(p)
 
-    # Keep only genuine 3C/家电 tiles that have BOTH a name and a price
-    # (drops cross-sell carousels like 紙巾/濾水壺 and un-parsed carousel tiles).
-    clean = [p for p in filter_basket(products) if p["price"] and p["name"] != "（無名）"]
+    # 家電一籃：從已知 3 家電 PDP BFS crawl「相關推薦」往外長
+    seed_appliance_urls = [
+        f"{BASE}/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/BOSE-Solo-Soundbar-TV-Speaker-II/p/3062725",
+        f"{BASE}/Televisions-Appliances/TV-Home-Entertainment/Television/Philips-55-inch-4K-UHD-Smart-TV/p/153526",
+        f"{BASE}/Televisions-Appliances/Air-Conditioners-Fans/Coolers-Humidifiers/Honeywell-Air-Purifier-AC1025D/p/157137",
+    ]
+    for p in crawl_appliances(seed_appliance_urls, max_items=15, max_requests=50, timeout=15, delay=0.3):
+        if p["sku"] not in seen:
+            seen.add(p["sku"])
+            basket.append(p)
 
-    clean.sort(key=lambda p: (p["tag"], -(p["price"] or 0)))
-    print(f"3C / 家電 一籃 — 抓到 {len(clean)} 筆有效商品（含品名 + 價格）\n")
-    for t in ("3C", "家電"):
-        items = [p for p in clean if p["tag"] == t]
-        if not items:
-            continue
-        print(f"【{t}】{len(items)} 筆")
-        for p in items:
-            path = p["category_path"].split("/")
-            crumb = " > ".join(path[:2]) if len(path) > 1 else p["category_path"]
-            print(f"  NT${p['price']:>10,.2f}  {p['name']:<46} sku {p['sku']}")
-            print(f"             {crumb}")
-    if clean:
-        hi = max(clean, key=lambda p: p["price"])
-        lo = min(clean, key=lambda p: p["price"])
+    basket.sort(key=lambda p: (p["tag"], -(p["price"] or 0)))
+    c3 = [p for p in basket if p["tag"] == "3C"]
+    ca = [p for p in basket if p["tag"] == "家電"]
+    print(f"3C/家電 一籃 — 3C {len(c3)} 筆（landing pool）+ 家電 {len(ca)} 筆（BFS crawl）")
+    for t, items in (("3C", c3), ("家電", ca)):
+        print(f"\n【{t}】{len(items)} 筆")
+        for p in sorted(items, key=lambda x: -x["price"]):
+            print(f'  NT${p["price"]:>10,.2f}  {p["name"][:48]:<48}  sku {p["sku"]}')
+    if basket:
+        hi = max(basket, key=lambda p: p["price"])
+        lo = min(basket, key=lambda p: p["price"])
         print(f"\n最貴: {hi['name']}  NT${hi['price']:,.2f}")
         print(f"最平: {lo['name']}  NT${lo['price']:,.2f}")
