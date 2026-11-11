@@ -249,6 +249,26 @@ def seed_from_snapshot(items: list[dict], days: int = 14,
 # a single-writer daily job needs none of git's binary merge machinery, but a
 # human can read exactly what changed.
 PERSIST_PATH = os.path.join(os.path.dirname(__file__), "history_data.json")
+# A SEPARATE, decoupled sidecar for discontinued (orphan) skus. It holds the LAST
+# known observation of any sku the rolling window evicted outright, so the alert
+# scanner / watchlist can still reference a sku that has dropped out of the series
+# — no dangling row, no silent deletion. watchlist.json is NEVER rewritten by this
+# (that is the #4 decoupling; retention only *flags* a discontinued watched sku).
+DISCONTINUED_PATH = os.path.join(os.path.dirname(__file__), "history_data.discontinued.json")
+
+# -------- rolling-window retention (issue #5: 保留策略 / drift 衛生) --------
+# history_data.json is append-only (reals grow it every day) so without a bound it
+# grows without bound. A rolling window keeps only the most recent N days. N is
+# configurable via the HISTORY_WINDOW_DAYS env var, an arg, or a param. The window
+# is ANCHORED at the newest observation in the file by default (NOT the wall clock)
+# so re-running a refresh on the already-pruned file is byte-identical — the
+# "idempotent + deterministic diff" guarantee (#5 AC4). When a window must evict,
+# it drops OLD SYNTHETIC (backfill) points first and keeps REAL points (a real
+# observation outranks an equivalent-age synthetic, #5 AC2); a sku left with no
+# in-window point and no real point is marked "discontinued" (#5 AC3), never left
+# as an orphan row.
+DEFAULT_WINDOW_DAYS = 90
+ENV_WINDOW = "HISTORY_WINDOW_DAYS"
 
 
 def load_observations(path: str = PERSIST_PATH) -> list[dict]:
@@ -316,17 +336,27 @@ def replay(conn: sqlite3.Connection, observations: list[dict]) -> int:
 
 
 def dump_observations(observations: list[dict],
-                      path: str = PERSIST_PATH) -> int:
+                      path: str = PERSIST_PATH,
+                      window_days: "Optional[int]" = None,
+                      now=None) -> int:
     """Write an observation list to the JSON artifact, ordered for a stable diff.
 
     The artifact is the single source of truth, so its byte output must be
     deterministic: sort by (sku, observed_at, synthetic) and indent with stable
     ASCII. This keeps the git diff reviewable (append-only: real points grow it).
+
+    When `window_days` is given the list is first passed through `apply_window`
+    (the rolling-window retention, #5 AC1) so the file stops growing without bound.
+    `window_days=None` (the existing default) leaves behavior unchanged, which keeps
+    every pre-#5 call site and test intact. `now` anchors the window (defaults to
+    the newest observation in the list for a wall-clock-independent diff — #5 AC4).
     """
+    if window_days is not None:
+        observations = apply_window(observations, window_days=window_days, now=now)
     ordered = sorted(
         observations,
         key=lambda o: (str(o.get("sku", "")), o.get("observed_at", ""),
-                       int(o.get("synthetic", 0))),
+                       _syn_int(o)),
     )
     with open(path, "w", encoding="utf-8") as f:
         json.dump(ordered, f, ensure_ascii=False, indent=1)    # matches export_observations
@@ -429,6 +459,370 @@ def all_sellers(conn: Optional[sqlite3.Connection] = None) -> list[str]:
     if own:
         conn.close()
     return skus
+
+
+# --------------------------------------------------------------------------
+# rolling-window retention — issue #5 (保留策略 / drift 衛生)
+#
+# history_data.json is append-only, so it grows without bound. `apply_window` adds
+# a deterministic, IDEMPOTENT rolling-window prune anchored at the NEWEST
+# observation (not the wall clock): evict old points, but drop SYNTHETIC (backfill
+# / fallback) points before equivalent-age REAL points, and mark a sku "discontinued"
+# (sidecar record, never a dangling row) when its whole series falls out of window
+# and it has no real evidence. `prune_to_window` wires it into the refresh path.
+# --------------------------------------------------------------------------
+def _syn_int(o: dict) -> int:
+    """Normalise the synthetic flag to 0/1 across int / bool / str spellings."""
+    syn = o.get("synthetic", 0)
+    if isinstance(syn, bool):
+        return 1 if syn else 0
+    if isinstance(syn, str):
+        return 1 if syn.strip().lower() in ("1", "true", "yes") else 0
+    try:
+        return 1 if int(syn) else 0
+    except (TypeError, ValueError):
+        return 0
+
+
+def _is_real(o: dict) -> bool:
+    """A genuine scrape is the NOT-synthetic one (a real outranks backfill/fallback)."""
+    return _syn_int(o) == 0
+
+
+def _parse_ts(ts):
+    """Parse an ISO-8601 `observed_at` to a NAIVE datetime, tolerant of 'Z',
+    offsets, and date-only forms — uniform naive across py3.9/3.11 so all
+    window comparisons are safe."""
+    if isinstance(ts, datetime):
+        return ts.replace(tzinfo=None)
+    s = str(ts).strip()
+    if s.endswith("Z"):
+        s = s[:-1]
+    try:
+        dt = datetime.fromisoformat(s)
+    except ValueError:
+        for fmt in ("%Y-%m-%dT%H:%M:%S.%f", "%Y-%m-%dT%H:%M:%S",
+                    "%Y-%m-%d %H:%M:%S.%f", "%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
+            try:
+                return datetime.strptime(s, fmt).replace(tzinfo=None)
+            except ValueError:
+                continue
+        raise
+    return dt.replace(tzinfo=None)
+
+
+def _obs_ts_key(o: dict):
+    """Stable sort/compare key for an observation's timestamp (naive datetime)."""
+    return _parse_ts(o.get("observed_at", ""))
+
+
+def newest_ts(observations: list[dict]):
+    """The most recent observed_at across all observations (naive datetime), or
+    None for an empty/corrupt list — the window's default anchor."""
+    best = None
+    for o in observations:
+        raw = o.get("observed_at") if isinstance(o, dict) else None
+        if raw is None:
+            continue
+        try:
+            t = _parse_ts(raw)
+        except ValueError:
+            continue
+        if best is None or t > best:
+            best = t
+    return best
+
+
+def _window_cutoff(observations, window_days, now):
+    """cutoff = anchor - window_days, where the anchor is `now` (if given and
+    not wall-clock-dependent) else the NEWEST observation — the deterministic,
+    idempotent anchor that makes a re-run byte-identical (AC4)."""
+    base = _as_dt(now) if now is not None else newest_ts(observations)
+    if base is None:
+        return None
+    return base - timedelta(days=window_days)
+
+
+def _as_dt(x):
+    if isinstance(x, datetime):
+        return x.replace(tzinfo=None)
+    if x is None:
+        return None
+    return _parse_ts(x)
+
+
+def _contiguous_window_suffix(pts: list[dict], cutoff) -> list[dict]:
+    """The in-window points of a sku PLUS a contiguous block of *older real*
+    points rescued just below the in-window edge, stopping at the FIRST synthetic
+    met.
+
+    This is the synthetic-first eviction (#5 AC2): when the window must trim, a
+    real point of equivalent age beats the synthetic it would otherwise evict, so
+    we walk the out-of-window points newest-first, keeping reals and halting at the
+    first old synthetic (which and everything older is then dropped). The result is
+    always a contiguous SUFFIX of the sku's ascending series — so AC5's "no gaps /
+    no broken/overlapping points / the boundary never cuts through a sku's needed
+    points" holds.
+    """
+    inw = [p for p in pts if _obs_ts_key(p) >= cutoff]
+    if not inw:
+        return []
+    oldest_inw = _obs_ts_key(inw[0])
+    below = [p for p in pts if _obs_ts_key(p) < oldest_inw]
+    rescued = []
+    for p in reversed(below):              # walk out-of-window newest-first
+        if _is_real(p):
+            rescued.append(p)
+        else:
+            break                          # first old synthetic -> stop; it & older drop
+    return rescued + inw
+
+
+def apply_window(observations: list[dict],
+                 window_days: "Optional[int]" = DEFAULT_WINDOW_DAYS,
+                 now=None,
+                 cutoff=None) -> list[dict]:
+    """Keep only the most recent `window_days` of an observation list (#5 AC1).
+
+    Per sku the series is reduced to a contiguous, windowed suffix:
+      * in-window points (observed_at >= cutoff) are always kept;
+      * if the sku has any synthetic point, the tail is extended down through
+        adjacent *real* points, dropping the first old synthetic and everything
+        older beneath it (synthetic-first eviction, real outranks — AC2);
+      * a sku left with NO in-window point but WITH real points keeps its real
+        evidence (AC2: "if it has any real points, keep those");
+      * a sku with NO in-window point AND NO real point is dropped entirely
+        (it is "discontinued" — surfaced via the sidecar, AC3).
+
+    `cutoff` may be passed (else it is derived: `now` if given, else the NEWEST
+    observation — the idempotent anchor, AC4). The output is deterministically
+    ordered by the same key `dump_observations` uses, and `apply_window` is
+    idempotent: re-applying it to an already-windowed list is a no-op (the newest
+    point always survives, so nothing moves).
+    """
+    if not observations:
+        return []
+    if cutoff is None:
+        cutoff = _window_cutoff(observations, window_days, now)
+    if cutoff is None:
+        return []
+    bysku: dict = {}
+    for o in observations:
+        bysku.setdefault(str(o.get("sku")), []).append(o)
+    kept: list[dict] = []
+    for sku in sorted(bysku):
+        pts = bysku[sku]
+        pts.sort(key=_obs_ts_key)
+        has_reals = any(_is_real(p) for p in pts)
+        has_syn = any(not _is_real(p) for p in pts)
+        inw = [p for p in pts if _obs_ts_key(p) >= cutoff]
+        if inw:
+            kept_pts = _contiguous_window_suffix(pts, cutoff) if has_syn else list(inw)
+        elif has_reals:
+            kept_pts = [p for p in pts if _is_real(p)]      # keep the real evidence
+        else:
+            continue                                         # discontinued -> drop (AC3)
+        kept.extend(kept_pts)
+    return sorted(kept, key=lambda o: (str(o.get("sku", "")),
+                                       o.get("observed_at", ""),
+                                       _syn_int(o)))
+
+
+def resolve_window_days() -> int:
+    """The effective window, resolved from the HISTORY_WINDOW_DAYS env var and
+    falling back to the default. Non-positive / non-numeric -> the default."""
+    raw = os.environ.get(ENV_WINDOW, "").strip()
+    if not raw:
+        return DEFAULT_WINDOW_DAYS
+    try:
+        n = int(raw)
+        return n if n > 0 else DEFAULT_WINDOW_DAYS
+    except ValueError:
+        return DEFAULT_WINDOW_DAYS
+
+
+def discontinued_skus(observations: list[dict],
+                      window_days: "Optional[int]" = DEFAULT_WINDOW_DAYS,
+                      now=None) -> set:
+    """SKUs that are "discontinued" under the window (#5 AC3): their latest
+    observation is older than the window (no in-window point) AND they carry no
+    real point (only synthetic history). Only such a sku may be pruned outright;
+    its last observation is still surfaced via the sidecar so it is never a
+    dangling/orphan row. An in-window sku, or a sku with any real point, is kept.
+    """
+    if not observations:
+        return set()
+    cutoff = _window_cutoff(observations, window_days, now)
+    if cutoff is None:
+        return set()
+    bysku: dict = {}
+    for o in observations:
+        bysku.setdefault(str(o.get("sku")), []).append(o)
+    out: set = set()
+    for sku, pts in bysku.items():
+        has_inw = any(_obs_ts_key(p) >= cutoff for p in pts)
+        has_reals = any(_is_real(p) for p in pts)
+        if not has_inw and not has_reals:
+            out.add(sku)
+    return out
+
+
+def _latest_record(observations: list[dict], sku: str) -> "Optional[dict]":
+    """The sidecar record for a discontinued sku, built from its LATEST
+    observation so the alert scanner / watchlist can still reference the sku."""
+    pts = [o for o in observations if str(o.get("sku")) == sku]
+    if not pts:
+        return None
+    latest = max(pts, key=_obs_ts_key)
+    return {
+        "sku": str(sku),
+        "name": latest.get("name"),
+        "tag": latest.get("tag"),
+        "price": latest.get("price"),
+        "currency": latest.get("currency", "TWD"),
+        "source": latest.get("source", "costco"),
+        "synthetic": _syn_int(latest),
+        "last_observed_at": latest.get("observed_at"),
+        "discontinued": True,
+        "watched": False,
+    }
+
+
+def render_discontinued(observations: list[dict],
+                        window_days: "Optional[int]" = DEFAULT_WINDOW_DAYS,
+                        now=None,
+                        watchlist_skus=None) -> list:
+    """The full, deterministically ordered list of discontinued sidecar records
+    for `observations` under `window_days`. A sku that is also in the watchlist
+    is flagged `watched=True` — the #4 decoupling: it is FLAGGED, never deleted
+    from watchlist.json by the retention path."""
+    disc = discontinued_skus(observations, window_days=window_days, now=now)
+    watched = {str(s) for s in (watchlist_skus or [])}
+    out = []
+    for sku in sorted(disc):
+        rec = _latest_record(observations, sku)
+        if rec is not None:
+            rec["watched"] = sku in watched
+            out.append(rec)
+    return out
+
+
+def flag_discontinued_watchlist(watchlist, discontinued) -> list:
+    """Non-mutating report of watchlist entries whose sku is discontinued (#5 AC3,
+    decoupling — #4). Returns the flagged entries; the watchlist list/file itself
+    is NEVER modified or deleted. `discontinued` may be a set of skus or a list of
+    sidecar records."""
+    if isinstance(discontinued, (list, tuple)):
+        disc = {str(r.get("sku")) if isinstance(r, dict) else str(r)
+                for r in (discontinued or [])}
+    else:
+        disc = {str(s) for s in (discontinued or [])}
+    out = []
+    for e in watchlist or []:
+        if not isinstance(e, dict):
+            continue
+        sku = e.get("sku")
+        if sku is not None and str(sku) in disc:
+            out.append({
+                "sku": str(sku),
+                "name": e.get("name"),
+                "threshold": e.get("threshold"),
+                "flag": "discontinued",
+            })
+    return out
+
+
+def load_discontinued(path: str = DISCONTINUED_PATH) -> list:
+    """Read the discontinued sidecar. [] when absent/corrupt — like
+    load_observations, it never raises."""
+    if not os.path.exists(path):
+        return []
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return []
+    return data if isinstance(data, list) else []
+
+
+def dump_discontinued_records(records: list,
+                              path: str = DISCONTINUED_PATH) -> int:
+    """Write the discontinued sidecar deterministically (sort_keys + fixed indent)
+    so a re-run that leaves the set unchanged produces a byte-identical file
+    (AC4) — the same guarantee load/save gives the watchlist and the dedup state."""
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(list(records), f, ensure_ascii=False, indent=1, sort_keys=True)
+    return len(records)
+
+
+def prune_to_window(observations=None,
+                    persist_path: str = PERSIST_PATH,
+                    discontinued_path: str = DISCONTINUED_PATH,
+                    window_days: "Optional[int]" = None,
+                    now=None,
+                    watchlist_skus=None,
+                    watchlist=None) -> dict:
+    """The refresh-path driver (#5 AC6): apply the rolling window to the SSOT and
+    rewrite BOTH artifacts deterministically + idempotently:
+      * `persist_path`       <- the windowed observations (AC1);
+      * `discontinued_path`  <- the accumulated sidecar of evicted skus (AC3);
+    a discontinued sku that is ALSO watched is flagged (AC3) but watchlist.json is
+    NEVER written (the #4 decoupling).
+
+    `window_days=None` resolves via `resolve_window_days()` (env / default).
+    `now` is left as None so the window anchors on the NEWEST observation — the only
+    thing that makes a re-run of THIS function on the already-pruned file byte-
+    identical (AC4). `watchlist` (a watchlist list) is optional; its skus flag the
+    sidecar. Returns a stats dict.
+    """
+    obs = load_observations(persist_path) if observations is None else observations
+    if window_days is None:
+        window_days = resolve_window_days()
+    if watchlist_skus is None and watchlist is not None:
+        from watchlist import skus as _wl_skus
+        watchlist_skus = _wl_skus(watchlist)
+    watch = {str(s) for s in (watchlist_skus or [])}
+
+    disc = discontinued_skus(obs, window_days=window_days, now=now)
+    windowed = apply_window(obs, window_days=window_days, now=now)
+
+    # Rewrite the SSOT. Idempotent: when `obs` is already windowed, `apply_window`
+    # is a no-op and `dump_observations` reproduces the exact bytes (AC4).
+    dump_observations(windowed, persist_path, window_days=None, now=now)
+
+    # The sidecar ACCUMULATES: keep every previously-known discontinued record,
+    # add newly-discontinued skus, and drop any that reactivated (came back into
+    # the windowed series). A re-run is therefore byte-identical for the file and
+    # the sidecar (AC4).
+    prev = {str(r.get("sku")): r for r in load_discontinued(discontinued_path)
+            if isinstance(r, dict)}
+    for sku in sorted(disc):
+        if sku not in prev:
+            rec = _latest_record(obs, sku)
+            if rec is not None:
+                rec["watched"] = sku in watch
+                prev[sku] = rec
+    survived = {str(o.get("sku")) for o in windowed}
+    records = []
+    for sku in sorted(prev):
+        if sku in survived:
+            continue                       # reactivated -> no longer orphaned
+        r = dict(prev[sku])
+        r["watched"] = sku in watch
+        records.append(r)
+    dump_discontinued_records(records, discontinued_path)
+
+    flags = flag_discontinued_watchlist(watchlist, disc) if watchlist is not None \
+        else flag_discontinued_watchlist([], disc)
+    return {
+        "before": len(obs),
+        "after": len(windowed),
+        "dropped": len(obs) - len(windowed),
+        "window_days": window_days,
+        "discontinued": sorted(disc),
+        "watchlist_flags": flags,
+        "records": records,
+    }
 
 
 if __name__ == "__main__":

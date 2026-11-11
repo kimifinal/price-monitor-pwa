@@ -37,6 +37,9 @@ ROOT = Path(__file__).resolve().parents[1]
 BACKEND = ROOT / "backend"
 SNAPSHOT = "backend/costco_data.py"
 HISTORY = "backend/history_data.json"
+# The discontinued-skus sidecar (issue #5 AC3): a decoupled, git-diffable record of
+# skus the rolling window evicted, so alerts/watchlist still reference them.
+DISCONTINUED = "backend/history_data.discontinued.json"
 
 
 def run(*cmd: str, **kw) -> subprocess.CompletedProcess:
@@ -105,23 +108,58 @@ def main() -> int:
     crypto_added = append_crypto(items=citems, persist_path=str(BACKEND / "history_data.json"))
     print(f"coingecko: +{crypto_added} new obs / {len(citems)} coins")
 
+    # 3c. Rolling-window retention (#5 — 保留策略 / drift 衛生). The append-only
+    #     history_data.json would otherwise grow without bound; a window keeps only
+    #     the most recent N days (HISTORY_WINDOW_DAYS, default 90). The window is
+    #     anchored at the NEWEST observation so a re-run on the already-pruned file
+    #     is byte-identical (idempotent diff). Discontinued skus land in a separate
+    #     decoupled sidecar (never a dangling row); a discontinued sku that is also
+    #     watched is merely FLAGGED — watchlist.json is NOT deleted from #4's
+    #     decoupling, so retention never churns the personalization gate.
+    from history import prune_to_window
+    from watchlist import load as wl_load
+    disc_path = str(BACKEND / "history_data.discontinued.json")
+    _wal = wl_load()
+    try:
+        stats = prune_to_window(
+            persist_path=str(BACKEND / "history_data.json"),
+            discontinued_path=disc_path,
+            watchlist=_wal,
+        )
+    except Exception as e:  # noqa: BLE001 — a scheduler must never crash on us
+        print(f"! retention failed ({e!r}) — leaving artifacts as-is")
+        return 1
+    print(f"retention(window={stats['window_days']}d): {stats['before']} -> "
+          f"{stats['after']} obs, -{stats['dropped']} evicted, "
+          f"{len(stats['discontinued'])} discontinued -> sidecar")
+    for _f in stats["watchlist_flags"]:
+        print(f"[retention:flag] watchlist sku {_f['sku']} is discontinued — "
+              f"kept in watchlist.json (flagged, not deleted)")
+
     # 4. Commit + push only when an artifact actually changed.
-    st = run("git", "status", "--porcelain", "--", SNAPSHOT, HISTORY)
+    st = run("git", "status", "--porcelain", "--", SNAPSHOT, HISTORY, DISCONTINUED)
     if not st.stdout.strip():
         print("no change — artifacts already up to date (no-op)")
         return 0
 
     if dry_run:
-        diff = run("git", "diff", "--stat", "--", SNAPSHOT, HISTORY)
-        print(f"[dry-run] would refresh {SNAPSHOT} + {HISTORY}:")
+        diff = run("git", "diff", "--stat", "--", SNAPSHOT, HISTORY, DISCONTINUED)
+        print(f"[dry-run] would refresh {SNAPSHOT} + {HISTORY} + {DISCONTINUED}:")
         print(diff.stdout.strip())
         print("[dry-run] not committing/pushing")
-        run("git", "checkout", "--", SNAPSHOT, HISTORY)  # keep tree clean
+        # Keep the tree clean. A first-ever sidecar is untracked (git checkout of it
+        # errors), so if the checkout reports that, drop the freshly-written copy.
+        rc = run("git", "checkout", "--", SNAPSHOT, HISTORY, DISCONTINUED)
+        if rc.returncode != 0 and os.path.exists(disc_path):
+            os.remove(disc_path)
+            run("git", "checkout", "--", SNAPSHOT, HISTORY)
         return 0
 
-    run("git", "add", SNAPSHOT, HISTORY)
+    run("git", "add", SNAPSHOT, HISTORY, DISCONTINUED)
     msg = (f"chore(data): refresh snapshot + history — "
-           f"{len(items)} items {by_tag}, +{added} costco obs, +{crypto_added} coingecko obs")
+           f"{len(items)} items {by_tag}, +{added} costco obs, "
+           f"+{crypto_added} coingecko obs, retention -{stats['dropped']} "
+           f"({stats['window_days']}d window)")
     c = run("git", "commit", "-m", msg)
     if c.returncode != 0:
         print("commit failed:\n", c.stderr)
