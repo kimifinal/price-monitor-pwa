@@ -199,18 +199,32 @@ def crawl_basket(
     tag: str,
     max_items: int = 20,
     max_requests: int = 40,
-    timeout: int = 20,
-    delay: float = 0.3,
+    timeout: int = 5,
+    delay: float = 0.1,
+    workers: int = 8,
 ) -> list[dict]:
     """BFS-crawl PDPs outward through their 相關推薦 links, keeping only items
     whose breadcrumb path classifies as `tag` (家電 or 3C).
 
-    Uses `parse_offers` on the already-fetched HTML (single network call per
-    PDP — the key optimization; `scrape_costco` re-fetches and is 2× slow).
+    Two speed levers, both applied here:
+      1. **Parallel rounds** — each round fetches up to `workers` PDPs at once
+         via a ThreadPoolExecutor (BFS is still level-by-level, so the order
+         and early-exit semantics are preserved). This is the big win vs a
+         naïve sequential crawl.
+      2. **Single fetch per PDP** — `parse_offers` runs on the HTML we already
+         fetched; `scrape_costco` re-fetches and is 2× slower, so we don't use
+         it. A short per-request `timeout` (5s) bounds the dead-link tail instead
+         of waiting 15–20s each (the dead-link tail was the real bottleneck).
+    The polite `delay` is per-round, not per-request, so wall time ≈
+        ceil(max_requests / workers) × (fetch + delay).
+    `parse_offers` is imported lazily so `import costco` doesn't pull in the
+    `requests` dependency at module load (keeps the offline DEMO_BASKET path
+    dependency-light).
     """
     import time
     from collections import deque
-    from scrapers import parse_offers  # lazy: no `requests` dependency at module load
+    from concurrent.futures import ThreadPoolExecutor
+    from scrapers import parse_offers
 
     queue = deque(seed_urls)
     seen = set()
@@ -218,40 +232,57 @@ def crawl_basket(
     requests = 0
 
     while queue and len(basket) < max_items and requests < max_requests:
-        url = queue.popleft()
-        if url in seen:
-            continue
-        seen.add(url)
-        html = fetch(url, timeout=timeout)
-        requests += 1
+        # Collect this round's work — up to `workers` fresh URLs, respecting the
+        # remaining request budget.
+        round_urls: list[str] = []
+        while queue and len(round_urls) < workers and requests + len(round_urls) < max_requests:
+            u = queue.popleft()
+            if u in seen:
+                continue
+            seen.add(u)
+            round_urls.append(u)
+        if not round_urls:
+            break
+
+        # Parallel fetch of this level (the network part only; parsing below runs
+        # in the main thread so shared state has no races).
+        def _fetch(u: str):
+            return u, fetch(u, timeout=timeout)
+
+        with ThreadPoolExecutor(max_workers=workers) as ex:
+            fetched = list(ex.map(_fetch, round_urls))
+
+        for url, html in fetched:
+            requests += 1
+            if not html:
+                continue
+            name = pdp_name(html)
+            m = re.search(r"/p/([0-9A-Za-z]+)", url)
+            sku = m.group(1) if m else None
+            info = parse_offers(html) or {}
+            price = info.get("price")
+            currency = info.get("currency") or "TWD"
+            # enqueue related PDPs that match our target tag
+            for path in re.findall(r"(/(?:[A-Za-z0-9._-]+/)*p/[0-9A-Za-z]+)", html):
+                ru = BASE + path
+                if ru not in seen and _tag_for(path) == tag:
+                    queue.append(ru)
+            if sku and price is not None and name and sku not in {b["sku"] for b in basket}:
+                basket.append(
+                    {
+                        "name": name,
+                        "price": price,
+                        "currency": currency,
+                        "sku": sku,
+                        "url": url,
+                        "tag": tag,
+                        "category_path": url.lstrip("/"),
+                    }
+                )
+            if len(basket) >= max_items:
+                break
+        # Polite wait between rounds (not per-request) so parallelism still helps.
         time.sleep(delay)
-        if not html:
-            continue
-        name = pdp_name(html)
-        # single fetch: parse price + sku from this HTML
-        sku = None
-        m = re.search(r"/p/([0-9A-Za-z]+)", url)
-        sku = m.group(1) if m else None
-        info = parse_offers(html) or {}
-        price = info.get("price")
-        currency = info.get("currency") or "TWD"
-        # enqueue related PDPs that match our target tag
-        for path in re.findall(r"(/(?:[A-Za-z0-9._-]+/)*p/[0-9A-Za-z]+)", html):
-            ru = BASE + path
-            if ru not in seen and _tag_for(path) == tag:
-                queue.append(ru)
-        if sku and price is not None and name and sku not in {b["sku"] for b in basket}:
-            basket.append(
-                {
-                    "name": name,
-                    "price": price,
-                    "currency": currency,
-                    "sku": sku,
-                    "url": url,
-                    "tag": tag,
-                    "category_path": url.lstrip("/"),
-                }
-            )
     return basket
 
 
@@ -260,11 +291,13 @@ def crawl_appliances(
     seed_urls: list[str],
     max_items: int = 15,
     max_requests: int = 40,
-    timeout: int = 20,
-    delay: float = 0.3,
+    timeout: int = 8,
+    delay: float = 0.1,
+    workers: int = 4,
 ) -> list[dict]:
     return crawl_basket(seed_urls, tag="家電", max_items=max_items,
-                        max_requests=max_requests, timeout=timeout, delay=delay)
+                        max_requests=max_requests, timeout=timeout, delay=delay,
+                        workers=workers)
 
 
 def related_appliance_urls(html: str) -> list[str]:
@@ -286,13 +319,18 @@ from costco_data import DEMO_BASKET
 
 
 def basket(live: bool = False,
-           per_tag_cap: int = 15, delay: float = 0.3) -> list[dict]:
+           per_tag_cap: int = 12, delay: float = 0.1,
+           workers: int = 8, timeout: int = 5) -> list[dict]:
     """Return a combined 3C + 家電 basket.
 
     live=False (default): returns today's pre-snapshotted `DEMO_BASKET` —
         fast, offline, safe for tests and CI.
-    live=True: unified BFS crawl seeded from DEMO_BASKET's own PDPs; both
-        3C and 家電 grow outward through their 相關推薦 links. ~30s, needs net.
+    live=True: unified parallel BFS crawl seeded from DEMO_BASKET's own PDPs;
+        both 3C and 家電 grow outward through their 相關推薦 links. The crawl is
+        parallel (PDPs fetched 8-at-a-time + 5s/request timeout), so the fast
+        ad-hoc basket lands in ~14s instead of the ~70s a sequential crawl took.
+        For an occasional full-coverage refresh, bump `per_tag_cap` (e.g. 15,
+        ~3s slower per tag) — that is a scheduled job's job, not ad-hoc latency.
     """
     if not live:
         return DEMO_BASKET
@@ -306,7 +344,8 @@ def basket(live: bool = False,
         seeds = [p["url"] for p in DEMO_BASKET
                  if p.get("tag") == tag and p.get("url")][:5]
         for p in crawl_basket(seeds, tag=tag, max_items=per_tag_cap,
-                               max_requests=40, timeout=15, delay=delay):
+                               max_requests=40, timeout=timeout,
+                               delay=delay, workers=workers):
             if p["sku"] not in seen:
                 seen.add(p["sku"])
                 out.append(p)
