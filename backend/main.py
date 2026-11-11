@@ -18,6 +18,7 @@ from scrapers import fetch_price
 from alerts import send_telegram_alert
 from costco import basket as costco_basket
 import history
+import crypto
 
 
 app = FastAPI(title="Price Monitor", version="1.0.0")
@@ -105,15 +106,27 @@ def get_costco_basket(live: bool = False) -> dict:
 def _history_conn():
     """A connection to a history DB, populated from the persisted artifact
     (history_data.json) with a snapshot fallback. Resolves paths at call time so
-    tests can redirect them to a tmp file."""
+    tests can redirect them to a tmp file.
+
+    Multi-source: crypto (source='coingecko') is backfilled here too, so a fresh
+    checkout already shows a crypto movement coexisting with Costco in the SAME
+    series + verdict layer. The backfill is offline + synthetic, so it is the
+    safe default and can never trip the real-only alert scanner.
+    """
     from costco_data import DEMO_BASKET
-    conn = history.ensure_history(fallback_items=DEMO_BASKET)
+    conn = history.ensure_history(
+        fallback_items=DEMO_BASKET,
+        crypto_items=crypto.fetch_crypto_items(live=False),
+    )
     return conn
 
 
 @app.get("/api/costco/history")
 def get_costco_history() -> dict:
-    """All tracked skus with comparison metrics + a verdict (the 比價 layer)."""
+    """The unified, source-agnostic 比價 layer: every tracked sku (costco AND
+    crypto) with comparison metrics + a verdict. Crypto coexists here in the same
+    time series + verdict — this is what 'multi-source' means for #3.
+    """
     conn = _history_conn()
     try:
         skus = [r["sku"] for r in conn.execute(
@@ -143,5 +156,61 @@ def get_costco_history_sku(sku: str) -> dict:
     m["series"] = [
         {"observed_at": ts, "price": price, "source": src_label}
         for (ts, price, src_label) in series
+    ]
+    return m
+
+
+# --- crypto 時序 (source='coingecko') ---------------------------------------
+# The SAME metrics() -> price_verdict() path as Costco, so a coin is judged by the
+# one verdict rule (never a second, divergent one). This is the 'multi-source'
+# 時序 layer #3 asks for: coingecko + costco share one history_data.json.
+def _crypto_metrics(conn) -> list[dict]:
+    """Every watchlist coin's metrics + verdict + series (source-agnostic path)."""
+    out: list[dict] = []
+    for sku in [crypto.crypto_sku(w["source"]) for w in crypto.CRYPTO_WATCHLIST]:
+        m = dict(history.metrics(sku, conn=conn))
+        if m.get("points", 0) == 0:
+            continue
+        m["source"] = "coingecko"
+        m["verdict"] = price_verdict(m)
+        series = history.series(sku, conn=conn)
+        m["series"] = [
+            {"observed_at": ts, "price": price, "source": src}
+            for (ts, price, src) in series
+        ]
+        out.append(m)
+    return out
+
+
+@app.get("/api/crypto")
+def get_crypto_history() -> dict:
+    """Every crypto coin's metrics + verdict + series (the 比價 layer for
+    source='coingecko'). Reuses history.metrics + models.price_verdict — the
+    SAME rule as Costco, just another source in the same time series."""
+    conn = _history_conn()
+    try:
+        items = _crypto_metrics(conn)
+    finally:
+        conn.close()
+    return {"count": len(items), "items": items}
+
+
+@app.get("/api/crypto/{coin}")
+def get_crypto_history_coin(coin: str) -> dict:
+    """One coin's full series + metrics + verdict — what feeds its sparkline."""
+    sku = crypto.crypto_sku(coin)
+    conn = _history_conn()
+    try:
+        m = dict(history.metrics(sku, conn=conn))
+        series = history.series(sku, conn=conn)
+    finally:
+        conn.close()
+    if m.get("points", 0) == 0:
+        raise HTTPException(status_code=404, detail=f"no history for {coin}")
+    m["source"] = "coingecko"
+    m["verdict"] = price_verdict(m)
+    m["series"] = [
+        {"observed_at": ts, "price": price, "source": src}
+        for (ts, price, src) in series
     ]
     return m

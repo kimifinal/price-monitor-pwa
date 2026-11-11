@@ -99,3 +99,40 @@ def test_costco_history_sku_series_and_404(tmp_path, monkeypatch):
     assert "verdict" in body and "label" in body["verdict"]
     # an sku with no history is a clean 404, not a crash
     assert client.get("/api/costco/history/000000-nope").status_code == 404
+
+
+# --------------------- crypto 時序層 (AC3 / AC4 / AC7) ---------------------
+def test_crypto_history_endpoint_returns_series_and_verdict(tmp_path, monkeypatch):
+    """GET /api/crypto returns coingecko metrics + a verdict + the series, offline."""
+    monkeypatch.setattr(_history, "DEFAULT_DB", str(tmp_path / "h.db"))
+    r = client.get("/api/crypto")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["count"] >= 1
+    for it in body["items"]:
+        assert it["source"] == "coingecko"
+        assert it["sku"].startswith("crypto:")
+        assert len(it["series"]) == it["points"] >= 1
+        assert it["verdict"]["verdict"] in (
+            "all_time_low", "good_deal", "stable", "near_high", "unknown"
+        )
+
+
+def test_crypto_coin_series_endpoint_and_404(tmp_path, monkeypatch):
+    monkeypatch.setattr(_history, "DEFAULT_DB", str(tmp_path / "h.db"))
+    r = client.get("/api/crypto/bitcoin")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["source"] == "coingecko"
+    assert "verdict" in body and "label" in body["verdict"]
+    assert len(body["series"]) >= 1
+    # an unknown coin is a clean 404, not a crash
+    assert client.get("/api/crypto/definitely-not-a-coin").status_code == 404
+
+
+def test_unified_history_includes_crypto_alongside_costco(tmp_path, monkeypatch):
+    """AC7: the unified /api/costco/history now carries crypto coexisting with costco."""
+    monkeypatch.setattr(_history, "DEFAULT_DB", str(tmp_path / "h.db"))
+    skus = [it["sku"] for it in client.get("/api/costco/history").json()["items"]]
+    assert any(s.startswith("crypto:") for s in skus)      # crypto side
+    assert any(not s.startswith("crypto:") for s in skus)  # costco side still present

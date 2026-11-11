@@ -4498,5 +4498,425 @@
   "observed_at": "2026-11-11T16:46:26.200725",
   "source": "backfill",
   "synthetic": 1
+ },
+ {
+  "sku": "crypto:bitcoin",
+  "name": "Bitcoin (BTC)",
+  "tag": "crypto",
+  "price": 133.1,
+  "currency": "TWD",
+  "observed_at": "2026-10-30T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:bitcoin",
+  "name": "Bitcoin (BTC)",
+  "tag": "crypto",
+  "price": 130.49,
+  "currency": "TWD",
+  "observed_at": "2026-10-31T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:bitcoin",
+  "name": "Bitcoin (BTC)",
+  "tag": "crypto",
+  "price": 127.39,
+  "currency": "TWD",
+  "observed_at": "2026-11-01T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:bitcoin",
+  "name": "Bitcoin (BTC)",
+  "tag": "crypto",
+  "price": 125.6,
+  "currency": "TWD",
+  "observed_at": "2026-11-02T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:bitcoin",
+  "name": "Bitcoin (BTC)",
+  "tag": "crypto",
+  "price": 124.78,
+  "currency": "TWD",
+  "observed_at": "2026-11-03T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:bitcoin",
+  "name": "Bitcoin (BTC)",
+  "tag": "crypto",
+  "price": 121.91,
+  "currency": "TWD",
+  "observed_at": "2026-11-04T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:bitcoin",
+  "name": "Bitcoin (BTC)",
+  "tag": "crypto",
+  "price": 118.75,
+  "currency": "TWD",
+  "observed_at": "2026-11-05T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:bitcoin",
+  "name": "Bitcoin (BTC)",
+  "tag": "crypto",
+  "price": 116.51,
+  "currency": "TWD",
+  "observed_at": "2026-11-06T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:bitcoin",
+  "name": "Bitcoin (BTC)",
+  "tag": "crypto",
+  "price": 115.18,
+  "currency": "TWD",
+  "observed_at": "2026-11-07T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:bitcoin",
+  "name": "Bitcoin (BTC)",
+  "tag": "crypto",
+  "price": 113.53,
+  "currency": "TWD",
+  "observed_at": "2026-11-08T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:bitcoin",
+  "name": "Bitcoin (BTC)",
+  "tag": "crypto",
+  "price": 111.56,
+  "currency": "TWD",
+  "observed_at": "2026-11-09T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:bitcoin",
+  "name": "Bitcoin (BTC)",
+  "tag": "crypto",
+  "price": 109.26,
+  "currency": "TWD",
+  "observed_at": "2026-11-10T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:bitcoin",
+  "name": "Bitcoin (BTC)",
+  "tag": "crypto",
+  "price": 107.56,
+  "currency": "TWD",
+  "observed_at": "2026-11-11T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:bitcoin",
+  "name": "Bitcoin (BTC)",
+  "tag": "crypto",
+  "price": 104.33,
+  "currency": "TWD",
+  "observed_at": "2026-11-12T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:ethereum",
+  "name": "Ethereum (ETH)",
+  "tag": "crypto",
+  "price": 98.84,
+  "currency": "TWD",
+  "observed_at": "2026-10-30T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:ethereum",
+  "name": "Ethereum (ETH)",
+  "tag": "crypto",
+  "price": 98.29,
+  "currency": "TWD",
+  "observed_at": "2026-10-31T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:ethereum",
+  "name": "Ethereum (ETH)",
+  "tag": "crypto",
+  "price": 95.33,
+  "currency": "TWD",
+  "observed_at": "2026-11-01T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:ethereum",
+  "name": "Ethereum (ETH)",
+  "tag": "crypto",
+  "price": 93.97,
+  "currency": "TWD",
+  "observed_at": "2026-11-02T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:ethereum",
+  "name": "Ethereum (ETH)",
+  "tag": "crypto",
+  "price": 92.46,
+  "currency": "TWD",
+  "observed_at": "2026-11-03T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:ethereum",
+  "name": "Ethereum (ETH)",
+  "tag": "crypto",
+  "price": 91.45,
+  "currency": "TWD",
+  "observed_at": "2026-11-04T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:ethereum",
+  "name": "Ethereum (ETH)",
+  "tag": "crypto",
+  "price": 89.09,
+  "currency": "TWD",
+  "observed_at": "2026-11-05T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:ethereum",
+  "name": "Ethereum (ETH)",
+  "tag": "crypto",
+  "price": 87.12,
+  "currency": "TWD",
+  "observed_at": "2026-11-06T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:ethereum",
+  "name": "Ethereum (ETH)",
+  "tag": "crypto",
+  "price": 85.16,
+  "currency": "TWD",
+  "observed_at": "2026-11-07T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:ethereum",
+  "name": "Ethereum (ETH)",
+  "tag": "crypto",
+  "price": 83.32,
+  "currency": "TWD",
+  "observed_at": "2026-11-08T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:ethereum",
+  "name": "Ethereum (ETH)",
+  "tag": "crypto",
+  "price": 81.85,
+  "currency": "TWD",
+  "observed_at": "2026-11-09T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:ethereum",
+  "name": "Ethereum (ETH)",
+  "tag": "crypto",
+  "price": 80.04,
+  "currency": "TWD",
+  "observed_at": "2026-11-10T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:ethereum",
+  "name": "Ethereum (ETH)",
+  "tag": "crypto",
+  "price": 78.54,
+  "currency": "TWD",
+  "observed_at": "2026-11-11T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:ethereum",
+  "name": "Ethereum (ETH)",
+  "tag": "crypto",
+  "price": 77.03,
+  "currency": "TWD",
+  "observed_at": "2026-11-12T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:solana",
+  "name": "Solana (SOL)",
+  "tag": "crypto",
+  "price": 229.77,
+  "currency": "TWD",
+  "observed_at": "2026-10-30T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:solana",
+  "name": "Solana (SOL)",
+  "tag": "crypto",
+  "price": 224.69,
+  "currency": "TWD",
+  "observed_at": "2026-10-31T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:solana",
+  "name": "Solana (SOL)",
+  "tag": "crypto",
+  "price": 224.27,
+  "currency": "TWD",
+  "observed_at": "2026-11-01T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:solana",
+  "name": "Solana (SOL)",
+  "tag": "crypto",
+  "price": 220.36,
+  "currency": "TWD",
+  "observed_at": "2026-11-02T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:solana",
+  "name": "Solana (SOL)",
+  "tag": "crypto",
+  "price": 219.77,
+  "currency": "TWD",
+  "observed_at": "2026-11-03T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:solana",
+  "name": "Solana (SOL)",
+  "tag": "crypto",
+  "price": 215.5,
+  "currency": "TWD",
+  "observed_at": "2026-11-04T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:solana",
+  "name": "Solana (SOL)",
+  "tag": "crypto",
+  "price": 212.48,
+  "currency": "TWD",
+  "observed_at": "2026-11-05T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:solana",
+  "name": "Solana (SOL)",
+  "tag": "crypto",
+  "price": 212.42,
+  "currency": "TWD",
+  "observed_at": "2026-11-06T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:solana",
+  "name": "Solana (SOL)",
+  "tag": "crypto",
+  "price": 207.69,
+  "currency": "TWD",
+  "observed_at": "2026-11-07T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:solana",
+  "name": "Solana (SOL)",
+  "tag": "crypto",
+  "price": 206.07,
+  "currency": "TWD",
+  "observed_at": "2026-11-08T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:solana",
+  "name": "Solana (SOL)",
+  "tag": "crypto",
+  "price": 203.83,
+  "currency": "TWD",
+  "observed_at": "2026-11-09T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:solana",
+  "name": "Solana (SOL)",
+  "tag": "crypto",
+  "price": 200.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-10T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:solana",
+  "name": "Solana (SOL)",
+  "tag": "crypto",
+  "price": 199.42,
+  "currency": "TWD",
+  "observed_at": "2026-11-11T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
+ },
+ {
+  "sku": "crypto:solana",
+  "name": "Solana (SOL)",
+  "tag": "crypto",
+  "price": 196.95,
+  "currency": "TWD",
+  "observed_at": "2026-11-12T02:20:12.510250",
+  "source": "coingecko",
+  "synthetic": 1
  }
 ]

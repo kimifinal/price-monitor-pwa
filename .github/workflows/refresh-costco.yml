@@ -44,7 +44,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Refresh snapshot (crawl + regenerate + push if changed)
+      - name: Refresh snapshot + crypto (crawl + regenerate + push if changed)
+        # This single job refreshes BOTH sources into the shared history_data.json:
+        # the Costco snapshot AND the coingecko series (source='coingecko', #3).
+        # The coingecko refresh is offline-safe — a failed live fetch falls back to
+        # per-coin synthetic points that are never alertable.
         run: python3 scripts/refresh_snapshot.py
 
       - name: Scan + deliver alerts (#2 — reuses the price_verdict SSOT)

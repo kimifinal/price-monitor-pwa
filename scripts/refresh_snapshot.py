@@ -8,6 +8,9 @@ Two artifacts keep the app fast *and* stateful:
                                  real point is appended per day; the 14-day
                                  backfill seed gives the UI/tests a shape before
                                  a single real day has elapsed.
+  - backend/crypto.py          : the coingecko refresh (source='coingecko'), which
+                                 appends into the SAME history_data.json — the
+                                 multi-source 時序 layer #3 asks for.
 
 Why this exists ("接 4" + "把持久化接上"): the live BFS crawl costs ~18-30s and a
 real price series only grows with elapsed days. Both are scheduled, not ad-hoc,
@@ -91,6 +94,17 @@ def main() -> int:
     added = append_real(items, persist_path=str(BACKEND / "history_data.json"))
     print(f"history_data.json: +{added} new obs ({added}/{len(items)} skus moved)")
 
+    # 3b. Grow the CRYPTO series in the SAME history_data.json (source='coingecko').
+    # CoinGecko is just another source in the multi-source 時序 layer (#3) — coexisting
+    # with Costco in one file. Offline-safe by construction: a failed live fetch yields
+    # per-coin *synthetic* points that never crash the job, and their synthetic flag
+    # keeps the real-only alert scanner from firing on a fallback price.
+    from crypto import ensure_crypto_series, append_crypto, fetch_crypto_items
+    ensure_crypto_series(persist_path=str(BACKEND / "history_data.json"))  # bootstrap a fresh checkout
+    citems = fetch_crypto_items(live=True)
+    crypto_added = append_crypto(items=citems, persist_path=str(BACKEND / "history_data.json"))
+    print(f"coingecko: +{crypto_added} new obs / {len(citems)} coins")
+
     # 4. Commit + push only when an artifact actually changed.
     st = run("git", "status", "--porcelain", "--", SNAPSHOT, HISTORY)
     if not st.stdout.strip():
@@ -107,7 +121,7 @@ def main() -> int:
 
     run("git", "add", SNAPSHOT, HISTORY)
     msg = (f"chore(data): refresh snapshot + history — "
-           f"{len(items)} items {by_tag}, +{added} history obs")
+           f"{len(items)} items {by_tag}, +{added} costco obs, +{crypto_added} coingecko obs")
     c = run("git", "commit", "-m", msg)
     if c.returncode != 0:
         print("commit failed:\n", c.stderr)
