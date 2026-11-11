@@ -177,3 +177,32 @@ def test_append_real_skips_unpriced_items(tmp_path):
     assert history.append_real(items, today="2026-11-02", persist_path=art) == 1
     obs = history.load_observations(art)
     assert [o["sku"] for o in obs] == ["c"]
+
+
+def test_current_prefers_real_over_later_backfill():
+    """A real obs (dated earlier on the day) must outrank a later-timestamped
+    deterministic backfill point for 'current' — the headline is a real scrape,
+    not the synthetic shape, whenever any real point exists."""
+    c = history.connect(":memory:")
+    history.record([{"sku": "q", "name": "Widget", "price": 900.0, "tag": "3C"}],
+                   ts="2026-01-11T16:00:00", source="backfill", synthetic=True, conn=c)
+    history.record([{"sku": "q", "name": "Widget", "price": 825.0, "tag": "3C"}],
+                   ts="2026-01-11T00:00:00",            # real, earlier in the day
+                   conn=c)
+    m = history.metrics("q", c)
+    assert m["current"] == 825.0            # not the 16:00 backfill
+    assert m["current_is_real"] is True
+    assert m["real_points"] == 1
+    assert m["last_seen"] == "2026-01-11T00:00:00"
+    c.close()
+
+
+def test_current_falls_back_to_backfill_when_no_real():
+    c = history.connect(":memory:")
+    history.record([{"sku": "p", "name": "X", "price": 100.0, "tag": "3C"}],
+                   ts="2026-01-10T00:00:00", source="backfill", synthetic=True, conn=c)
+    m = history.metrics("p", c)
+    assert m["current"] == 100.0
+    assert m["current_is_real"] is False
+    assert m["real_points"] == 0
+    c.close()

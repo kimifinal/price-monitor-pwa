@@ -142,7 +142,7 @@ def metrics(sku: str, conn: Optional[sqlite3.Connection] = None) -> dict:
     own = conn is None
     conn = conn or connect()
     rows = conn.execute(
-        "SELECT observed_at, price, name, tag FROM observations WHERE sku=? "
+        "SELECT observed_at, price, name, tag, synthetic FROM observations WHERE sku=? "
         "ORDER BY observed_at ASC",
         (str(sku),),
     ).fetchall()
@@ -154,20 +154,28 @@ def metrics(sku: str, conn: Optional[sqlite3.Connection] = None) -> dict:
     prices = [float(r["price"]) for r in rows]
     low = min(prices)
     high = max(prices)
-    current = prices[-1]
+    # "current" = the price the verdict is actually about. A real scraped
+    # observation outranks a deterministic backfill point, so when real data
+    # exists the headline never reflects the synthetic shape. Only when no real
+    # point has ever been recorded do we fall back to the latest backfill value.
+    real_rows = [r for r in rows if not int(r["synthetic"])]
+    cur_rows = real_rows if real_rows else rows
+    current = float(cur_rows[-1]["price"])
     drop = ((high - current) / high * 100.0) if high else 0.0
     return {
         "sku": str(sku),
-        "name": rows[-1]["name"] or "",
-        "tag": rows[-1]["tag"] or "",
+        "name": cur_rows[-1]["name"] or "",
+        "tag": cur_rows[-1]["tag"] or "",
         "current": round(current, 2),
+        "current_is_real": bool(real_rows),
         "low": round(low, 2),
         "high": round(high, 2),
         "drop_pct_from_high": round(drop, 1),
         "at_all_time_low": current <= low * 1.001,
         "points": len(rows),
+        "real_points": len(real_rows),
         "first_seen": rows[0]["observed_at"],
-        "last_seen": rows[-1]["observed_at"],
+        "last_seen": cur_rows[-1]["observed_at"],
     }
 
 
