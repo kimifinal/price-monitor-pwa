@@ -386,14 +386,21 @@ def ensure_history(conn: Optional[sqlite3.Connection] = None,
 
 
 if __name__ == "__main__":
-    # `python history.py` : ensure the persisted artifact exists, seeding it from
-    # the snapshot on a first run. Used by the scheduled refresh bootstrap.
-    c = connect()
+    # `python history.py` : bootstrap the persisted artifact when it is missing.
+    # Used by the refresh cron on a *fresh checkout*. It must be deterministic and
+    # idempotent, so the baseline is built in a fresh in-memory DB (not the
+    # on-disk one, which could hold a stale/accumulated seed). If the JSON already
+    # exists it is left untouched — the committed artifact is the SSOT.
     obs = load_observations()
     if len(obs) == 0:
+        c = connect(":memory:")                 # fresh, ignores any on-disk db
         from costco_data import DEMO_BASKET
         seed_from_snapshot(DEMO_BASKET, conn=c)
-    n = export_observations(c, PERSIST_PATH)
-    print(f"history_data.json: {n} observations (at {PERSIST_PATH})")
-    c.close()
+        n = export_observations(c, PERSIST_PATH)
+        c.close()
+        print(f"history_data.json: {n} observations seeded "
+              f"(at {PERSIST_PATH})")
+    else:
+        print(f"history_data.json: {len(obs)} observations already present "
+              f"({PERSIST_PATH}) — left as-is")
 
