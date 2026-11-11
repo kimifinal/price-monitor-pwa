@@ -393,6 +393,21 @@ def ensure_history(conn: Optional[sqlite3.Connection] = None,
     return conn
 
 
+def all_sellers(conn: Optional[sqlite3.Connection] = None) -> list[str]:
+    """Distinct skus currently tracked, stably ordered.
+
+    The single enumerator: both the `/api/costco/history` endpoint and the alert
+    scanner call this, so they always see the same set of SKUs to evaluate.
+    """
+    own = conn is None
+    conn = conn or connect()
+    rows = conn.execute("SELECT DISTINCT sku FROM observations ORDER BY sku").fetchall()
+    skus = [str(r["sku"]) for r in rows]
+    if own:
+        conn.close()
+    return skus
+
+
 if __name__ == "__main__":
     # `python history.py` : bootstrap the persisted artifact when it is missing.
     # Used by the refresh cron on a *fresh checkout*. It must be deterministic and

@@ -34,3 +34,13 @@ jobs:
 
       - name: Refresh snapshot (crawl + regenerate + push if changed)
         run: python3 scripts/refresh_snapshot.py
+
+      - name: Scan + deliver alerts (#2 — reuses the price_verdict SSOT)
+        # Reads the persisted history, fires an alert per SKU that crosses an
+        # alarm verdict AND isn't already in the dedup state. GitHub sink needs
+        # only the Actions GITHUB_TOKEN (no new secret); a --limit keeps the first
+        # day's digest tasteful. Set TELEGRAM_BOT_TOKEN+TELEGRAM_CHAT_ID and
+        # --sink telegram to push to a chat instead (no-ops without creds).
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/notify_alerts.py --sink github --limit 10
