@@ -49,6 +49,8 @@ out = header + json.dumps(norm, ensure_ascii=False, indent=2) + '''
 __all__ = ["DEMO_BASKET"]
 '''
 
-with open("costco_data.py", "w", encoding="utf-8") as f:
+import pathlib
+_out = pathlib.Path(__file__).resolve().parent / "costco_data.py"
+with open(_out, "w", encoding="utf-8") as f:
     f.write(out)
 print(f"Rebuilt costco_data.py: {len(norm)} items ({by_tag})")
