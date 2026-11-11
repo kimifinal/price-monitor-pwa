@@ -13,10 +13,11 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 import uuid
 
-from models import Item, PriceResult
+from models import Item, PriceResult, price_verdict
 from scrapers import fetch_price
 from alerts import send_telegram_alert
 from costco import basket as costco_basket
+import history
 
 
 app = FastAPI(title="Price Monitor", version="1.0.0")
@@ -95,3 +96,54 @@ def get_costco_basket(live: bool = False) -> dict:
         "家電": len(ca),
         "items": items,
     }
+
+
+# --- 歷史價格比價 --------------------------------------------------------------
+# The time-series half. The history DB is pre-seeded (deterministic backfill
+# from DEMO_BASKET) on first use so it is offline/CI-safe and immediate.
+def _history_conn():
+    """A connection to the local history DB, auto-seeded from the snapshot if
+    empty. Resolves history.DEFAULT_DB at call time so tests can redirect it to
+    a tmp file."""
+    conn = history.connect()
+    n = conn.execute("SELECT COUNT(*) AS c FROM observations").fetchone()["c"]
+    if n == 0:
+        from costco_data import DEMO_BASKET
+        history.seed_from_snapshot(DEMO_BASKET, conn=conn)
+    return conn
+
+
+@app.get("/api/costco/history")
+def get_costco_history() -> dict:
+    """All tracked skus with comparison metrics + a verdict (the 比價 layer)."""
+    conn = _history_conn()
+    try:
+        skus = [r["sku"] for r in conn.execute(
+            "SELECT DISTINCT sku FROM observations ORDER BY sku").fetchall()]
+        items = []
+        for sku in skus:
+            m = dict(history.metrics(sku, conn=conn))
+            m["verdict"] = price_verdict(m)
+            items.append(m)
+    finally:
+        conn.close()
+    return {"count": len(items), "items": items}
+
+
+@app.get("/api/costco/history/{sku}")
+def get_costco_history_sku(sku: str) -> dict:
+    """One sku's full series + metrics + verdict — what feeds the sparkline."""
+    conn = _history_conn()
+    try:
+        m = dict(history.metrics(sku, conn=conn))
+        series = history.series(sku, conn=conn)
+    finally:
+        conn.close()
+    if m.get("points", 0) == 0:
+        raise HTTPException(status_code=404, detail=f"no history for sku {sku}")
+    m["verdict"] = price_verdict(m)
+    m["series"] = [
+        {"observed_at": ts, "price": price, "source": src_label}
+        for (ts, price, src_label) in series
+    ]
+    return m

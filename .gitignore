@@ -19,3 +19,6 @@ frontend/workbox-*.js
 
 # OS
 .DS_Store
+
+# price-history SQLite store (auto-seeded, not source)
+backend/price_history.db

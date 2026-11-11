@@ -66,3 +66,36 @@ def test_costco_basket_endpoint_returns_snapshot():
     assert body["3C"] >= 5
     assert body["家電"] >= 10
     assert len(body["items"]) >= 20
+
+
+import history as _history
+from costco_data import DEMO_BASKET
+
+
+def test_costco_history_all_offline(tmp_path, monkeypatch):
+    """GET /api/costco/history returns metrics + a verdict for every sku, and
+    stays offline/CI-safe (auto-seeded from the snapshot, into a tmp DB)."""
+    monkeypatch.setattr(_history, "DEFAULT_DB", str(tmp_path / "h.db"))
+    r = client.get("/api/costco/history")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["count"] >= 20
+    for it in body["items"]:
+        for k in ("current", "low", "high", "drop_pct_from_high", "points"):
+            assert k in it
+        assert it["verdict"]["verdict"] in (
+            "all_time_low", "good_deal", "stable", "near_high", "unknown"
+        )
+        assert it["points"] >= 1
+
+
+def test_costco_history_sku_series_and_404(tmp_path, monkeypatch):
+    monkeypatch.setattr(_history, "DEFAULT_DB", str(tmp_path / "h.db"))
+    sku = str(DEMO_BASKET[0]["sku"])
+    r = client.get(f"/api/costco/history/{sku}")
+    assert r.status_code == 200
+    body = r.json()
+    assert len(body["series"]) == body["points"] >= 1
+    assert "verdict" in body and "label" in body["verdict"]
+    # an sku with no history is a clean 404, not a crash
+    assert client.get("/api/costco/history/000000-nope").status_code == 404
