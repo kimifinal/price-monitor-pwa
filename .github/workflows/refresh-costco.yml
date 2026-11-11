@@ -5,8 +5,20 @@ name: Refresh Costco Snapshot
 #
 on:
   schedule:
-    - cron: '0 4 * * *'   # daily ~04:00 UTC
-  workflow_dispatch: {}
+    - cron: '0 4 * * *'   # daily ~04:00 UTC — scheduled runs use the SAFE default
+  workflow_dispatch:
+    # A manual trigger can choose a delivery sink; scheduled runs fall back to the
+    # safe defaults (sink=log: scan + log only, never auto-creates an issue).
+    inputs:
+      sink:
+        description: delivery sink — log (no delivery) / github (digest comment) / telegram
+        default: "log"
+        type: choice
+        options: [log, github, telegram]
+      limit:
+        description: max alerts delivered this run (0 = no cap)
+        default: "10"
+        type: number
 
 jobs:
   refresh:
@@ -36,11 +48,12 @@ jobs:
         run: python3 scripts/refresh_snapshot.py
 
       - name: Scan + deliver alerts (#2 — reuses the price_verdict SSOT)
-        # Reads the persisted history, fires an alert per SKU that crosses an
-        # alarm verdict AND isn't already in the dedup state. GitHub sink needs
-        # only the Actions GITHUB_TOKEN (no new secret); a --limit keeps the first
-        # day's digest tasteful. Set TELEGRAM_BOT_TOKEN+TELEGRAM_CHAT_ID and
-        # --sink telegram to push to a chat instead (no-ops without creds).
+        # Reads the persisted history, fires an alert per SKU that crosses an alarm
+        # verdict AND isn't already in the dedup state. Default sink is 'log' so
+        # scheduled runs stay non-polluting (no issue is auto-created). A manual
+        # dispatch picks github (digest comment — uses only the free GITHUB_TOKEN)
+        # or telegram (needs TELEGRAM_BOT_TOKEN+CHAT_ID; no-ops without creds).
+        # --limit caps what is *sent*; the dedup state still advances on the full set.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 scripts/notify_alerts.py --sink github --limit 10
+        run: python3 scripts/notify_alerts.py --sink "${{ github.event.inputs.sink || 'log' }}" --limit "${{ github.event.inputs.limit || '10' }}"
