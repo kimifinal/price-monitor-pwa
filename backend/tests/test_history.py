@@ -14,6 +14,16 @@ import history
 # Fresh module state so a re-imported schema can't mask a stale connection.
 reload(history)
 
+# A small fixed basket reused by the JSON-persistence tests (skus with prices,
+# plus one "3C"/one "家電" so the tag field is exercised).
+ITEMS = [
+    {"sku": "139339", "name": "PQI 氮化鎵 35W", "price": 959.0, "tag": "3C"},
+    {"sku": "143371", "name": "Soodatek 氮化鎵 65W", "price": 825.0, "tag": "3C"},
+    {"sku": "3062725", "name": "BOSE Solo Soundbar", "price": 8149.0, "tag": "家電"},
+    {"sku": "153519", "name": "Panasonic 4K TV", "price": 13299.0, "tag": "家電"},
+    {"sku": "157137", "name": "Honeywell 吸塵器", "price": 6999.0, "tag": "家電"},
+]
+
 
 @pytest.fixture()
 def db(tmp_path):
@@ -98,3 +108,72 @@ def test_seed_is_idempotent(db):
     n2 = history.seed_from_snapshot(items, now=now, conn=db)
     assert n1 > 0
     assert n2 == 0                         # re-seeding the same window adds nothing
+
+
+# ----------------------- JSON persistence SSOT -----------------------
+def test_load_missing_artifact_returns_empty(tmp_path):
+    assert history.load_observations(str(tmp_path / "nope.json")) == []
+
+
+def test_dump_is_deterministic_roundtrip(tmp_path):
+    art = str(tmp_path / "h.json")
+    c = history.connect(":memory:")
+    history.seed_from_snapshot(ITEMS, conn=c)
+    n = history.export_observations(c, art)
+    assert n == 5 * 14
+    back = history.load_observations(art)
+    assert len(back) == n
+    assert history.load_observations(art) == back        # stable bytes
+    c.close()
+
+
+def test_replay_rebuilds_series_from_json(tmp_path):
+    art = str(tmp_path / "h.json")
+    c = history.connect(":memory:")
+    history.seed_from_snapshot(ITEMS, conn=c)
+    history.export_observations(c, art)
+    c.close()
+    # a brand-new connection rebuilds the whole series from the JSON artifact
+    g = history.connect(":memory:")
+    obs = history.load_observations(art)
+    history.replay(conn=g, observations=obs)
+    assert len(history.series("3062725", g)) == 14
+    g.close()
+
+
+def test_append_real_grows_the_json_artifact(tmp_path):
+    """The scheduled job grows history_data.json: backfill + one real day."""
+    art = str(tmp_path / "h.json")
+    c = history.connect(":memory:")
+    history.seed_from_snapshot(ITEMS, conn=c)
+    history.export_observations(c, art)
+    c.close()
+    added = history.append_real(ITEMS, today="2026-11-02", persist_path=art)
+    assert added == 5                                   # 5 skus, one real point
+    g = history.connect(":memory:")
+    history.replay(conn=g, observations=history.load_observations(art))
+    assert len(history.series("139339", g)) == 15       # 14 backfill + 1 real
+    g.close()
+
+
+def test_append_real_idempotent_same_day(tmp_path):
+    """A same-day re-run is a no-op; a new day extends the series."""
+    art = str(tmp_path / "h.json")
+    history.dump_observations([], art)                  # start from nothing
+    assert history.append_real(ITEMS, today="2026-11-02", persist_path=art) == 5
+    assert history.append_real(ITEMS, today="2026-11-02", persist_path=art) == 0  # dedup
+    assert history.append_real(ITEMS, today="2026-11-03", persist_path=art) == 5   # new day
+    assert history.append_real(ITEMS, today="2026-11-03", persist_path=art) == 0
+
+
+def test_append_real_skips_unpriced_items(tmp_path):
+    art = str(tmp_path / "h.json")
+    history.dump_observations([], art)
+    items = [
+        {"sku": "a", "name": "Free", "price": None},
+        {"sku": "b", "name": "Zero", "price": 0},
+        {"sku": "c", "name": "OK", "price": 42.0},
+    ]
+    assert history.append_real(items, today="2026-11-02", persist_path=art) == 1
+    obs = history.load_observations(art)
+    assert [o["sku"] for o in obs] == ["c"]

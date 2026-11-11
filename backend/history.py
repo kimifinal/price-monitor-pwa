@@ -15,6 +15,7 @@ in-memory DB. No network, no real time required.
 """
 from __future__ import annotations
 
+import json
 import os
 import random
 import sqlite3
@@ -228,3 +229,171 @@ def seed_from_snapshot(items: list[dict], days: int = 14,
     if own:
         conn.close()
     return inserted
+
+
+# --------------------------------------------------------------------------
+# persistence — the git-tracked source of truth (history_data.json)
+# --------------------------------------------------------------------------
+# SQLite is the *runtime query engine*; the persisted source of truth a
+# scheduled job appends to and commits is a JSON artifact. We use JSON (not a
+# committed binary .db) because it is diffable, audit-friendly and merge-free —
+# a single-writer daily job needs none of git's binary merge machinery, but a
+# human can read exactly what changed.
+PERSIST_PATH = os.path.join(os.path.dirname(__file__), "history_data.json")
+
+
+def load_observations(path: str = PERSIST_PATH) -> list[dict]:
+    """Read the persisted observation list. [] when the file is absent."""
+    if not os.path.exists(path):
+        return []
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return []
+    return data if isinstance(data, list) else []
+
+
+def export_observations(conn: sqlite3.Connection, path: str = PERSIST_PATH,
+                        sort: bool = True) -> int:
+    """Write all rows in `conn` to the JSON artifact. Returns row count.
+
+    Deterministic ordering (observed_at, sku, price) so the file diff is
+    stable across runs — a no-change day produces a byte-identical file.
+    """
+    q = ("SELECT sku,name,tag,price,currency,observed_at,source,synthetic "
+         "FROM observations")
+    if sort:
+        q += " ORDER BY observed_at ASC, sku ASC, price ASC"
+    rows = [dict(r) for r in conn.execute(q).fetchall()]
+    for r in rows:
+        r["sku"] = str(r["sku"])
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(rows, f, ensure_ascii=False, indent=1)
+    return len(rows)
+
+
+def replay(conn: sqlite3.Connection, observations: list[dict]) -> int:
+    """Insert a list of persisted observations into a DB, idempotently
+    (dedupe by the natural key sku+observed_at+price+source). Returns added."""
+    added = 0
+    for o in observations:
+        sku, ts, price = str(o.get("sku")), o.get("observed_at"), o.get("price")
+        if sku is None or ts is None or price is None:
+            continue
+        dup = conn.execute(
+            "SELECT 1 FROM observations WHERE sku=? AND observed_at=? AND price=? AND source=? LIMIT 1",
+            (sku, ts, float(price), o.get("source", "costco")),
+        ).fetchone()
+        if dup:
+            continue
+        conn.execute(
+            "INSERT INTO observations (sku,name,tag,price,currency,observed_at,source,synthetic) "
+            "VALUES (?,?,?,?,?,?,?,?)",
+            (
+                sku,
+                o.get("name"),
+                o.get("tag"),
+                float(price),
+                o.get("currency", "TWD"),
+                ts,
+                o.get("source", "costco"),
+                1 if o.get("synthetic") else 0,
+            ),
+        )
+        added += 1
+    conn.commit()
+    return added
+
+
+def dump_observations(observations: list[dict],
+                      path: str = PERSIST_PATH) -> int:
+    """Write an observation list to the JSON artifact, ordered for a stable diff.
+
+    The artifact is the single source of truth, so its byte output must be
+    deterministic: sort by (sku, observed_at, synthetic) and indent with stable
+    ASCII. This keeps the git diff reviewable (append-only: real points grow it).
+    """
+    ordered = sorted(
+        observations,
+        key=lambda o: (str(o.get("sku", "")), o.get("observed_at", ""),
+                       int(o.get("synthetic", 0))),
+    )
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(ordered, f, ensure_ascii=False, indent=1)    # matches export_observations
+    return len(ordered)
+
+
+def append_real(items: list[dict], today: Optional[str] = None,
+                persist_path: str = PERSIST_PATH) -> int:
+    """Grow the JSON time series with today's *real* price per sku.
+
+    Loads the committed artifact, appends one real (non-synthetic) observation
+    per sku dated today, and rewrites it. Re-runs the same day are no-ops (the
+    (sku, date) key dedupes); a new day extends the series. This keeps
+    history_data.json — not a binary .db — as the persisted SSOT, so it survives
+    ephemeral CI runners. Returns the number of new points added (excludes skips).
+    """
+    obs = load_observations(persist_path)
+    ts = (today or datetime.now().strftime("%Y-%m-%d")) + "T00:00:00"
+    seen = {str(o.get("sku", "")) + "|" + o.get("observed_at", "") for o in obs}
+    added = 0
+    for item in items:
+        price = item.get("price")
+        if not price or price <= 0:
+            continue
+        sku = str(item.get("sku") or item.get("name"))
+        key = sku + "|" + ts
+        if key in seen:
+            continue
+        obs.append({
+            "sku": sku,
+            "name": item.get("name"),
+            "tag": item.get("tag"),
+            "price": float(price),
+            "currency": item.get("currency", "TWD"),
+            "observed_at": ts,
+            "source": "costco",
+            "synthetic": 0,
+        })
+        seen.add(key)
+        added += 1
+    if added:
+        dump_observations(obs, persist_path)
+    return added
+
+
+def ensure_history(conn: Optional[sqlite3.Connection] = None,
+                   persist_path: str = PERSIST_PATH,
+                   fallback_items: Optional[list[dict]] = None) -> sqlite3.Connection:
+    """Open a history DB populated from the PERSISTED artifact, falling back to a
+    snapshot backfill only when the artifact is missing/empty.
+
+    This is the API entry point: the service reads whatever a scheduled job last
+    committed (real observations accumulated over time); a brand-new checkout
+    with no artifact yet still shows a deterministic backfill demo.
+    """
+    own = conn is None
+    conn = conn or connect()
+    obs = load_observations(persist_path)
+    if obs:
+        replay(conn, obs)
+    elif fallback_items:
+        seed_from_snapshot(fallback_items, conn=conn)
+    # Do NOT close a freshly-created conn: callers keep querying it (the API closes
+    # in its own finally). We only close a conn we were *given* back closed — never.
+    return conn
+
+
+if __name__ == "__main__":
+    # `python history.py` : ensure the persisted artifact exists, seeding it from
+    # the snapshot on a first run. Used by the scheduled refresh bootstrap.
+    c = connect()
+    obs = load_observations()
+    if len(obs) == 0:
+        from costco_data import DEMO_BASKET
+        seed_from_snapshot(DEMO_BASKET, conn=c)
+    n = export_observations(c, PERSIST_PATH)
+    print(f"history_data.json: {n} observations (at {PERSIST_PATH})")
+    c.close()
+

@@ -99,17 +99,15 @@ def get_costco_basket(live: bool = False) -> dict:
 
 
 # --- 歷史價格比價 --------------------------------------------------------------
-# The time-series half. The history DB is pre-seeded (deterministic backfill
-# from DEMO_BASKET) on first use so it is offline/CI-safe and immediate.
+# The time-series half. ensure_history() loads the git-tracked history_data.json
+# (real observations a scheduled job has accumulated); a fresh checkout with no
+# artifact yet falls back to a deterministic snapshot backfill.
 def _history_conn():
-    """A connection to the local history DB, auto-seeded from the snapshot if
-    empty. Resolves history.DEFAULT_DB at call time so tests can redirect it to
-    a tmp file."""
-    conn = history.connect()
-    n = conn.execute("SELECT COUNT(*) AS c FROM observations").fetchone()["c"]
-    if n == 0:
-        from costco_data import DEMO_BASKET
-        history.seed_from_snapshot(DEMO_BASKET, conn=conn)
+    """A connection to a history DB, populated from the persisted artifact
+    (history_data.json) with a snapshot fallback. Resolves paths at call time so
+    tests can redirect them to a tmp file."""
+    from costco_data import DEMO_BASKET
+    conn = history.ensure_history(fallback_items=DEMO_BASKET)
     return conn
 
 

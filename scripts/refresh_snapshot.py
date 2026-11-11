@@ -1,18 +1,24 @@
 #!/usr/bin/env python3
-"""Refresh the offline Costco snapshot (DEMO_BASKET) and push it when it changes.
+"""Refresh the offline Costco snapshot AND the history time series, then push.
 
-Why this exists ("接 4"): the live BFS crawl costs ~18-30s. That cost must NOT
-sit on the request path. A scheduled job (local cron / GitHub Actions) runs THIS
-periodically to keep `backend/costco_data.py` fresh; the FastAPI endpoint always
-serves the pre-snapshotted basket, so user-facing latency stays ~0ms.
+Two artifacts keep the app fast *and* stateful:
+  - backend/costco_data.py     : the current-price snapshot (DEMO_BASKET). The API
+                                 serves this, so user latency stays ~0ms.
+  - backend/history_data.json  : the persisted price time series (SSOT). A new
+                                 real point is appended per day; the 14-day
+                                 backfill seed gives the UI/tests a shape before
+                                 a single real day has elapsed.
 
-Idempotent + scheduler-safe:
-  - only commits + pushes when the snapshot actually changed;
-  - a day where nothing moved leaves the tree clean and exits 0;
-  - a failed crawl never corrupts the existing snapshot (it is left untouched).
+Why this exists ("接 4" + "把持久化接上"): the live BFS crawl costs ~18-30s and a
+real price series only grows with elapsed days. Both are scheduled, not ad-hoc,
+so they must NOT sit on the request path.
+
+Scheduler-safe: a day where nothing moved leaves the tree clean and exits 0; a
+failed crawl never corrupts the existing artifacts. history_data.json is the JSON
+SSOT, so it survives ephemeral CI runners (a binary .db would not).
 
 Usage:
-  python3 scripts/refresh_snapshot.py            # crawl + regenerate + push if changed
+  python3 scripts/refresh_snapshot.py            # crawl + regenerate + push
   python3 scripts/refresh_snapshot.py --dry-run  # crawl + regenerate, show diff, no push
 """
 from __future__ import annotations
@@ -27,6 +33,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 BACKEND = ROOT / "backend"
 SNAPSHOT = "backend/costco_data.py"
+HISTORY = "backend/history_data.json"
 
 
 def run(*cmd: str, **kw) -> subprocess.CompletedProcess:
@@ -77,22 +84,30 @@ def main() -> int:
         run("git", "checkout", "--", SNAPSHOT)
         return 1
 
-    # 3. Commit + push only if the snapshot file actually changed.
-    st = run("git", "status", "--porcelain", "--", SNAPSHOT)
+    # 3. Grow the persisted time series with today's real observation. This is the
+    #    step that turns the JSON backfill into a *growing* real series: one new
+    #    point per sku dated today. Re-running the same day is a no-op.
+    from history import append_real
+    added = append_real(items, persist_path=str(BACKEND / "history_data.json"))
+    print(f"history_data.json: +{added} new obs ({added}/{len(items)} skus moved)")
+
+    # 4. Commit + push only when an artifact actually changed.
+    st = run("git", "status", "--porcelain", "--", SNAPSHOT, HISTORY)
     if not st.stdout.strip():
-        print("no change — snapshot already up to date (no-op)")
+        print("no change — artifacts already up to date (no-op)")
         return 0
 
     if dry_run:
-        diff = run("git", "diff", "--stat", "--", SNAPSHOT)
-        print(f"[dry-run] would refresh {SNAPSHOT}:")
+        diff = run("git", "diff", "--stat", "--", SNAPSHOT, HISTORY)
+        print(f"[dry-run] would refresh {SNAPSHOT} + {HISTORY}:")
         print(diff.stdout.strip())
         print("[dry-run] not committing/pushing")
-        run("git", "checkout", "--", SNAPSHOT)  # keep tree clean
+        run("git", "checkout", "--", SNAPSHOT, HISTORY)  # keep tree clean
         return 0
 
-    run("git", "add", SNAPSHOT)
-    msg = f"chore(snapshot): refresh Costco basket ({len(items)} items {by_tag})"
+    run("git", "add", SNAPSHOT, HISTORY)
+    msg = (f"chore(data): refresh snapshot + history — "
+           f"{len(items)} items {by_tag}, +{added} history obs")
     c = run("git", "commit", "-m", msg)
     if c.returncode != 0:
         print("commit failed:\n", c.stderr)
