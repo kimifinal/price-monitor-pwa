@@ -153,14 +153,15 @@ def filter_basket(products: list[dict], tags=None) -> list[dict]:
     return [p for p in products if p["tag"] in tags]
 
 
-# ---- 家電 basket via bounded BFS crawl of PDP "相關推薦" links ----------------
-# Costco's rendered catalog caps at ~30 featured items (家电 only ~3). But each
-# 家電 PDP lists "相關推薦" links to MORE 家電 PDPs. A bounded BFS crawl of those
-# links grows the 家電 basket. This is the standard technique when a listing
-# page is intentionally sparse: crawl outward through the product graph.
+# ---- Unified 3C + 家電 basket via bounded BFS crawl of PDP "相關推薦" links ----
+# Costco's rendered catalog caps at ~30 featured items per tag, but each PDP lists
+# "相關推薦" links to MORE same-category PDPs. A bounded BFS crawl of those links
+# grows the basket for any tag (3C or 家電). This is the standard technique when a
+# listing page is intentionally sparse: crawl outward through the product graph.
 #
-# `scrape_costco` is imported lazily inside crawl_appliances so that
-# `import costco` does NOT pull in the `requests` dependency at module load time.
+# `parse_offers` is imported lazily inside `crawl_basket` so that `import costco`
+# does NOT pull in `scrapers`/`requests` at module load time (keeps the offline
+# DEMO_BASKET path dependency-light).
 
 
 def pdp_name(html: str) -> str | None:
@@ -193,21 +194,23 @@ def related_appliance_urls(html: str) -> list[str]:
     return urls
 
 
-def crawl_appliances(
+def crawl_basket(
     seed_urls: list[str],
-    max_items: int = 15,
+    tag: str,
+    max_items: int = 20,
     max_requests: int = 40,
     timeout: int = 20,
     delay: float = 0.3,
 ) -> list[dict]:
-    """BFS crawl 家電 PDPs outward through their 相關推薦 links.
+    """BFS-crawl PDPs outward through their 相關推薦 links, keeping only items
+    whose breadcrumb path classifies as `tag` (家電 or 3C).
 
-    Returns up to `max_items` 家電 products (each with name, price, sku, url,
-    path). Bounded by `max_requests` + a polite delay between requests.
+    Uses `parse_offers` on the already-fetched HTML (single network call per
+    PDP — the key optimization; `scrape_costco` re-fetches and is 2× slow).
     """
     import time
     from collections import deque
-    from scrapers import scrape_costco  # lazy: import costco shouldn't need requests
+    from scrapers import parse_offers  # lazy: no `requests` dependency at module load
 
     queue = deque(seed_urls)
     seen = set()
@@ -224,27 +227,57 @@ def crawl_appliances(
         time.sleep(delay)
         if not html:
             continue
-        info = scrape_costco(url, timeout=timeout)  # {price, sku, currency, ...}
-        sku = info.get("sku") if info else None
         name = pdp_name(html)
-        # Enqueue related 家電 PDPs before consuming the basket cap.
-        for ru in related_appliance_urls(html):
-            if ru not in seen:
+        # single fetch: parse price + sku from this HTML
+        sku = None
+        m = re.search(r"/p/([0-9A-Za-z]+)", url)
+        sku = m.group(1) if m else None
+        info = parse_offers(html) or {}
+        price = info.get("price")
+        currency = info.get("currency") or "TWD"
+        # enqueue related PDPs that match our target tag
+        for path in re.findall(r"(/(?:[A-Za-z0-9._-]+/)*p/[0-9A-Za-z]+)", html):
+            ru = BASE + path
+            if ru not in seen and _tag_for(path) == tag:
                 queue.append(ru)
-        if sku and info.get("price") and name:
-            if sku and sku not in {b["sku"] for b in basket}:
-                basket.append(
-                    {
-                        "name": name,
-                        "price": info["price"],
-                        "currency": info.get("currency", "TWD"),
-                        "sku": sku,
-                        "url": url,
-                        "tag": "家電",
-                        "category_path": url.lstrip("/"),
-                    }
-                )
+        if sku and price is not None and name and sku not in {b["sku"] for b in basket}:
+            basket.append(
+                {
+                    "name": name,
+                    "price": price,
+                    "currency": currency,
+                    "sku": sku,
+                    "url": url,
+                    "tag": tag,
+                    "category_path": url.lstrip("/"),
+                }
+            )
     return basket
+
+
+# 家電-specific wrapper (kept for backward compat + existing tests)
+def crawl_appliances(
+    seed_urls: list[str],
+    max_items: int = 15,
+    max_requests: int = 40,
+    timeout: int = 20,
+    delay: float = 0.3,
+) -> list[dict]:
+    return crawl_basket(seed_urls, tag="家電", max_items=max_items,
+                        max_requests=max_requests, timeout=timeout, delay=delay)
+
+
+def related_appliance_urls(html: str) -> list[str]:
+    """家電-tagged related-PDP URLs from a PDP."""
+    urls = []
+    seen = set()
+    for path in re.findall(r"(/(?:[A-Za-z0-9._-]+/)*p/[0-9A-Za-z]+)", html):
+        if _tag_for(path) == "家電":
+            u = BASE + path
+            if u not in seen:
+                seen.add(u)
+                urls.append(u)
+    return urls
 
 
 # ---- 3C + 家電 合併一籃 -----------------------------------------------------------
@@ -253,12 +286,13 @@ from costco_data import DEMO_BASKET
 
 
 def basket(live: bool = False,
-           max_appliance_items: int = 15, delay: float = 0.3) -> list[dict]:
+           per_tag_cap: int = 15, delay: float = 0.3) -> list[dict]:
     """Return a combined 3C + 家電 basket.
 
     live=False (default): returns today's pre-snapshotted `DEMO_BASKET` —
         fast, offline, safe for tests and CI.
-    live=True: real scrape + BFS crawl; ~30s, needs internet.
+    live=True: unified BFS crawl seeded from DEMO_BASKET's own PDPs; both
+        3C and 家電 grow outward through their 相關推薦 links. ~30s, needs net.
     """
     if not live:
         return DEMO_BASKET
@@ -266,23 +300,16 @@ def basket(live: bool = False,
     seen: set = set()
     out: list[dict] = []
 
-    for pg in ("/c/1", "/c/3"):
-        for p in scrape_category(f"{BASE}{pg}"):
-            if p["sku"] and p["sku"] not in seen and p.get("price") and p["name"] != "（無名）":
-                if _tag_for(p.get("category_path", "") or "") == "3C":
-                    seen.add(p["sku"])
-                    out.append(p)
-
-    seed_urls = [
-        f"{BASE}/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/BOSE-Solo-Soundbar-TV-Speaker-II/p/3062725",
-        f"{BASE}/Televisions-Appliances/TV-Home-Entertainment/Television/Philips-55-inch-4K-UHD-Smart-TV/p/153526",
-        f"{BASE}/Televisions-Appliances/Air-Conditioners-Fans/Coolers-Humidifiers/Honeywell-Air-Purifier-AC1025D/p/157137",
-    ]
-    for p in crawl_appliances(seed_urls, max_items=max_appliance_items,
-                                max_requests=50, delay=delay):
-        if p["sku"] not in seen:
-            seen.add(p["sku"])
-            out.append(p)
+    for tag in ("3C", "家電"):
+        # Seed each tag's crawl from DEMO_BASKET's PDPs of that tag — keeps the
+        # crawl starting points in sync with the last known-good snapshot.
+        seeds = [p["url"] for p in DEMO_BASKET
+                 if p.get("tag") == tag and p.get("url")][:5]
+        for p in crawl_basket(seeds, tag=tag, max_items=per_tag_cap,
+                               max_requests=40, timeout=15, delay=delay):
+            if p["sku"] not in seen:
+                seen.add(p["sku"])
+                out.append(p)
     return out
 
 
