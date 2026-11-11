@@ -19,6 +19,7 @@ from alerts import send_telegram_alert
 from costco import basket as costco_basket
 import history
 import crypto
+from watchlist import load as load_watchlist, skus as watchlist_skus
 
 
 app = FastAPI(title="Price Monitor", version="1.0.0")
@@ -214,3 +215,22 @@ def get_crypto_history_coin(coin: str) -> dict:
         for (ts, price, src) in series
     ]
     return m
+
+
+# --- 個人化 watchlist (#4) ---------------------------------------------------
+# The per-item alert GATE. The verdict stays sourced from price_verdict (the
+# SSOT); this only exposes WHICH skus are watched + their per-item threshold,
+# from the git-diffable `watchlist.json`. It is a READ of a local SSOT — no
+# network, fully offline. An empty watchlist means no alerts (the silent
+# default), which is exactly what a GET shows when nothing is watched.
+@app.get("/api/watchlist")
+def get_watchlist() -> dict:
+    """The #4 個人化 alert gate as a read model: every watchlist entry, the
+    distinct skus in play, and the raw entries. Offline-safe — reads the
+    committed watchlist.json, never the network."""
+    wl = load_watchlist()
+    return {
+        "count": len(wl),
+        "skus": watchlist_skus(wl),
+        "items": wl,
+    }

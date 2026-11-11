@@ -26,6 +26,7 @@ import urllib.error
 from typing import Optional
 
 from models import price_verdict   # the SSOT — we never re-implement the rule here
+from watchlist import find_entry, threshold_met   # the #4 per-item gate (its SSOT)
 
 # --------------------------------------------------------------------------
 # delivery (Telegram)
@@ -69,7 +70,8 @@ def _alert_verdicts(policy: Optional[dict]) -> set:
     return set((policy or DEFAULT_POLICY).get("alarm_verdicts", DEFAULT_POLICY["alarm_verdicts"]))
 
 
-def alert_for(m: dict, policy: Optional[dict] = None) -> Optional[dict]:
+def alert_for(m: dict, policy: Optional[dict] = None,
+              watchlist: Optional[list] = None) -> Optional[dict]:
     """One SKU's metrics -> an alert dict when it trips an ALARM verdict, else None.
 
     Reuses `price_verdict` (the SSOT) so the "what counts as a good time to buy"
@@ -77,11 +79,27 @@ def alert_for(m: dict, policy: Optional[dict] = None) -> Optional[dict]:
       * returns None for an empty/sparse series, and
       * returns None for `current_is_real == False` — never fire on the synthetic
         backfill. That is what keeps an offline / fallback pipeline from shouting.
+
+    The #4 GATE: when `watchlist` is passed, only skus that are IN the watchlist
+    AND meet their OWN per-item `threshold` may fire — so an unwatched sku never
+    alerts (even at an all-time low) and an empty watchlist stays silent. When
+    `watchlist is None` the gate is off (legacy verdict-only behaviour, which the
+    existing suite relies on). The verdict itself is still sourced from
+    `price_verdict`; the watchlist + threshold only decides *which* verdicts may
+    come through.
     """
     if not m or not m.get("points"):
         return None
     if not m.get("current_is_real"):                # no false alerts on fallback/demo
         return None
+    # The #4 gate must run BEFORE the verdict so an unwatched all-time-low never
+    # even reaches the verdict comparison — a non-watchlisted sku never alerts.
+    threshold = None
+    if watchlist is not None:
+        entry = find_entry(m, watchlist)
+        if entry is None or not threshold_met(m, entry):
+            return None
+        threshold = entry.get("threshold")
     v = price_verdict(m)
     if v["verdict"] not in _alert_verdicts(policy):
         return None
@@ -97,6 +115,7 @@ def alert_for(m: dict, policy: Optional[dict] = None) -> Optional[dict]:
         "currency": m.get("currency", "TWD"),
         "url": m.get("url"),
         "as_of": as_of,
+        "threshold": threshold,
     }
 
 
@@ -107,17 +126,23 @@ def alert_signature(a: dict) -> str:
 
 
 def scan(metrics_list: list[dict], state: Optional[dict] = None,
-         policy: Optional[dict] = None) -> tuple[list[dict], dict]:
+         policy: Optional[dict] = None,
+         watchlist: Optional[list] = None) -> tuple[list[dict], dict]:
     """Decide which SKUs should be alerted *now*, given a dedup `state`.
 
     `metrics_list` is the per-SKU metrics from `history.metrics` (already carrying
     `current_is_real`). Returns `(fresh_alerts, updated_state)`; `fresh_alerts`
     are the ones NOT already in `state`.
+
+    The #4 GATE: when `watchlist` is passed, only skus IN the watchlist that meet
+    their threshold are eligible (an unwatched sku or an unmet threshold is never
+    alerted); `watchlist=[]` is the silent default (nothing fires); `None` disables
+    the gate (legacy verdict-only, what the existing suite assumes).
     """
     state = dict(state or {})
     fresh: list[dict] = []
     for m in metrics_list:
-        a = alert_for(m, policy)
+        a = alert_for(m, policy, watchlist)
         if not a:
             continue
         sig = alert_signature(a)

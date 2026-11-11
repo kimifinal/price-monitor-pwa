@@ -64,15 +64,26 @@ def main() -> int:
 
     import history          # noqa: E402
     from alerts import scan, load_state, save_state, emit  # noqa: E402
+    import watchlist        # noqa: E402
+
+    # 0. The #4 個人化 gate: load the watchlist SSOT (a git-diffable JSON). Only
+    #    watched skus whose own threshold is met may fire; an empty watchlist is
+    #    the silent default (nothing alerts). `--watchlist PATH` overrides the
+    #    committed default so a user's personalized copy can drive the run.
+    wl_path = str(BACKEND / "watchlist.json")
+    if "--watchlist" in sys.argv:
+        wl_path = sys.argv[sys.argv.index("--watchlist") + 1]
+    wl = watchlist.load(wl_path)
 
     # 1. Load the persisted time series (falls back to the committed snapshot).
     conn = history.ensure_history()
     metrics_list = [history.metrics(s, conn) for s in history.all_sellers(conn)]
 
-    # 2. Deduped scan against the durable state.
+    # 2. Deduped scan against the durable state, GATED by the watchlist (#4).
     state = load_state(str(BACKEND / "alerts_state.json"))
-    fresh, new_state = scan(metrics_list, state=state)
-    print(f"scan: {len(metrics_list)} skus, {len(fresh)} new alert(s), sink={sink}")
+    fresh, new_state = scan(metrics_list, state=state, watchlist=wl)
+    print(f"scan: {len(metrics_list)} skus, {len(watchlist.skus(wl))} watched, "
+          f"{len(fresh)} new alert(s), sink={sink}")
 
     # 3. Persist the dedup state (git SSOT) on the FULL fresh set.
     save_state(new_state, str(BACKEND / "alerts_state.json"))

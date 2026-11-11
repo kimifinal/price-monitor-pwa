@@ -136,3 +136,27 @@ def test_unified_history_includes_crypto_alongside_costco(tmp_path, monkeypatch)
     skus = [it["sku"] for it in client.get("/api/costco/history").json()["items"]]
     assert any(s.startswith("crypto:") for s in skus)      # crypto side
     assert any(not s.startswith("crypto:") for s in skus)  # costco side still present
+
+
+# ---------------------- 個人化 watchlist gate (AC1..#4) ----------------------
+def test_watchlist_endpoint_returns_the_ssot():
+    """GET /api/watchlist is a READ of the committed watchlist.json — offline,
+    no network. count is consistent with the entries it returns."""
+    r = client.get("/api/watchlist")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["count"] == len(body["items"])
+    assert body["count"] == len(body["skus"])
+    assert body["count"] >= 1
+    for e in body["items"]:
+        assert "sku" in e
+        assert all(k in ("target", "min_drop_pct") for k in (e.get("threshold") or {}))
+
+
+def test_watchlist_endpoint_offline_empty_is_silent(monkeypatch):
+    """AC5 via the API: an EMPTY watchlist reads back as 0 / no watched skus
+    (the silent default), still without any network."""
+    monkeypatch.setattr("main.load_watchlist", lambda *a, **k: [])
+    r = client.get("/api/watchlist")
+    assert r.status_code == 200
+    assert r.json() == {"count": 0, "skus": [], "items": []}

@@ -1,0 +1,30 @@
+[
+ {
+  "name": "ANKER A2674 336 GaN 67W 急速充電器 2入組",
+  "sku": "149699",
+  "threshold": {
+   "target": 1100
+  }
+ },
+ {
+  "name": "BOSE Solo Soundbar 電視音響 II",
+  "sku": "3062725",
+  "threshold": {
+   "min_drop_pct": 15
+  }
+ },
+ {
+  "name": "Samsung 55吋 Mini LED 4K AI 量子智慧顯示器",
+  "sku": "161520",
+  "threshold": {
+   "target": 18000
+  }
+ },
+ {
+  "name": "DeWALT 得偉 乾濕兩用吸塵器",
+  "sku": "6677010",
+  "threshold": {
+   "min_drop_pct": 15
+  }
+ }
+]

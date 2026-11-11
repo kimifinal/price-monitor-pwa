@@ -5,6 +5,7 @@ import { alertedItems, sortByUrgency } from './lib/monitor.js'
 import AddItemForm from './components/AddItemForm.vue'
 import ItemCard from './components/ItemCard.vue'
 import PriceHistory from './components/PriceHistory.vue'
+import WatchlistEditor from './components/WatchlistEditor.vue'
 
 const items = ref(loadItems())
 
@@ -69,6 +70,13 @@ function onRemove(id) {
   items.value = items.value.filter((i) => i.id !== id)
   persist()
 }
+
+// The watchlist editor self-persists to localStorage (offline). The parent keeps
+// a reference to the latest gate so it could, e.g., re-run wouldAlert() against
+// live prices; the gate itself lives in the editor + lib/watchlist.js.
+function onWatchlistChange(wl) {
+  return wl
+}
 </script>
 
 <template>
@@ -97,6 +105,14 @@ function onRemove(id) {
         :item="item"
         @remove="onRemove"
       />
+    </section>
+
+    <section class="personalize">
+      <h2>🎯 個人化追蹤清單（離線可編輯）</h2>
+      <p class="subtitle">
+        只有清單內、且達到門檻的品項才會通知；清單為空時永遠沉默。
+      </p>
+      <watchlist-editor @change="onWatchlistChange" />
     </section>
 
     <section class="price-history" data-section="compare">
