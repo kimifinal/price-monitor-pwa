@@ -5,6 +5,8 @@ import {
   sortByUrgency,
   alertMessage,
   alertedItems,
+  priceVerdict,
+  sparkPath,
 } from '../../src/lib/monitor.js'
 
 describe('shouldAlert', () => {
@@ -128,5 +130,61 @@ describe('alertedItems', () => {
   it('returns empty array on non-array input', () => {
     expect(alertedItems(null)).toEqual([])
     expect(alertedItems('foo')).toEqual([])
+  })
+})
+
+// SSOT: these MUST stay in lockstep with backend/models.py:price_verdict.
+describe('priceVerdict (SSOT mirror of backend price_verdict)', () => {
+  it('is unknown with no history', () => {
+    expect(priceVerdict({ points: 0 })).toEqual({ verdict: 'unknown', label: '無歷史資料', dropPct: 0 })
+    expect(priceVerdict(null).verdict).toBe('unknown')
+    expect(priceVerdict(undefined).verdict).toBe('unknown')
+  })
+
+  it('flags all-time low regardless of drop size', () => {
+    expect(priceVerdict({ points: 10, atAllTimeLow: true, dropPctFromHigh: 40 }).verdict).toBe('all_time_low')
+  })
+
+  it('is a good deal above the 15% drop threshold', () => {
+    expect(priceVerdict({ points: 5, atAllTimeLow: false, dropPctFromHigh: 20 }).verdict).toBe('good_deal')
+  })
+
+  it('is stable between the thresholds', () => {
+    expect(priceVerdict({ points: 5, atAllTimeLow: false, dropPctFromHigh: 8 }).verdict).toBe('stable')
+  })
+
+  it('is near the high below the 5% threshold', () => {
+    expect(priceVerdict({ points: 5, atAllTimeLow: false, dropPctFromHigh: 2 }).verdict).toBe('near_high')
+  })
+
+  it('is bad when price is null/undefined (guards against NaN spread)', () => {
+    expect(priceVerdict({ points: 3, dropPctFromHigh: 0, atAllTimeLow: false }).verdict).toBe('near_high')
+  })
+})
+
+describe('sparkPath', () => {
+  it('returns empty string on empty or invalid input', () => {
+    expect(sparkPath([])).toBe('')
+    expect(sparkPath(null)).toBe('')
+    expect(sparkPath([NaN, 'x', undefined])).toBe('')
+  })
+
+  it('produces a well-formed path string with M + L commands', () => {
+    const path = sparkPath([10, 20, 10, 5, 10], 100, 28)
+    expect(typeof path).toBe('string')
+    expect(path).toMatch(/^M[0-9.]*/)
+    expect(path).toContain('L')
+    // 5 points -> 1 M + 4 L = 5 coordinate pairs
+    expect(path.split(' ')).toHaveLength(5)
+  })
+
+  it('handles a monotonic decrease correctly (min is last point)', () => {
+    const path = sparkPath([100, 80, 60, 40], 100, 28, 1)
+    const coords = path.split(' ').map((seg) => {
+      const [, num] = seg.replace('M', '').replace('L', '').split(',')
+      return parseFloat(num)
+    })
+    // y-coord: higher price = smaller y; the last point (min price=40) has the largest y
+    expect(coords[coords.length - 1]).toBeGreaterThan(coords[0])
   })
 })

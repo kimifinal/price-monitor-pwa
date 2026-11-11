@@ -75,3 +75,59 @@ export function alertedItems(items) {
   if (!Array.isArray(items)) return []
   return items.filter((i) => shouldAlert(i))
 }
+
+/* ---------------------------------------------------------------------------
+ * 歷史價格比價 — the verdict SSOT, mirrored from backend/models.py:price_verdict.
+ * Keep the thresholds + branch order in lockstep with the Python side.
+ * ------------------------------------------------------------------------- */
+
+// Mirrors backend/models.py constants.
+const GOOD_DEAL_DROP = 15 // >= 15% below the high => a genuinely good deal
+const NEAR_HIGH_DROP = 5 // <= 5% below => basically at the high
+
+/**
+ * Turn a price-history metrics object into a "is it a good time to buy?" verdict.
+ * Mirrors `price_verdict` in the backend — the two must agree.
+ * @param {{points?: number, atAllTimeLow?: boolean, dropPctFromHigh?: number}} m
+ * @returns {{verdict: string, label: string, dropPct: number}}
+ */
+export function priceVerdict(m) {
+  if (!m || !m.points) return { verdict: 'unknown', label: '無歷史資料', dropPct: 0 }
+  const drop = m.dropPctFromHigh ?? 0
+  if (m.atAllTimeLow) return { verdict: 'all_time_low', label: '歷史最低 👍', dropPct: drop }
+  if (drop >= GOOD_DEAL_DROP) {
+    return { verdict: 'good_deal', label: `較近低點 ▼${Math.round(drop)}%`, dropPct: drop }
+  }
+  if (drop <= NEAR_HIGH_DROP) return { verdict: 'near_high', label: '接近高點', dropPct: drop }
+  return { verdict: 'stable', label: '平穩', dropPct: drop }
+}
+
+export const PRICE_THRESHOLDS = { GOOD_DEAL_DROP, NEAR_HIGH_DROP }
+
+/**
+ * Build an SVG polyline `d` string from a price series — an offline sparkline.
+ * Accepts either [number] or [{price}] (or a mix with junk filtered out).
+ * Pure => trivially unit-testable and meaningful for the coverage gate.
+ * @param {Array<number|{price:number}>} points
+ * @param {number} [width=100]
+ * @param {number} [height=28]
+ * @returns {string} SVG path (or '' when there's nothing to draw)
+ */
+export function sparkPath(points, width = 100, height = 28, pad = 1) {
+  if (!Array.isArray(points) || points.length === 0) return ''
+  const vals = points
+    .map((p) => (typeof p === 'number' ? p : p?.price))
+    .filter((v) => typeof v === 'number' && Number.isFinite(v))
+  if (vals.length === 0) return ''
+  const min = Math.min(...vals)
+  const max = Math.max(...vals)
+  const span = max - min || 1
+  const step = width / (vals.length - 1 || 1)
+  return vals
+    .map((v, i) => {
+      const x = i * step
+      const y = pad + (1 - (v - min) / span) * (height - 2 * pad)
+      return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
+    })
+    .join(' ')
+}
