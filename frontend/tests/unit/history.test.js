@@ -10,13 +10,12 @@ import {
 } from '../../src/lib/history.js'
 import { sparkPath } from '../../src/lib/monitor.js'
 import costcoSnapshot from '../../public/snapshot/costco-history.json'
-import cryptoSnapshot from '../../public/snapshot/crypto.json'
 
 describe('mapItem', () => {
   it('drops junk and non-object items', () => {
     expect(mapItem(null, 'costco')).toBeNull()
     expect(mapItem(42, 'costco')).toBeNull()
-    expect(mapItem('nope', 'crypto')).toBeNull()
+    expect(mapItem('nope', 'costco')).toBeNull()
   })
 
   it('maps snake_case backend metrics to the camelCase card shape', () => {
@@ -50,7 +49,7 @@ describe('mapItem', () => {
       dropPctFromHigh: 5,
       atAllTimeLow: true,
       series: [11, 10, 9],
-    }, 'coingecko')
+    }, 'costco')
     expect(card.series).toEqual([11, 10, 9])
     expect(sparkPath(card.series)).toContain('M') // draws a path
   })
@@ -101,12 +100,6 @@ describe('cardsFromHistory', () => {
     expect(first.series && first.series.length > 1).toBe(true)
     expect(sparkPath(first.series)).toContain('M') // a real path, i.e. a rendered card
   })
-
-  it('renders the COMMITTED crypto snapshot and keeps the coingecko source', () => {
-    const cards = cardsFromHistory(cryptoSnapshot, 'coingecko')
-    expect(cards.every((c) => c.source === 'coingecko')).toBe(true)
-    expect(cards.some((c) => c.series && c.series.length > 1)).toBe(true)
-  })
 })
 
 describe('loadLiveHistory — live → snapshot fallback, never throws', () => {
@@ -119,21 +112,18 @@ describe('loadLiveHistory — live → snapshot fallback, never throws', () => {
       return new Response(JSON.stringify(ok), { status: 200 })
     }
     const cards = await loadLiveHistory('http://h/', { fetch })
-    expect(cards.length).toBe(2) // costco + crypto both live
+    expect(cards.length).toBe(1) // costco only now
     expect(calls.some((u) => u.includes('/api/costco/history'))).toBe(true)
-    expect(calls.some((u) => u.includes('/api/crypto'))).toBe(true)
   })
 
   it('falls back to the committed snapshot when the live API fails', async () => {
     const fetch = async (u) => {
       if (u.includes('/api/')) throw new Error('offline')
       if (u.includes(SNAPSHOT_PATHS.costco.snapshot)) return new Response(JSON.stringify(costcoSnapshot), { status: 200 })
-      if (u.includes(SNAPSHOT_PATHS.crypto.snapshot)) return new Response(JSON.stringify(cryptoSnapshot), { status: 200 })
       return new Response('nope', { status: 404 })
     }
     const cards = await loadLiveHistory('http://h/', { fetch })
     expect(cards.length).toBeGreaterThan(0)
-    expect(cards.some((c) => c.name === 'Bitcoin (BTC)')).toBe(true)
   })
 
   it('returns [] for a total outage and when no fetch is available', async () => {

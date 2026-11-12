@@ -18,7 +18,6 @@ import {
 // Tie the offline contract to the COMMITTED baked snapshot (the git-diffable SSOT):
 // offline must be able to render a movement card out of exactly these files.
 import costcoSnapshot from '../../public/snapshot/costco-history.json'
-import cryptoSnapshot from '../../public/snapshot/crypto.json'
 import { cardsFromHistory } from '../../src/lib/history.js'
 
 /* --- in-memory fakes -------------------------------------------------------- */
@@ -83,8 +82,6 @@ describe('offline-cache matchers', () => {
   it('recognizes the API endpoints the cards fetch', () => {
     expect(isApiRequest('/api/costco/history')).toBe(true)
     expect(isApiRequest('/api/costco/history/149699')).toBe(true)
-    expect(isApiRequest('/api/crypto')).toBe(true)
-    expect(isApiRequest('/api/crypto/bitcoin')).toBe(true)
     expect(isApiRequest(new Request('http://h/api/costco/history'))).toBe(true)
     expect(isApiRequest('/api/items')).toBe(false)
     expect(isApiRequest('/')).toBe(false)
@@ -93,7 +90,6 @@ describe('offline-cache matchers', () => {
   it('maps each endpoint to its committed snapshot file', () => {
     expect(snapshotFileFor('/api/costco/history')).toBe('snapshot/costco-history.json')
     expect(snapshotFileFor('/api/costco/history/1')).toBe('snapshot/costco-history.json')
-    expect(snapshotFileFor('/api/crypto/btc')).toBe('snapshot/crypto.json')
     expect(snapshotFileFor('/api/items')).toBe(null)
   })
 
@@ -102,7 +98,7 @@ describe('offline-cache matchers', () => {
     // Request can't be constructed with that mode in Node, so simulate with a
     // shape the strategy only reads `.url` + `.mode` from.
     expect(isNavigation({ url: 'http://h/', mode: 'navigate' })).toBe(true)
-    expect(isNavigation(new Request('http://h/api/crypto'))).toBe(false)
+    expect(isNavigation(new Request('http://h/api/costco/history'))).toBe(false)
     expect(isNavigation('a string')).toBe(false)
     expect(isNavigation(null)).toBe(false)
   })
@@ -154,21 +150,6 @@ describe('offline data contract — /api/costco/history', () => {
     const e = env({ online: false, cacheEntries: {} })
     const res = await handleFetch(new Request('http://localhost/api/costco/history'), e)
     expect(res).toBeNull()
-  })
-})
-
-describe('offline data contract — /api/crypto', () => {
-  it('renders a coin movement card from the baked crypto snapshot', async () => {
-    const e = env({
-      online: false,
-      cacheEntries: { [CACHE_NAME]: [['http://localhost/snapshot/crypto.json', jsonRes(cryptoSnapshot)]] },
-      network: () => { throw new Error('offline') },
-    })
-    const res = await handleFetch(new Request('http://localhost/api/crypto'), e)
-    const cards = cardsFromHistory(await res.json(), 'coingecko')
-    expect(cards.length).toBeGreaterThan(0)
-    expect(cards.every((c) => c.source === 'coingecko')).toBe(true)
-    expect(cards.some((c) => c.series && c.series.length > 1)).toBe(true)
   })
 })
 
@@ -243,7 +224,7 @@ async function readCache(e) {
   // expose the MCache entries back out for seeding a second (offline) env
   const snapshot = []
   // MCache stores by url; we re-pull via a round-trip match against a wildcard
-  const urls = ['http://localhost/api/costco/history', 'http://localhost/api/crypto']
+  const urls = ['http://localhost/api/costco/history']
   for (const u of urls) {
     const r = await e.match(CACHE_NAME, new Request(u))
     if (r) snapshot.push([u, r])

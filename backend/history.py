@@ -371,16 +371,16 @@ def append_real(items: list[dict], today: Optional[str] = None,
     Loads the committed artifact, appends one observation per sku dated today
     (a *real* scrape by default; pass `synthetic=True` for a deterministic
     backfill point), and rewrites it deterministically. Re-running the same day
-    for the same source is a no-op (deduped by sku+date+source), so a source can
-    grow the SAME `history_data.json` without clobbering another source's point
-    at the same (sku, day) — that is what makes coingecko + costco coexist. A
-    per-item `source`/`synthetic` override the module defaults, so coingecko
-    points land beside costco points. Returns the new points added.
+    for the same source is a no-op (deduped by sku+date+source), so a second
+    source can grow the SAME `history_data.json` without clobbering the first
+    source's point at the same (sku, day). A per-item `source`/`synthetic`
+    override the module defaults, so an alternate source's points land beside the
+    primary source's. Returns the new points added.
     """
     obs = load_observations(persist_path)
     ts = (today or datetime.now().strftime("%Y-%m-%d")) + "T00:00:00"
-    # multi-source dedup key: a costco point and a coingecko point may share a
-    # (sku, day) without clobbering each other.
+    # multi-source dedup key: two different sources may share a (sku, day)
+    # without clobbering each other.
     seen = {f"{o.get('sku')}|{o.get('observed_at')}|{o.get('source', 'costco')}"
             for o in obs}
     added = 0
@@ -414,7 +414,7 @@ def append_real(items: list[dict], today: Optional[str] = None,
 def ensure_history(conn: Optional[sqlite3.Connection] = None,
                    persist_path: str = PERSIST_PATH,
                    fallback_items: Optional[list[dict]] = None,
-                   crypto_items: Optional[list[dict]] = None) -> sqlite3.Connection:
+                   extra_items: Optional[list[dict]] = None) -> sqlite3.Connection:
     """Open a history DB populated from the PERSISTED artifact, falling back to a
     snapshot backfill only when the artifact is missing/empty.
 
@@ -422,11 +422,11 @@ def ensure_history(conn: Optional[sqlite3.Connection] = None,
     committed (real observations accumulated over time); a brand-new checkout
     with no artifact yet still shows a deterministic backfill demo.
 
-    `crypto_items` makes the layer *multi-source*: when supplied, any coin that
-    has no series yet gets a deterministic, synthetic backfill (source='coingecko')
-    so crypto coexists with Costco in the SAME series + verdict layer even before
-    a single real crypto scrape. Backfill stays synthetic so the real-only alert
-    scanner can never fire on it.
+    `extra_items` makes the layer *multi-source*: when supplied, any sku that has
+    no series yet gets a deterministic, synthetic backfill (source='backfill') so
+    an alternate source coexists in the SAME series + verdict layer even before a
+    single real scrape. Backfill stays synthetic so the real-only alert scanner
+    can never fire on it.
     """
     own = conn is None
     conn = conn or connect()
@@ -435,12 +435,12 @@ def ensure_history(conn: Optional[sqlite3.Connection] = None,
         replay(conn, obs)
     elif fallback_items:
         seed_from_snapshot(fallback_items, conn=conn)
-    if crypto_items:
+    if extra_items:
         have = {str(r["sku"]) for r in conn.execute(
             "SELECT DISTINCT sku FROM observations").fetchall()}
-        missing = [c for c in crypto_items if str(c.get("sku")) not in have]
+        missing = [c for c in extra_items if str(c.get("sku")) not in have]
         if missing:
-            seed_from_snapshot(missing, conn=conn, source="coingecko")
+            seed_from_snapshot(missing, conn=conn, source="backfill")
     # Do NOT close a freshly-created conn: callers keep querying it (the API closes
     # in its own finally). We only close a conn we were *given* back closed — never.
     return conn

@@ -1,71 +1,15 @@
-"""Tests for the real scraper + its offline fallback."""
-import json
-from unittest.mock import patch, MagicMock
+"""Tests for the real scraper + its offline fallback.
+
+The sacred invariant: a network down NEVER crashes the pipeline — every path
+degrades to the deterministic simulator. These are all OFFLINE.
+"""
+from unittest.mock import patch
 from scrapers import (
-    fetch_crypto_price,
-    fetch_crypto_prices,
     fetch_price,
     simulate,
+    scrape_costco,
     fetch_price_from_page,
 )
-
-
-def _fake_response(payload: dict):
-    """Build a context-manager-able fake urllib response."""
-    resp = MagicMock()
-    resp.read.return_value = json.dumps(payload).encode("utf-8")
-    resp.__enter__ = lambda self: self
-    resp.__exit__ = lambda self, *a: False
-    return resp
-
-
-def test_fetch_crypto_price_parses_live_payload():
-    with patch(
-        "scrapers.urllib.request.urlopen",
-        return_value=_fake_response({"bitcoin": {"twd": 2453399}}),
-    ):
-        price = fetch_crypto_price("bitcoin", "twd")
-        assert price == 2453399.0
-
-
-def test_fetch_password_missing_currency_raises():
-    with patch(
-        "scrapers.urllib.request.urlopen",
-        return_value=_fake_response({"bitcoin": {"usd": 100}}),
-    ):
-        try:
-            fetch_crypto_price("bitcoin", "twd")
-            assert False, "expected ValueError when currency missing"
-        except ValueError:
-            pass
-
-
-
-
-def test_fetch_crypto_prices_bulk_one_request_parses_all_assets():
-    with patch(
-        "scrapers._http_get_json",
-        return_value={"bitcoin": {"twd": 2453399}, "ethereum": {"twd": 69615}},
-    ):
-        out = fetch_crypto_prices(["bitcoin", "ethereum"], "twd")
-        assert out["bitcoin"] == 2453399.0
-        assert out["ethereum"] == 69615.0
-
-
-def test_fetch_crypto_prices_empty_assets():
-    assert fetch_crypto_prices([]) == {}
-
-
-def test_fetch_price_dispatches_crypto_prefix_and_falls_back():
-    # Network failure -> must fall back to the simulator (deterministic).
-    with patch(
-        "scrapers.urllib.request.urlopen",
-        side_effect=OSError("network down"),
-    ):
-        p1 = fetch_price("crypto:bitcoin", "twd", timeout=1)
-        p2 = fetch_price("crypto:bitcoin", "twd", timeout=1)
-        assert p1 == p2  # deterministic fallback
-        assert p1 > 0
 
 
 def test_simulate_is_deterministic_and_nonzero():
@@ -82,3 +26,23 @@ def test_fetch_price_from_page_requires_url():
         assert False
     except ValueError:
         pass
+
+
+def test_scrape_costco_fails_softly_offline():
+    # No network -> the real scrape returns None (never raises); the caller
+    # falls back to the simulator.
+    with patch("scrapers.urllib.request.urlopen",
+               side_effect=OSError("network down")):
+        assert scrape_costco("https://www.costco.com.tw/x/30991", timeout=1) is None
+
+
+def test_fetch_price_offline_falls_back_to_simulator():
+    # A non-URL source uses the deterministic simulator directly.
+    assert fetch_price("chiikawa-badge", "twd", timeout=1) == \
+        round(simulate("chiikawa-badge"), 2)
+    # An http source degrades to the simulator when the network is down — the
+    # offline invariant: the pipeline never crashes on a dead network.
+    url = "https://www.costco.com.tw/x/30991"
+    with patch("scrapers.urllib.request.urlopen",
+               side_effect=OSError("network down")):
+        assert fetch_price(url, "twd", timeout=1) == round(simulate(url), 2)

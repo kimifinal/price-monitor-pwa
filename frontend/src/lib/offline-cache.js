@@ -10,7 +10,7 @@
  * slots — the logic that a CI browser test would otherwise have to run.
  *
  * Strategy (the "safe subset" of #6 — no account config, no secret):
- *   /api/costco/history*, /api/crypto* (offline data the cards need):
+ *   /api/costco/history* (offline data the cards need):
  *       online  -> stale-while-revalidate: serve the cache NOW and refresh the
  *                  cache in the background; if the network FAILS, fall back to
  *                  the baked-in snapshot (last known series + verdicts).
@@ -34,7 +34,6 @@ export const SNAPSHOT_DIR = 'snapshot'
 // (/api/costco/history/123) still falls back to the whole costco snapshot.
 export function snapshotFileFor(path) {
   if (/^\/api\/costco\/history/.test(path)) return joinBase(SNAPSHOT_DIR, 'costco-history.json')
-  if (/^\/api\/crypto/.test(path)) return joinBase(SNAPSHOT_DIR, 'crypto.json')
   return null
 }
 
@@ -67,9 +66,9 @@ function urlPath(input) {
   }
 }
 
-/** True for the API endpoints the cards fetch (/api/costco/history*, /api/crypto*). */
+/** True for the API endpoint the cards fetch (/api/costco/history*). */
 export function isApiRequest(input) {
-  return /^\/api\/(costco\/history|crypto)\b/.test(urlPath(input))
+  return /^\/api\/costco\/history\b/.test(urlPath(input))
 }
 
 /** True for a document navigation (deep link / reload). */

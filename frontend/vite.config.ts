@@ -8,7 +8,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 // Issue #6: instead of workbox's generateSW (app-shell only), we ship a CUSTOM
 // service worker (src/sw.js) via `injectManifest`. It delegates every request to
 // the pure, unit-tested `src/lib/offline-cache.js` strategy so /api/costco/history
-// (and /api/crypto) resolve from cache when offline, then fall back to the
+// resolves from cache when offline, then falls back to the
 // committed snapshot JSON — the 歷史價格比價 cards render last-known series even
 // with no network. `src/sw.js` is excluded from ESLint (thin web-API bridge); the
 // real logic lives in the linted/tested module it imports.

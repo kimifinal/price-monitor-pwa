@@ -1,5 +1,5 @@
 /**
- * history.js — turn a /api/costco/history or /api/crypto payload into the card
+ * history.js — turn a /api/costco/history payload into the card
  * objects the 歷史價格比價 UI renders, with a FULLY-OFFLINE loader.
  *
  * Issue #6: the app must render its price-movement cards with no network. The
@@ -10,15 +10,14 @@
  *
  * The mapper `cardsFromHistory` is pure and is the single place that bridges the
  * backend's snake_case metrics to the camelCase `metrics` the card renderer
- * (PriceHistory.vue / monitor.js) consumes — so a Costco item and a CoinGecko
- * coin render identically (the multi-source SSOT from #3).
+ * (PriceHistory.vue / monitor.js) consumes — so a Costco item and any other
+ * tracked source render identically (the multi-source SSOT).
  */
 import { SNAPSHOT_DIR, joinBase } from './offline-cache.js'
 
 /** Committed baked-in snapshot, resolved relative to the app base. */
 export const SNAPSHOT_PATHS = {
   costco: { live: 'api/costco/history', snapshot: joinBase(SNAPSHOT_DIR, 'costco-history.json') },
-  crypto: { live: 'api/crypto', snapshot: joinBase(SNAPSHOT_DIR, 'crypto.json') },
 }
 
 /**
@@ -60,7 +59,7 @@ export function mapItem(item, source) {
 
 /**
  * Map a payload — `/api/*` ({count, items: []}) or a bare item array — into
- * renderable cards. Source threads through so a coin keeps its 🪙 badge.
+ * renderable cards. Source threads through so a card keeps its source label.
  * @returns {Array<object>} possibly empty
  */
 export function cardsFromHistory(payload, source) {
@@ -88,11 +87,8 @@ function joinUrl(base, rel) {
 export async function loadLiveHistory(baseURL = '', opts = {}) {
   const fetch = opts.fetch || globalThis.fetch
   if (typeof fetch !== 'function') return []
-  const [costco, crypto] = await Promise.all([
-    tryEndpoint(SNAPSHOT_PATHS.costco, baseURL, 'costco', fetch),
-    tryEndpoint(SNAPSHOT_PATHS.crypto, baseURL, 'coingecko', fetch),
-  ])
-  return [...costco, ...crypto]
+  const costco = await tryEndpoint(SNAPSHOT_PATHS.costco, baseURL, 'costco', fetch)
+  return costco
 }
 
 async function tryEndpoint({ live, snapshot }, baseURL, source, fetch) {

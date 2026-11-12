@@ -39,18 +39,6 @@ const compareCards = [
     metrics: { points: 6, atAllTimeLow: true, dropPctFromHigh: 22.2 },
     url: 'https://www.costco.com.tw/p/149699',
   },
-  // crypto — a coingecko coin renders in the SAME component with only a 🪙 badge;
-  // the verdict + spark are the single SSOT. This is the multi-source 時序 UI (#3).
-  {
-    name: 'Bitcoin (BTC)',
-    source: 'coingecko',
-    tag: 'crypto',
-    currency: 'TWD',
-    current: 2250000,
-    series: [2700000, 2620000, 2500000, 2400000, 2300000, 2250000],
-    metrics: { points: 6, atAllTimeLow: true, dropPctFromHigh: 16.7 },
-    url: 'https://www.coingecko.com/en/bitcoin',
-  },
 ]
 const compareRows = computed(() =>
   [...compareCards].sort(
@@ -134,7 +122,7 @@ function onWatchlistChange(wl) {
     </section>
 
     <section class="price-history" data-section="compare">
-      <h2>📊 歷史價格比價 · 3C / 家電 / 加密貨幣</h2>
+      <h2>📊 歷史價格比價 · 3C / 家電</h2>
       <p class="subtitle">依近期降幅排序，綠色 = 歷史最低、可考慮入手</p>
       <price-history
         v-for="card in compareRows"

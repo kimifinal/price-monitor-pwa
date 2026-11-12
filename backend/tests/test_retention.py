@@ -28,7 +28,6 @@ from datetime import datetime, timedelta
 import pytest
 
 import history
-import crypto
 
 # The fixed "now" every window is measured from — deterministic, offline.
 NOW = datetime(2026, 11, 12)
@@ -363,37 +362,19 @@ def _series_intact(kept, originals):
 def test_series_intact_no_dup_no_gap_no_break(tmp_path):
     # A realistic per-sku layout: a block of SYNTHEtics at the old end, then a
     # contiguous block of REAL points at the new end — plus discontinued + real
-    # -evidence + crypto skus. After the window each kept series is intact.
+    # -evidence skus. After the window each kept series is intact.
     originals = []
     # clean "tail" sku: synthetics older than the reals, window cuts only the synth
     originals += [obs("clean", d, 100.0 + d, synthetic=True, source="backfill")
                   for d in range(60, 46, -1)]        # days 60..47 (old synthetics)
     originals += [obs("clean", d, 110.0 - d, synthetic=False, source="costco")
                   for d in (30, 20, 10, 0)]          # days 30..0 (reals, in-window)
-    # crypto coexistence (pure synthetic, in-window) -> untouched
-    originals += [obs("crypto:bitcoin", d, 2_600_000.0 + d, synthetic=True,
-                      source="coingecko", tag="crypto")
-                  for d in range(0, 14)]
     kept = history.apply_window(originals, window_days=30, now=NOW)
     _series_intact(kept, originals)
     # the window cut through only the SYNTHETIC tail, not the real evidence
     clean_ts = {r["observed_at"] for r in series_of(kept, "clean")}
     assert ts_str(0) in clean_ts and ts_str(30) in clean_ts
     assert ts_str(47) not in clean_ts and ts_str(60) not in clean_ts
-    # crypto points coexist (source='coingecko'), untouched by the window
-    crypto_recs = [r for r in kept if r["sku"] == "crypto:bitcoin"]
-    assert len(crypto_recs) == 14 and all(r["source"] == "coingecko" for r in crypto_recs)
-
-
-def test_retention_keeps_crypto_coexistence(tmp_path):
-    # AC coexistence: costco + coingecko survive the window side by side.
-    pts = [
-        obs("139339", 3, 959.0, synthetic=False, source="costco", tag="3C"),
-        obs("crypto:bitcoin", 3, 2_600_000.0, synthetic=True, source="coingecko", tag="crypto"),
-    ]
-    kept = history.apply_window(pts, window_days=30, now=NOW)
-    by_src = {r["sku"]: r["source"] for r in kept}
-    assert by_src == {"139339": "costco", "crypto:bitcoin": "coingecko"}
 
 
 def test_no_fabrication_kept_subset_of_original(tmp_path):
@@ -442,31 +423,6 @@ def test_window_does_not_touch_watchlist_file_directly(tmp_path):
     history.render_discontinued(history.load_observations(art), window_days=30, now=NOW)
     after = open(wl, encoding="utf-8").read()
     assert before == after                      # watchlist.json never written
-
-
-# ======================================================================
-# crypto module coexistence stays intact through history retention (#3)
-# ======================================================================
-
-def test_crypto_series_survives_window(tmp_path):
-    art = str(tmp_path / "h.json")
-    c = history.connect(":memory:")
-    history.seed_from_snapshot([
-        {"sku": "139339", "name": "PQI 35W", "price": 959.0, "tag": "3C"}
-    ], conn=c, source="backfill")
-    history.export_observations(c, art)
-    c.close()
-    crypto.append_crypto(
-        items=[{"sku": "crypto:bitcoin", "name": "Bitcoin (BTC)", "tag": "crypto",
-                "price": 2_600_000.0, "currency": "TWD", "source": "coingecko",
-                "synthetic": 0}],
-        today="2026-11-12", persist_path=art,
-    )
-    obs = history.load_observations(art)
-    srcs = {o["source"] for o in obs}
-    assert {"backfill", "coingecko"} <= srcs    # both sides coexist
-    kept = history.apply_window(obs, window_days=90, now=NOW)
-    assert "crypto:bitcoin" in skus_of(kept) and "139339" in skus_of(kept)
 
 
 # ======================================================================

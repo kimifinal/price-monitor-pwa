@@ -12,6 +12,7 @@ __pycache__/
 venv/
 .env
 .coverage
+.pytest_cache/
 
 # PWA generated
 frontend/sw.js

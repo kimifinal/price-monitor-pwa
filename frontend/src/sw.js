@@ -11,7 +11,7 @@
  * bridge, not business logic.
  *
  * What it guarantees, offline:
- *   • /api/costco/history* & /api/crypto* resolve from the response cache,
+ *   • /api/costco/history* resolves from the response cache,
  *     else the committed snapshot (public/snapshot/*.json, precached here) ->
  *     the 歷史價格比價 price-movement cards always have last-known series +
  *     verdicts even with no network.
@@ -22,7 +22,7 @@ import { handleFetch, CACHE_NAME, SHELL_CACHE, resolveUrl, SNAPSHOT_DIR } from '
 
 // The two committed snapshots are precached so even a never-online first load
 // has the last known series to render the cards from.
-const SNAPSHOT_FILES = ['costco-history.json', 'crypto.json']
+const SNAPSHOT_FILES = ['costco-history.json']
 
 // Install: precache the app shell (manifest injected by vite-plugin-pwa) and the
 // committed snapshots. `cache.add` with no-cors tolerates a single 404/fail: we
