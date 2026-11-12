@@ -192,6 +192,15 @@ DEMO_BASKET = [
     "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/JBL-BAR-21-DEEP-BASS-MK2-Channel-Soundbar-With-Wireless-Subwoofer/p/154155"
   },
   {
+    "name": "惠而浦 190公升直立式冷凍櫃 WUFZ1860W",
+    "price": 12999.0,
+    "currency": "TWD",
+    "sku": "136403",
+    "url": "https://www.costco.com.tw/Televisions-Appliances/Large-Appliances/Fridges-Freezers/Whirlpool-190-L-Upright-Freezer-WUFZ1860W/p/136403",
+    "tag": "家電",
+    "category_path": "https://www.costco.com.tw/Televisions-Appliances/Large-Appliances/Fridges-Freezers/Whirlpool-190-L-Upright-Freezer-WUFZ1860W/p/136403"
+  },
+  {
     "name": "Denon 3.1.2 聲道 Dolby Atmos Soundbar 重低音組合 DHT-S517 | Cost...",
     "price": 14999.0,
     "currency": "TWD",
@@ -255,31 +264,22 @@ DEMO_BASKET = [
     "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/Philips-55-inch-4K-Google-TV-Monitor-55PUH763096/p/153519"
   },
   {
-    "name": "Samsung 55吋 Mini LED 4K AI 量子智慧顯示器 UA55M1EHAXXZW | Costco...",
-    "price": 18999.0,
+    "name": "東芝 43吋 4K QLED VIDAA 智慧顯示器 43M450RP",
+    "price": 11999.0,
     "currency": "TWD",
-    "sku": "161520",
-    "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/Samsung-55-inch-Mini-LED-4K-AI-Smart-Monitor-UA55M1EHAXXZW/p/161520",
+    "sku": "162415",
+    "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/30-49-TVs/TOSHIBA-43-inch-4K-QLED-VIDAA-Smart-Monitor-43M450RP/p/162415",
     "tag": "家電",
-    "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/Samsung-55-inch-Mini-LED-4K-AI-Smart-Monitor-UA55M1EHAXXZW/p/161520"
+    "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/30-49-TVs/TOSHIBA-43-inch-4K-QLED-VIDAA-Smart-Monitor-43M450RP/p/162415"
   },
   {
-    "name": "東芝 Regza 55型 QLED144Hz 全陣列背光智慧顯示器 55Z670NT",
-    "price": 18999.0,
+    "name": "東芝 50吋 4K QLED VIDAA 智慧顯示器 50M450RP",
+    "price": 13999.0,
     "currency": "TWD",
-    "sku": "156638",
-    "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/Toshiba-Regza-55-inch-Full-Array-QLED-144Hz-Smart-Monitor-55Z670NT/p/156638",
+    "sku": "162414",
+    "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/TOSHIBA-50-inch-4K-QLED-VIDAA-Smart-Monitor-50M450RP/p/162414",
     "tag": "家電",
-    "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/Toshiba-Regza-55-inch-Full-Array-QLED-144Hz-Smart-Monitor-55Z670NT/p/156638"
-  },
-  {
-    "name": "TCL 55吋 4K Mini LED Google TV 量子智能液晶顯示器 不含視訊盒 55C6K | Cos...",
-    "price": 19999.0,
-    "currency": "TWD",
-    "sku": "153539",
-    "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/TCL-55-inch-4K-Mini-LED-Google-TV-Smart-Monitor-without-Tuner-Box-55C6K/p/153539",
-    "tag": "家電",
-    "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/TCL-55-inch-4K-Mini-LED-Google-TV-Smart-Monitor-without-Tuner-Box-55C6K/p/153539"
+    "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/TOSHIBA-50-inch-4K-QLED-VIDAA-Smart-Monitor-50M450RP/p/162414"
   }
 ]
 

@@ -1,8 +1,35 @@
 {
   "snapshot_for": "/api/costco/history",
   "generated_by": "scripts/render_history_snapshot.py",
-  "count": 39,
+  "count": 42,
   "items": [
+    {
+      "sku": "136403",
+      "name": "惠而浦 190公升直立式冷凍櫃 WUFZ1860W",
+      "tag": "家電",
+      "current": 12999.0,
+      "current_is_real": true,
+      "low": 12999.0,
+      "high": 12999.0,
+      "drop_pct_from_high": 0.0,
+      "at_all_time_low": true,
+      "points": 1,
+      "real_points": 1,
+      "first_seen": "2026-11-12T00:00:00",
+      "last_seen": "2026-11-12T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 0.0
+      },
+      "series": [
+        {
+          "observed_at": "2026-11-12T00:00:00",
+          "price": 12999.0,
+          "source": "costco"
+        }
+      ]
+    },
     {
       "sku": "139339",
       "name": "PQI 35W 雙孔氮化鎵 PD/QC3.0 快速充電器 附二合一 USB-C to USB-C/Lightnin...",
@@ -2651,6 +2678,60 @@
           "observed_at": "2026-11-11T16:46:26.200725",
           "price": 13299.0,
           "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "162414",
+      "name": "東芝 50吋 4K QLED VIDAA 智慧顯示器 50M450RP",
+      "tag": "家電",
+      "current": 13999.0,
+      "current_is_real": true,
+      "low": 13999.0,
+      "high": 13999.0,
+      "drop_pct_from_high": 0.0,
+      "at_all_time_low": true,
+      "points": 1,
+      "real_points": 1,
+      "first_seen": "2026-11-12T00:00:00",
+      "last_seen": "2026-11-12T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 0.0
+      },
+      "series": [
+        {
+          "observed_at": "2026-11-12T00:00:00",
+          "price": 13999.0,
+          "source": "costco"
+        }
+      ]
+    },
+    {
+      "sku": "162415",
+      "name": "東芝 43吋 4K QLED VIDAA 智慧顯示器 43M450RP",
+      "tag": "家電",
+      "current": 11999.0,
+      "current_is_real": true,
+      "low": 11999.0,
+      "high": 11999.0,
+      "drop_pct_from_high": 0.0,
+      "at_all_time_low": true,
+      "points": 1,
+      "real_points": 1,
+      "first_seen": "2026-11-12T00:00:00",
+      "last_seen": "2026-11-12T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 0.0
+      },
+      "series": [
+        {
+          "observed_at": "2026-11-12T00:00:00",
+          "price": 11999.0,
+          "source": "costco"
         }
       ]
     },

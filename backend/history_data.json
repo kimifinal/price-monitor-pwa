@@ -1,5 +1,15 @@
 [
  {
+  "sku": "136403",
+  "name": "惠而浦 190公升直立式冷凍櫃 WUFZ1860W",
+  "tag": "家電",
+  "price": 12999.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-12T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
   "sku": "139339",
   "name": "PQI 35W 雙孔氮化鎵 PD/QC3.0 快速充電器 附二合一 USB-C to USB-C/Lightnin...",
   "tag": "3C",
@@ -3848,6 +3858,26 @@
   "observed_at": "2026-11-11T16:46:26.200725",
   "source": "backfill",
   "synthetic": 1
+ },
+ {
+  "sku": "162414",
+  "name": "東芝 50吋 4K QLED VIDAA 智慧顯示器 50M450RP",
+  "tag": "家電",
+  "price": 13999.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-12T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "162415",
+  "name": "東芝 43吋 4K QLED VIDAA 智慧顯示器 43M450RP",
+  "tag": "家電",
+  "price": 11999.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-12T00:00:00",
+  "source": "costco",
+  "synthetic": 0
  },
  {
   "sku": "162420",
