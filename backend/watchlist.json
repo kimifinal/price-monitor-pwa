@@ -3,7 +3,7 @@
   "name": "ANKER A2674 336 GaN 67W 急速充電器 2入組",
   "sku": "149699",
   "threshold": {
-   "target": 1100
+      "target": 1500
   }
  },
  {
