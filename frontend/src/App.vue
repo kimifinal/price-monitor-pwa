@@ -104,6 +104,7 @@ function onWatchlistChange(wl) {
 
     <section class="watchlist">
       <h2>追蹤中（{{ items.length }}）</h2>
+      <p class="subtitle">手動加入的名單，依緊迫度排序——目標價跌破現價就通知。</p>
       <add-item-form @add="onAdd" />
       <item-card
         v-for="item in sorted"
@@ -114,9 +115,9 @@ function onWatchlistChange(wl) {
     </section>
 
     <section class="personalize">
-      <h2>🎯 個人化追蹤清單（離線可編輯）</h2>
+      <h2>🎯 個人化通知門檻（離線可編輯）</h2>
       <p class="subtitle">
-        只有清單內、且達到門檻的品項才會通知；清單為空時永遠沉默。
+        每項的「觸發開關」—只有清單內、且達到目標價 / 最低降幅門檻的品項才會通知；清單為空則永遠沉默。
       </p>
       <watchlist-editor @change="onWatchlistChange" />
     </section>

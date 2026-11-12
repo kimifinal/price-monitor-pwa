@@ -91,7 +91,7 @@ function reset() {
     </div>
 
     <p v-if="isEmpty" class="we-empty" data-testid="we-empty">
-      追蹤清單為空 —— 不會有任何通知（沉默是預設）。
+      清單為空 —— 不會有任何通知（沉默是預設）。
     </p>
 
     <ul class="we-list">
@@ -101,44 +101,52 @@ function reset() {
         class="we-row"
         :data-testid="`we-row-${i}`"
       >
-        <span class="we-sku">{{ row.sku }}</span>
-        <input
-          class="we-name"
-          v-model="row.name"
-          placeholder="名稱（選填）"
-          @change="onFieldChange"
-        />
-        <label class="we-th">
-          目標
+        <!-- top line: sku (mono) + name (flex, ellipsis) + remove, no overflow -->
+        <div class="we-row-top">
+          <span class="we-sku">{{ row.sku }}</span>
           <input
-            class="we-target"
-            type="number"
-            step="0.01"
-            v-model.number="row.threshold.target"
-            placeholder="目標(選填)"
+            class="we-name"
+            v-model="row.name"
+            placeholder="名稱（選填）"
             @change="onFieldChange"
           />
-        </label>
-        <label class="we-th">
-          降幅%
-          <input
-            class="we-drop"
-            type="number"
-            step="0.1"
-            v-model.number="row.threshold.min_drop_pct"
-            placeholder="最低降幅%"
-            @change="onFieldChange"
-          />
-        </label>
+          <button class="we-remove" type="button" data-testid="we-remove" @click="remove(i)">
+            移除
+          </button>
+        </div>
+
+        <!-- threshold fields: label over input, 2-col when wide, stacks on phone -->
+        <div class="we-th-fields">
+          <label class="we-th">
+            <span class="we-th-label">目標價</span>
+            <input
+              class="we-target"
+              type="number"
+              step="0.01"
+              v-model.number="row.threshold.target"
+              placeholder="目標(選填)"
+              @change="onFieldChange"
+            />
+          </label>
+          <label class="we-th">
+            <span class="we-th-label">最低降幅%</span>
+            <input
+              class="we-drop"
+              type="number"
+              step="0.1"
+              v-model.number="row.threshold.min_drop_pct"
+              placeholder="最低降幅%"
+              @change="onFieldChange"
+            />
+          </label>
+        </div>
+
         <span
           v-if="probeMatch(row) !== null"
           class="we-fire"
           :data-fire="probeMatch(row)"
           >{{ probeMatch(row) ? '🔔 會觸發' : '待價' }}</span
         >
-        <button class="we-remove" type="button" data-testid="we-remove" @click="remove(i)">
-          移除
-        </button>
       </li>
     </ul>
 
@@ -161,14 +169,15 @@ function reset() {
 .watchlist-editor {
   background: #141218;
   border: 1px solid #2a2740;
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin-bottom: 12px;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
 }
 .we-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
 }
 .we-head h2 {
   font-size: 14px;
@@ -178,75 +187,133 @@ function reset() {
 .we-reset,
 .we-remove,
 .we-add-btn {
-  font-size: 11px;
+  font-size: 12px;
   color: #b0a8c8;
   background: #1b1830;
   border: 1px solid #2a2740;
   border-radius: 6px;
-  padding: 4px 8px;
+  padding: 5px 10px;
   cursor: pointer;
+  white-space: nowrap;
+  flex: none;
 }
 .we-reset {
   background: #4a3f7a;
+  color: #efeaff;
 }
 .we-empty {
   color: #8a86a8;
   font-size: 12px;
+  margin: 4px 0 0;
 }
 .we-list {
   list-style: none;
   padding: 0;
-  margin: 8px 0 0;
+  margin: 10px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
+
+/* ---- one card per watched item ---- */
 .we-row {
+  background: #1b1830;
+  border: 1px solid #2a2740;
+  border-radius: 10px;
+  padding: 10px;
+}
+.we-row-top {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 6px;
+  gap: 8px;
 }
 .we-sku {
-  font-family: monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 11px;
   color: #f0c000;
-  min-width: 64px;
+  white-space: nowrap;
+  flex: none;
 }
 .we-name {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0; /* allow flex to shrink so the value truncates with an ellipsis */
 }
+.we-remove {
+  color: #e07a7a;
+  border-color: #4a3345;
+}
+
+/* threshold fields: label stacked over each input; 2-col wide, 1-col narrow */
+.we-th-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+@media (min-width: 380px) {
+  .we-th-fields {
+    flex-direction: row;
+  }
+}
+.we-th {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.we-th-label {
+  font-size: 11px;
+  color: #8a86a8;
+  white-space: nowrap;
+}
+
 .we-name,
 .we-target,
 .we-drop,
 .we-new-sku,
-.we-new-name,
-.we-add {
-  background: #1b1830;
+.we-new-name {
+  width: 100%;
+  box-sizing: border-box;
+  background: #141218;
   color: #efeaff;
   border: 1px solid #2a2740;
   border-radius: 6px;
-  padding: 4px 6px;
+  padding: 7px 8px;
+  font-size: 13px;
 }
-.we-th {
-  display: flex;
-  align-items: center;
-  gap: 3px;
+
+.we-fire {
+  display: inline-block;
+  margin-top: 8px;
   font-size: 11px;
   color: #8a86a8;
 }
-.we-target,
-.we-drop {
-  width: 64px;
+.we-fire[data-fire='true'] {
+  color: #4caf50;
+  font-weight: bold;
 }
-.we-fire {
-  font-size: 11px;
-}
+
+/* add-form: stacked full-width on a phone, a row on wider screens */
 .we-add {
-  margin-top: 8px;
+  margin-top: 12px;
   display: flex;
+  flex-direction: column;
   gap: 6px;
-  flex-wrap: wrap;
+}
+@media (min-width: 380px) {
+  .we-add {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+.we-new-sku,
+.we-new-name,
+.we-add-btn {
+  font-size: 13px;
 }
 .we-add-btn {
   background: #4a3f7a;
-  cursor: pointer;
+  color: #efeaff;
 }
 </style>
