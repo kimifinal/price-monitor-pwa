@@ -4,6 +4,14 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // Mirrors the mini-calculator Vite config: a PWA that builds to GitHub Pages
 // (base './') with an auto-updating service worker + manifest.
+//
+// Issue #6: instead of workbox's generateSW (app-shell only), we ship a CUSTOM
+// service worker (src/sw.js) via `injectManifest`. It delegates every request to
+// the pure, unit-tested `src/lib/offline-cache.js` strategy so /api/costco/history
+// (and /api/crypto) resolve from cache when offline, then fall back to the
+// committed snapshot JSON — the 歷史價格比價 cards render last-known series even
+// with no network. `src/sw.js` is excluded from ESLint (thin web-API bridge); the
+// real logic lives in the linted/tested module it imports.
 export default defineConfig({
   base: './',
   plugins: [
@@ -11,6 +19,14 @@ export default defineConfig({
     VitePWA({
       injectRegister: 'auto',
       registerType: 'autoUpdate',
+      // Flip the build to injectManifest so our CUSTOM service worker
+      // (src/sw.js -> offline-cache.js) ships instead of workbox's auto-gen
+      // app-shell SW. `strategies` selects the mode; `srcDir`+`filename` point
+      // the Vite build's SW entry at src/sw.js, where its relative import of
+      // './lib/offline-cache.js' resolves.
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.js',
       manifest: {
         name: 'Price Monitor',
         short_name: 'PriceMon',
@@ -30,9 +46,12 @@ export default defineConfig({
           },
         ],
       },
-      workbox: {
-        globPatterns: ['index.html', 'assets/**/*'],
-        navigateFallback: 'index.html',
+      injectManifest: {
+        // Vite (above, via srcDir+filename) builds src/sw.js into dist/sw.js, and
+        // workbox then injects its precache manifest here as `self.__WB_MANIFEST`.
+        // These patterns are the app shell — the SW precaches the committed
+        // snapshots separately (on install) so the 比價 cards work offline.
+        globPatterns: ['index.html', 'assets/**/*', 'icons/**/*', 'manifest.webmanifest'],
       },
       devOptions: { enabled: false },
     }),

@@ -1,0 +1,3613 @@
+{
+  "snapshot_for": "/api/costco/history",
+  "generated_by": "scripts/render_history_snapshot.py",
+  "count": 33,
+  "items": [
+    {
+      "sku": "139339",
+      "name": "PQI 35W 雙孔氮化鎵 PD/QC3.0 快速充電器 附二合一 USB-C to USB-C/Lightnin...",
+      "tag": "3C",
+      "current": 959.0,
+      "current_is_real": true,
+      "low": 959.0,
+      "high": 1203.91,
+      "drop_pct_from_high": 20.3,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 20.3
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 1203.91,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 1185.22,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 1165.73,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 1149.44,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 1121.82,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 1117.43,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 1099.55,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 1075.43,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 1055.7,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 1033.27,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 1018.27,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 997.58,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 987.1,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 959.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 959.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "143371",
+      "name": "Soodatek PD 65W 氮化鎵高速充電 USB-C 套裝",
+      "tag": "3C",
+      "current": 825.0,
+      "current_is_real": true,
+      "low": 825.0,
+      "high": 1035.27,
+      "drop_pct_from_high": 20.3,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 20.3
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 1035.27,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 1019.0,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 1009.77,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 989.67,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 978.62,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 961.7,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 947.34,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 931.86,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 904.33,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 892.44,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 871.7,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 863.45,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 844.82,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 825.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 825.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "144129",
+      "name": "Backbone Mamba 人體工學全網椅",
+      "tag": "3C",
+      "current": 4599.0,
+      "current_is_real": true,
+      "low": 4599.0,
+      "high": 5448.91,
+      "drop_pct_from_high": 15.6,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 15.6
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 5448.91,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 5441.84,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 5372.08,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 5236.72,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 5168.23,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 5178.58,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 5106.36,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 4996.31,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 4952.12,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 4841.13,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 4793.63,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 4735.69,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 4641.89,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 4599.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 4599.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "147918",
+      "name": "飛利浦 2.1 聲道 無線重低音杜比全景聲聲霸 TAB6309",
+      "tag": "家電",
+      "current": 7599.0,
+      "current_is_real": true,
+      "low": 7599.0,
+      "high": 9591.0,
+      "drop_pct_from_high": 20.8,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 20.8
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 9591.0,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 9393.82,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 9151.66,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 9047.67,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 8997.15,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 8844.7,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 8596.18,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 8465.95,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 8336.23,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 8235.33,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 7981.55,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 7944.25,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 7727.95,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 7599.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 7599.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "148022",
+      "name": "Klipsch Flexus 無線聲霸 Core 100",
+      "tag": "家電",
+      "current": 9999.0,
+      "current_is_real": true,
+      "low": 9999.0,
+      "high": 12311.5,
+      "drop_pct_from_high": 18.8,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 18.8
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 12311.5,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 12164.39,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 12033.33,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 11790.1,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 11695.25,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 11500.8,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 11166.97,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 11130.22,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 10963.47,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 10705.54,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 10532.52,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 10390.19,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 10236.06,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 9999.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 9999.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "149115",
+      "name": "Samsung 3.1聲道 兩件式家庭劇院含重低音 HW-S700D/ZW",
+      "tag": "家電",
+      "current": 9999.0,
+      "current_is_real": true,
+      "low": 9999.0,
+      "high": 12536.81,
+      "drop_pct_from_high": 20.2,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 20.2
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 12536.81,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 12371.18,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 12092.08,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 11978.76,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 11787.04,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 11605.53,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 11310.24,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 11083.43,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 10913.33,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 10660.28,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 10649.92,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 10283.57,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 10204.57,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 9999.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 9999.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "149699",
+      "name": "ANKER A2674 336 GaN 67W 急速充電器 2入組",
+      "tag": "3C",
+      "current": 1069.0,
+      "current_is_real": true,
+      "low": 1069.0,
+      "high": 1375.12,
+      "drop_pct_from_high": 22.3,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 22.3
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 1375.12,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 1350.81,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 1333.84,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 1310.18,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 1290.79,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 1249.71,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 1244.7,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 1217.75,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 1184.22,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 1160.38,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 1145.09,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 1118.61,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 1095.65,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 1069.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 1069.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "152206",
+      "name": "國際牌 手持式掛燙機 NI-GS410",
+      "tag": "家電",
+      "current": 2449.0,
+      "current_is_real": true,
+      "low": 2449.0,
+      "high": 3049.7,
+      "drop_pct_from_high": 19.7,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 19.7
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 3049.7,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 2993.31,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 2946.39,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 2917.92,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 2829.3,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 2783.55,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 2768.12,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 2731.2,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 2664.43,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 2625.64,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 2573.18,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 2528.9,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 2483.07,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 2449.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 2449.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "153519",
+      "name": "飛利浦 55吋 4K Google TV 顯示器 55PUH7630/96",
+      "tag": "家電",
+      "current": 13699.0,
+      "current_is_real": true,
+      "low": 13699.0,
+      "high": 16439.82,
+      "drop_pct_from_high": 16.7,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 16.7
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 16439.82,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 16345.11,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 15969.29,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 15966.15,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 15619.77,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 15391.87,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 15093.74,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 14929.48,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 14866.85,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 14544.21,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 14225.73,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 14157.25,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 13987.36,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 13699.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 13699.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "153526",
+      "name": "飛利浦 55吋 4K QLED Google TV 顯示器 55PQT8530/96",
+      "tag": "家電",
+      "current": 12599.0,
+      "current_is_real": true,
+      "low": 12599.0,
+      "high": 15139.28,
+      "drop_pct_from_high": 16.8,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 16.8
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 15139.28,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 15023.11,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 14756.58,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 14461.78,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 14395.74,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 14216.21,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 14043.48,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 13801.83,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 13494.26,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 13290.35,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 13129.82,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 12979.93,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 12884.88,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 12599.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 12599.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "153555",
+      "name": "TCL 75吋 4K Mini LED Google TV 量子智能液晶顯示器 不含視訊盒 75C6K | Cos...",
+      "tag": "家電",
+      "current": 27799.0,
+      "current_is_real": true,
+      "low": 27799.0,
+      "high": 34139.27,
+      "drop_pct_from_high": 18.6,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 18.6
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 34139.27,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 33637.8,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 33513.13,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 32947.4,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 32063.13,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 31834.74,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 31317.26,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 30693.99,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 30433.18,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 29876.25,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 29136.73,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 28976.18,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 28120.8,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 27799.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 27799.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "153862",
+      "name": "Acer Gaming USB-A to USB-C 1公尺 白 + USB-C to USB-C 1.2公尺 白...",
+      "tag": "3C",
+      "current": 599.0,
+      "current_is_real": true,
+      "low": 599.0,
+      "high": 765.13,
+      "drop_pct_from_high": 21.7,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 21.7
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 765.13,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 747.06,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 732.06,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 721.08,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 714.44,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 696.65,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 692.1,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 677.9,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 662.46,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 643.6,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 631.05,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 621.7,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 613.93,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 599.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 599.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "153876",
+      "name": "JBL Live 670NC 耳罩式降噪藍牙耳機",
+      "tag": "3C",
+      "current": 1899.0,
+      "current_is_real": true,
+      "low": 1899.0,
+      "high": 2198.24,
+      "drop_pct_from_high": 13.6,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 13.6
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 2198.24,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 2177.09,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 2129.71,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 2112.11,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 2087.22,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 2065.06,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 2065.77,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 2024.72,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 1993.76,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 2006.73,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 1957.58,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 1939.41,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 1910.97,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 1899.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 1899.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "154155",
+      "name": "JBL BAR 2.1 DEEP BASS (MK2) 2.1聲道條型音箱",
+      "tag": "家電",
+      "current": 9699.0,
+      "current_is_real": true,
+      "low": 9699.0,
+      "high": 12557.32,
+      "drop_pct_from_high": 22.8,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 22.8
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 12557.32,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 12264.0,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 12167.69,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 11887.31,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 11698.55,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 11508.7,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 11155.08,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 11092.07,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 10874.48,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 10568.58,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 10365.05,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 10114.44,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 9949.07,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 9699.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 9699.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "156177",
+      "name": "TP-Link 旋轉式 WI-FI 攝影機 C212 2入組",
+      "tag": "3C",
+      "current": 1599.0,
+      "current_is_real": true,
+      "low": 1599.0,
+      "high": 1839.97,
+      "drop_pct_from_high": 13.1,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 13.1
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 1839.97,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 1830.1,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 1821.05,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 1783.8,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 1777.7,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 1759.29,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 1735.5,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 1719.71,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 1688.4,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 1669.5,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 1658.83,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 1652.84,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 1631.19,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 1599.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 1599.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "156638",
+      "name": "東芝 Regza 55型 QLED144Hz 全陣列背光智慧顯示器 55Z670NT",
+      "tag": "家電",
+      "current": 18999.0,
+      "current_is_real": true,
+      "low": 18999.0,
+      "high": 22017.33,
+      "drop_pct_from_high": 13.7,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 13.7
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 22017.33,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 21469.02,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 21376.58,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 21302.03,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 20849.91,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 20657.36,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 20403.14,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 20185.13,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 20019.27,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 19992.33,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 19694.48,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 19542.45,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 19375.53,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 18999.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 18999.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "156974",
+      "name": "iClever BTH18 炫光無線兒童耳機",
+      "tag": "3C",
+      "current": 849.0,
+      "current_is_real": true,
+      "low": 849.0,
+      "high": 1060.42,
+      "drop_pct_from_high": 19.9,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 19.9
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 1060.42,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 1041.49,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 1029.18,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 1009.28,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 989.5,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 980.42,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 966.32,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 954.23,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 937.59,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 918.74,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 898.42,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 874.4,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 862.88,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 849.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 849.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "157137",
+      "name": "Honeywell 淨味空氣清淨機 HPA5350WTWV1",
+      "tag": "家電",
+      "current": 6999.0,
+      "current_is_real": true,
+      "low": 6999.0,
+      "high": 8420.91,
+      "drop_pct_from_high": 16.9,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 16.9
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 8420.91,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 8253.76,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 8202.37,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 8052.47,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 7986.54,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 7794.5,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 7679.08,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 7663.67,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 7534.79,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 7449.82,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 7257.94,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 7266.11,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 7047.09,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 6999.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 6999.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "157488",
+      "name": "Soodatek GaN PD140W 氮化鎵急速充電 USB-C 套裝",
+      "tag": "3C",
+      "current": 1479.0,
+      "current_is_real": true,
+      "low": 1479.0,
+      "high": 1837.62,
+      "drop_pct_from_high": 19.5,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 19.5
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 1837.62,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 1800.33,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 1794.94,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 1745.04,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 1725.83,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 1703.61,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 1675.4,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 1650.81,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 1616.95,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 1579.85,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 1557.99,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 1533.55,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 1494.78,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 1479.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 1479.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "158679",
+      "name": "Ringway RP60 數位鋼琴",
+      "tag": "3C",
+      "current": 10399.0,
+      "current_is_real": true,
+      "low": 10399.0,
+      "high": 12787.59,
+      "drop_pct_from_high": 18.7,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 18.7
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 12787.59,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 12675.57,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 12410.15,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 12270.1,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 11943.22,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 11828.88,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 11751.19,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 11565.6,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 11251.7,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 11113.42,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 10869.64,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 10673.16,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 10576.65,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 10399.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 10399.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "161051",
+      "name": "PQI 100W 數位顯示充電器",
+      "tag": "3C",
+      "current": 1379.0,
+      "current_is_real": true,
+      "low": 1379.0,
+      "high": 1711.67,
+      "drop_pct_from_high": 19.4,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 19.4
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 1711.67,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 1683.74,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 1645.09,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 1618.01,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 1608.67,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 1582.68,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 1554.39,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 1536.77,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 1510.43,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 1481.86,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 1461.73,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 1430.12,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 1412.33,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 1379.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 1379.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "161367",
+      "name": "Soundcore AeroClip 開放式藍牙耳夾耳機",
+      "tag": "3C",
+      "current": 2079.0,
+      "current_is_real": true,
+      "low": 2079.0,
+      "high": 2378.86,
+      "drop_pct_from_high": 12.6,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 12.6
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 2376.37,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 2378.86,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 2365.36,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 2342.58,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 2287.81,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 2277.17,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 2264.07,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 2207.68,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 2215.63,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 2159.52,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 2135.97,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 2134.73,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 2104.63,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 2079.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 2079.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "161520",
+      "name": "Samsung 55吋 Mini LED 4K AI 量子智慧顯示器 UA55M1EHAXXZW | Costco...",
+      "tag": "家電",
+      "current": 18999.0,
+      "current_is_real": true,
+      "low": 18999.0,
+      "high": 24137.22,
+      "drop_pct_from_high": 21.3,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 21.3
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 24137.22,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 23662.53,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 23156.94,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 22865.03,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 22332.75,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 22198.83,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 21704.23,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 21178.74,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 20881.37,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 20665.79,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 19962.08,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 19576.76,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 19511.72,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 18999.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 18999.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "161741",
+      "name": "TCL 55吋 P6L 4K Google TV 智慧連網液晶顯示器 不含視訊盒 55P6L",
+      "tag": "家電",
+      "current": 13299.0,
+      "current_is_real": true,
+      "low": 13299.0,
+      "high": 15698.62,
+      "drop_pct_from_high": 15.3,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 15.3
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 15698.62,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 15498.13,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 15469.52,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 15306.62,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 15067.27,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 14690.33,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 14739.01,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 14350.98,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 14297.61,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 14090.73,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 13779.45,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 13728.02,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 13397.72,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 13299.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 13299.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "162420",
+      "name": "Sony 3.1聲道 BRAVIA Theatre Bar 5 單件式喇叭搭配無線重低音揚聲器 HT-B500 |...",
+      "tag": "家電",
+      "current": 11949.0,
+      "current_is_real": true,
+      "low": 11949.0,
+      "high": 15230.88,
+      "drop_pct_from_high": 21.5,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 21.5
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 15230.88,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 15123.71,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 14861.01,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 14465.16,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 14335.25,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 13999.29,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 13623.74,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 13551.7,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 13249.43,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 13042.13,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 12683.11,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 12434.43,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 12306.46,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 11949.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 11949.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "162427",
+      "name": "Hawk 360° 旋轉升降螢幕架 附抽屜",
+      "tag": "3C",
+      "current": 669.0,
+      "current_is_real": true,
+      "low": 669.0,
+      "high": 844.63,
+      "drop_pct_from_high": 20.8,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 20.8
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 844.63,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 828.26,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 813.48,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 805.6,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 782.04,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 777.2,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 766.4,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 750.61,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 735.03,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 715.24,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 706.11,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 695.79,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 685.24,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 669.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 669.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "163907",
+      "name": "Nintendo Switch 2 寶可夢傳說 Z-A + Pokémon Pokopia 組合 | Costco...",
+      "tag": "3C",
+      "current": 18799.0,
+      "current_is_real": true,
+      "low": 18799.0,
+      "high": 22764.04,
+      "drop_pct_from_high": 17.4,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 17.4
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 22764.04,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 22478.81,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 22367.19,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 21846.33,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 21399.7,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 21411.79,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 20909.0,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 20473.4,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 20403.83,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 20145.36,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 19697.17,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 19351.51,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 19130.4,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 18799.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 18799.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "169089",
+      "name": "Apple AirPods 5",
+      "tag": "3C",
+      "current": 4249.0,
+      "current_is_real": true,
+      "low": 4249.0,
+      "high": 5111.17,
+      "drop_pct_from_high": 16.9,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 16.9
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 5111.17,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 5038.08,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 5001.67,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 4869.35,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 4811.45,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 4820.22,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 4731.11,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 4676.97,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 4570.67,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 4475.13,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 4455.03,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 4346.49,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 4347.51,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 4249.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 4249.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "3062725",
+      "name": "BOSE Solo Soundbar 電視音響 II",
+      "tag": "家電",
+      "current": 8149.0,
+      "current_is_real": true,
+      "low": 8149.0,
+      "high": 10228.4,
+      "drop_pct_from_high": 20.3,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 20.3
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 10228.4,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 9956.42,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 9908.02,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 9774.85,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 9490.69,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 9376.13,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 9304.46,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 9058.2,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 8904.54,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 8765.84,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 8635.35,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 8537.38,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 8371.84,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 8149.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 8149.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "6677010",
+      "name": "DeWALT 得偉 乾濕兩用吸塵器",
+      "tag": "家電",
+      "current": 3399.0,
+      "current_is_real": true,
+      "low": 3399.0,
+      "high": 4034.88,
+      "drop_pct_from_high": 15.8,
+      "at_all_time_low": true,
+      "points": 15,
+      "real_points": 1,
+      "first_seen": "2026-10-29T16:46:26.200725",
+      "last_seen": "2026-11-11T00:00:00",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 15.8
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-29T16:46:26.200725",
+          "price": 4034.88,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-30T16:46:26.200725",
+          "price": 4031.61,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-10-31T16:46:26.200725",
+          "price": 3971.13,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-01T16:46:26.200725",
+          "price": 3899.38,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-02T16:46:26.200725",
+          "price": 3883.65,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-03T16:46:26.200725",
+          "price": 3775.19,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-04T16:46:26.200725",
+          "price": 3773.13,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-05T16:46:26.200725",
+          "price": 3692.46,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-06T16:46:26.200725",
+          "price": 3666.7,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-07T16:46:26.200725",
+          "price": 3626.03,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-08T16:46:26.200725",
+          "price": 3524.75,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-09T16:46:26.200725",
+          "price": 3475.75,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-10T16:46:26.200725",
+          "price": 3468.38,
+          "source": "backfill"
+        },
+        {
+          "observed_at": "2026-11-11T00:00:00",
+          "price": 3399.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-11T16:46:26.200725",
+          "price": 3399.0,
+          "source": "backfill"
+        }
+      ]
+    },
+    {
+      "sku": "crypto:bitcoin",
+      "name": "Bitcoin (BTC)",
+      "tag": "crypto",
+      "current": 104.33,
+      "current_is_real": false,
+      "low": 104.33,
+      "high": 137.07,
+      "drop_pct_from_high": 23.9,
+      "at_all_time_low": true,
+      "points": 42,
+      "real_points": 0,
+      "first_seen": "2026-10-30T01:23:05.419902",
+      "last_seen": "2026-11-12T02:20:12.510250",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 23.9
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-30T01:23:05.419902",
+          "price": 137.07,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-10-30T01:52:35.394174",
+          "price": 137.04,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-10-30T02:20:12.510250",
+          "price": 133.1,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-10-31T01:23:05.419902",
+          "price": 134.38,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-10-31T01:52:35.394174",
+          "price": 134.35,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-10-31T02:20:12.510250",
+          "price": 130.49,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-01T01:23:05.419902",
+          "price": 131.18,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-01T01:52:35.394174",
+          "price": 131.16,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-01T02:20:12.510250",
+          "price": 127.39,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-02T01:23:05.419902",
+          "price": 129.35,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-02T01:52:35.394174",
+          "price": 129.32,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-02T02:20:12.510250",
+          "price": 125.6,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-03T01:23:05.419902",
+          "price": 128.5,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-03T01:52:35.394174",
+          "price": 128.47,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-03T02:20:12.510250",
+          "price": 124.78,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-04T01:23:05.419902",
+          "price": 125.55,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-04T01:52:35.394174",
+          "price": 125.52,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-04T02:20:12.510250",
+          "price": 121.91,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-05T01:23:05.419902",
+          "price": 122.29,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-05T01:52:35.394174",
+          "price": 122.26,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-05T02:20:12.510250",
+          "price": 118.75,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-06T01:23:05.419902",
+          "price": 119.98,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-06T01:52:35.394174",
+          "price": 119.96,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-06T02:20:12.510250",
+          "price": 116.51,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-07T01:23:05.419902",
+          "price": 118.61,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-07T01:52:35.394174",
+          "price": 118.59,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-07T02:20:12.510250",
+          "price": 115.18,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-08T01:23:05.419902",
+          "price": 116.91,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-08T01:52:35.394174",
+          "price": 116.89,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-08T02:20:12.510250",
+          "price": 113.53,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-09T01:23:05.419902",
+          "price": 114.88,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-09T01:52:35.394174",
+          "price": 114.86,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-09T02:20:12.510250",
+          "price": 111.56,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-10T01:23:05.419902",
+          "price": 112.52,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-10T01:52:35.394174",
+          "price": 112.5,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-10T02:20:12.510250",
+          "price": 109.26,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-11T01:23:05.419902",
+          "price": 110.76,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-11T01:52:35.394174",
+          "price": 110.74,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-11T02:20:12.510250",
+          "price": 107.56,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-12T01:23:05.419902",
+          "price": 107.44,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-12T01:52:35.394174",
+          "price": 107.42,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-12T02:20:12.510250",
+          "price": 104.33,
+          "source": "coingecko"
+        }
+      ]
+    },
+    {
+      "sku": "crypto:ethereum",
+      "name": "Ethereum (ETH)",
+      "tag": "crypto",
+      "current": 77.03,
+      "current_is_real": false,
+      "low": 77.03,
+      "high": 101.79,
+      "drop_pct_from_high": 24.3,
+      "at_all_time_low": true,
+      "points": 42,
+      "real_points": 0,
+      "first_seen": "2026-10-30T01:23:05.419902",
+      "last_seen": "2026-11-12T02:20:12.510250",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 24.3
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-30T01:23:05.419902",
+          "price": 101.79,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-10-30T01:52:35.394174",
+          "price": 101.77,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-10-30T02:20:12.510250",
+          "price": 98.84,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-10-31T01:23:05.419902",
+          "price": 101.22,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-10-31T01:52:35.394174",
+          "price": 101.19,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-10-31T02:20:12.510250",
+          "price": 98.29,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-01T01:23:05.419902",
+          "price": 98.18,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-01T01:52:35.394174",
+          "price": 98.15,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-01T02:20:12.510250",
+          "price": 95.33,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-02T01:23:05.419902",
+          "price": 96.78,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-02T01:52:35.394174",
+          "price": 96.75,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-02T02:20:12.510250",
+          "price": 93.97,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-03T01:23:05.419902",
+          "price": 95.22,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-03T01:52:35.394174",
+          "price": 95.2,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-03T02:20:12.510250",
+          "price": 92.46,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-04T01:23:05.419902",
+          "price": 94.18,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-04T01:52:35.394174",
+          "price": 94.16,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-04T02:20:12.510250",
+          "price": 91.45,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-05T01:23:05.419902",
+          "price": 91.76,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-05T01:52:35.394174",
+          "price": 91.73,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-05T02:20:12.510250",
+          "price": 89.09,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-06T01:23:05.419902",
+          "price": 89.72,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-06T01:52:35.394174",
+          "price": 89.69,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-06T02:20:12.510250",
+          "price": 87.12,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-07T01:23:05.419902",
+          "price": 87.71,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-07T01:52:35.394174",
+          "price": 87.69,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-07T02:20:12.510250",
+          "price": 85.16,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-08T01:23:05.419902",
+          "price": 85.81,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-08T01:52:35.394174",
+          "price": 85.79,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-08T02:20:12.510250",
+          "price": 83.32,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-09T01:23:05.419902",
+          "price": 84.3,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-09T01:52:35.394174",
+          "price": 84.27,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-09T02:20:12.510250",
+          "price": 81.85,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-10T01:23:05.419902",
+          "price": 82.43,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-10T01:52:35.394174",
+          "price": 82.4,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-10T02:20:12.510250",
+          "price": 80.04,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-11T01:23:05.419902",
+          "price": 80.89,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-11T01:52:35.394174",
+          "price": 80.87,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-11T02:20:12.510250",
+          "price": 78.54,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-12T01:23:05.419902",
+          "price": 79.33,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-12T01:52:35.394174",
+          "price": 79.31,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-12T02:20:12.510250",
+          "price": 77.03,
+          "source": "coingecko"
+        }
+      ]
+    },
+    {
+      "sku": "crypto:solana",
+      "name": "Solana (SOL)",
+      "tag": "crypto",
+      "current": 196.95,
+      "current_is_real": false,
+      "low": 196.95,
+      "high": 236.64,
+      "drop_pct_from_high": 16.8,
+      "at_all_time_low": true,
+      "points": 42,
+      "real_points": 0,
+      "first_seen": "2026-10-30T01:23:05.419902",
+      "last_seen": "2026-11-12T02:20:12.510250",
+      "verdict": {
+        "verdict": "all_time_low",
+        "label": "歷史最低 👍",
+        "drop_pct": 16.8
+      },
+      "series": [
+        {
+          "observed_at": "2026-10-30T01:23:05.419902",
+          "price": 236.64,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-10-30T01:52:35.394174",
+          "price": 236.59,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-10-30T02:20:12.510250",
+          "price": 229.77,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-10-31T01:23:05.419902",
+          "price": 231.41,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-10-31T01:52:35.394174",
+          "price": 231.36,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-10-31T02:20:12.510250",
+          "price": 224.69,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-01T01:23:05.419902",
+          "price": 230.97,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-01T01:52:35.394174",
+          "price": 230.93,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-01T02:20:12.510250",
+          "price": 224.27,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-02T01:23:05.419902",
+          "price": 226.95,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-02T01:52:35.394174",
+          "price": 226.91,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-02T02:20:12.510250",
+          "price": 220.36,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-03T01:23:05.419902",
+          "price": 226.34,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-03T01:52:35.394174",
+          "price": 226.3,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-03T02:20:12.510250",
+          "price": 219.77,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-04T01:23:05.419902",
+          "price": 221.94,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-04T01:52:35.394174",
+          "price": 221.9,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-04T02:20:12.510250",
+          "price": 215.5,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-05T01:23:05.419902",
+          "price": 218.83,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-05T01:52:35.394174",
+          "price": 218.79,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-05T02:20:12.510250",
+          "price": 212.48,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-06T01:23:05.419902",
+          "price": 218.77,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-06T01:52:35.394174",
+          "price": 218.73,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-06T02:20:12.510250",
+          "price": 212.42,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-07T01:23:05.419902",
+          "price": 213.9,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-07T01:52:35.394174",
+          "price": 213.86,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-07T02:20:12.510250",
+          "price": 207.69,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-08T01:23:05.419902",
+          "price": 212.23,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-08T01:52:35.394174",
+          "price": 212.19,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-08T02:20:12.510250",
+          "price": 206.07,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-09T01:23:05.419902",
+          "price": 209.92,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-09T01:52:35.394174",
+          "price": 209.88,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-09T02:20:12.510250",
+          "price": 203.83,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-10T01:23:05.419902",
+          "price": 205.99,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-10T01:52:35.394174",
+          "price": 205.95,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-10T02:20:12.510250",
+          "price": 200.0,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-11T01:23:05.419902",
+          "price": 205.39,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-11T01:52:35.394174",
+          "price": 205.35,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-11T02:20:12.510250",
+          "price": 199.42,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-12T01:23:05.419902",
+          "price": 202.84,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-12T01:52:35.394174",
+          "price": 202.8,
+          "source": "coingecko"
+        },
+        {
+          "observed_at": "2026-11-12T02:20:12.510250",
+          "price": 196.95,
+          "source": "coingecko"
+        }
+      ]
+    }
+  ]
+}

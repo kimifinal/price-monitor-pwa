@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { loadItems, saveItems } from './lib/storage.js'
 import { alertedItems, sortByUrgency } from './lib/monitor.js'
+import { loadLiveHistory } from './lib/history.js'
 import AddItemForm from './components/AddItemForm.vue'
 import ItemCard from './components/ItemCard.vue'
 import PriceHistory from './components/PriceHistory.vue'
@@ -56,6 +57,23 @@ const compareRows = computed(() =>
     (a, b) => b.metrics.dropPctFromHigh - a.metrics.dropPctFromHigh,
   ),
 )
+
+// --- 即時比價（離線可用）— issue #6: real /api data, offline-first ----------------
+// loadLiveHistory() tries the live API first (the service worker in src/sw.js
+// serves the cache when online, else the committed snapshot), so these cards are
+// driven by real last-known series + verdicts and render with NO network. It
+// degrades to [] on total failure; it never throws, so the hard-coded samples
+// above still stand as the offline fallback. Kept in its own section so the
+// static 4-card compare demo (guarded by e2e) is untouched.
+const liveCards = ref([])
+onMounted(async () => {
+  try {
+    const base = import.meta.env.BASE_URL || ''
+    liveCards.value = await loadLiveHistory(base)
+  } catch {
+    liveCards.value = []
+  }
+})
 
 function persist() {
   saveItems(items.value)
@@ -123,6 +141,19 @@ function onWatchlistChange(wl) {
         :key="card.name"
         :card="card"
       />
+    </section>
+
+    <section class="price-history" data-section="live">
+      <h2>📡 即時比價（離線可用）</h2>
+      <p class="subtitle">
+        由離線快取 / 快照驅動 — 無網路時仍渲染最新走勢與結論（離線 PWA · #6）
+      </p>
+      <price-history
+        v-for="(card, i) in liveCards"
+        :key="`live-${i}`"
+        :card="card"
+      />
+      <p v-if="!liveCards.length" class="subtitle">正在載入離線快照…</p>
     </section>
   </div>
 </template>
