@@ -1,12 +1,20 @@
 """
 Price Monitor backend — FastAPI.
 
-Exposes a small JSON API for the frontend PWA: watch items, fetch current
-prices, and fire a Telegram alert when a price drops below target.
+Exposes a small JSON API for the frontend PWA and serves as the backend
+half of a single source of truth (SSOT):
 
-This is a SCAFFOLD: `scrapers.py` returns simulated prices. To make it real,
-replace `fetch_price()` with an HTTP fetch against a product page + a parser,
-and `alerts.py` already has a Telegram send stub you fill in.
+- Real HTTP scraping of live Costco PDP prices (`scrapers.py` / `costco.py`),
+  with a deterministic offline fallback so CI stays green with no network.
+- Append-only, retention-bounded price history (`history.py`,
+  `history_data.json`, default 90-day window).
+- A per-item alert gate (`watchlist.py`, `watchlist.json`) — only watched
+  skus whose OWN verdict meets their own threshold can alert.
+- Verdict-based alerts (`alerts.py`) that reuse the one rule
+  (`models.price_verdict`, mirrored in `frontend/src/lib/monitor.js`) through
+  a configurable sink (log / telegram / github) with dedup state
+  (`alerts_state.json`). The legacy target-price Telegram path is kept for
+  backwards compatibility but is not the primary alert mechanism.
 """
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
