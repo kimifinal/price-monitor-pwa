@@ -23,6 +23,7 @@ Usage:
 """
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
 import subprocess
@@ -37,6 +38,14 @@ HISTORY = "backend/history_data.json"
 # The discontinued-skus sidecar (issue #5 AC3): a decoupled, git-diffable record of
 # skus the rolling window evicted, so alerts/watchlist still reference them.
 DISCONTINUED = "backend/history_data.discontinued.json"
+# The frontend's baked-in offline snapshot (issue #6/#10): rendered from the SAME
+# SSOT as `render_history_snapshot.py`. It MUST be re-rendered from the just-
+# updated history_data.json and committed alongside it — otherwise the scheduled
+# append+prune leaves the committed copy stale and issue #10's idempotence guard
+# (CI `git diff --exit-code` on a fresh re-render, + the backend
+# test_snapshot_idempotent test) starts failing. This is the #9 CI blocker.
+FRONTEND_SNAPSHOT = "frontend/public/snapshot/costco-history.json"
+RENDER = "scripts/render_history_snapshot.py"
 
 
 def run(*cmd: str, **kw) -> subprocess.CompletedProcess:
@@ -122,27 +131,57 @@ def main() -> int:
         print(f"[retention:flag] watchlist sku {_f['sku']} is discontinued — "
               f"kept in watchlist.json (flagged, not deleted)")
 
+    # 3c. Re-render the frontend offline snapshot from the JUST-updated SSOT (step
+    #     1+3+3b above) so it is committed in lock-step with history_data.json.
+    #     This is the fix that keeps issue #10's idempotence guard green after
+    #     every scheduled refresh: without it the append+prune grows the series
+    #     (30 -> N skus) but the committed frontend snapshot stays frozen, so the
+    #     CI `git diff --exit-code` on a fresh re-render -- and the backend
+    #     test_snapshot_idempotent -- diverge. render_history_snapshot.render is
+    #     pure-Python / JSON-only / byte-deterministic (no network, no .db), and
+    #     its side effects are LOCAL + lazy, so importing it here is safe.
+    _render_spec = importlib.util.spec_from_file_location(
+        "render_history_snapshot", str(ROOT / RENDER)
+    )
+    _render_mod = None
+    if _render_spec is not None and _render_spec.loader is not None:
+        _render_mod = importlib.util.module_from_spec(_render_spec)
+        _render_spec.loader.exec_module(_render_mod)
+    try:
+        assert _render_mod is not None, f"could not load {RENDER}"
+        _render_mod.render_snapshot()
+    except Exception as e:  # noqa: BLE001 — surface the failure, never leave a
+        # half-rendered / truncated snapshot on disk that would fool CI.
+        print(f"! frontend snapshot re-render failed ({e!r}) — aborting, tree left untouched")
+        run("git", "checkout", "--", FRONTEND_SNAPSHOT)
+        return 1
+    print(f"re-rendered {FRONTEND_SNAPSHOT} from updated history_data.json "
+          f"(offline, byte-deterministic)")
+
     # 4. Commit + push only when an artifact actually changed.
-    st = run("git", "status", "--porcelain", "--", SNAPSHOT, HISTORY, DISCONTINUED)
+    st = run("git", "status", "--porcelain", "--",
+             SNAPSHOT, HISTORY, DISCONTINUED, FRONTEND_SNAPSHOT)
     if not st.stdout.strip():
         print("no change — artifacts already up to date (no-op)")
         return 0
 
     if dry_run:
-        diff = run("git", "diff", "--stat", "--", SNAPSHOT, HISTORY, DISCONTINUED)
-        print(f"[dry-run] would refresh {SNAPSHOT} + {HISTORY} + {DISCONTINUED}:")
+        diff = run("git", "diff", "--stat", "--",
+                   SNAPSHOT, HISTORY, DISCONTINUED, FRONTEND_SNAPSHOT)
+        print(f"[dry-run] would refresh {SNAPSHOT} + {HISTORY} + {DISCONTINUED} "
+              f"+ {FRONTEND_SNAPSHOT}:")
         print(diff.stdout.strip())
         print("[dry-run] not committing/pushing")
         # Keep the tree clean. A first-ever sidecar is untracked (git checkout of it
         # errors), so if the checkout reports that, drop the freshly-written copy.
-        rc = run("git", "checkout", "--", SNAPSHOT, HISTORY, DISCONTINUED)
+        rc = run("git", "checkout", "--", SNAPSHOT, HISTORY, DISCONTINUED, FRONTEND_SNAPSHOT)
         if rc.returncode != 0 and os.path.exists(disc_path):
             os.remove(disc_path)
-            run("git", "checkout", "--", SNAPSHOT, HISTORY)
+            run("git", "checkout", "--", SNAPSHOT, HISTORY, FRONTEND_SNAPSHOT)
         return 0
 
-    run("git", "add", SNAPSHOT, HISTORY, DISCONTINUED)
-    msg = (f"chore(data): refresh snapshot + history — "
+    run("git", "add", SNAPSHOT, HISTORY, DISCONTINUED, FRONTEND_SNAPSHOT)
+    msg = (f"chore(data): refresh snapshot + history (+ frontend offline snapshot) — "
            f"{len(items)} items {by_tag}, +{added} costco obs, "
            f"retention -{stats['dropped']} ({stats['window_days']}d window)")
     c = run("git", "commit", "-m", msg)
