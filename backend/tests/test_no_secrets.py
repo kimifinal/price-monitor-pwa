@@ -60,9 +60,24 @@ SCOPE_FILENAMES = {
     "docker-compose.yaml",
     "README.md",
 }
-# Real env files are in scope by suffix; templates are not.
+# Real env files are in scope when their NAME CONTAINS ".env" so every variant is
+# covered — .env, .env.local, .env.production, .env.development, .env.dev, ...
+# (issue #9 / #10-reviewer gap (a): a `.env.local` could quietly carry a live
+# token). TEMPLATES (.env.example / *.env.sample / *.env.template / *.env.dist)
+# stay OUT — they hold no secret — via _should_skip below.
+ENV_SUBSTR = ".env"
 ENV_SUFFIX = ".env"
-ENV_TEMPLATE_SUFFIX = ".env.example"
+ENV_TEMPLATE_SUFFIXES = (".env.example", ".env.sample", ".env.template",
+                        ".env.dist")
+
+
+def _env_in_scope_name(name: str) -> bool:
+    """Pure decision: a filename is a REAL env file (in the curated scan scope)
+    when its name CONTAINS '.env' but it is NOT a template. Covers `.env`,
+    `.env.local`, `.env.production`, `.env.development`, `.env.dev`, ... while
+    leaving `.env.example` / `*.env.sample` / `*.env.template` out (issue #9 /
+    #10-reviewer gap (a))."""
+    return ENV_SUBSTR in name and not name.endswith(ENV_TEMPLATE_SUFFIXES)
 
 # The allowlist marker: a line containing this token skips the file, so an
 # infra/config file that *legitimately* references-or-injects a secret (e.g. an
@@ -76,9 +91,20 @@ PATTERNS = [
     ("github_pat",     re.compile(r"ghp_[A-Za-z0-9]{20,}")),
     ("openai_key",     re.compile(r"sk-[A-Za-z0-9_\-]{20,}")),
     ("aws_access_key", re.compile(r"AKIA[0-9A-Z]{12}")),
+    ("aws_secret_key", re.compile(r"AWS_SECRET_ACCESS_KEY\s*[:=]\s*[\"']?[A-Za-z0-9/+=]{40,}")),
     ("telegram_bot_token", re.compile(r"TELEGRAM_BOT_TOKEN\s*=\s*\S")),
     ("telegram_chat_id", re.compile(r"TELEGRAM_CHAT_ID\s*=\s*[0-9]+")),
-    ("password_literal", re.compile(r"password=\S{12,}")),
+    ("password_literal", re.compile(r"password\s*[:=]\s*[\"']?\S{8,}")),
+    # ---- issue #9 / #10-reviewer gap (b): bare <key>=<value> + AWS 40-char secret ----
+    # A bare value under a well-known key. The value must be 8+ chars, so a short
+    # placeholder / a BARE VAR REFERENCE (os.environ.get('X'), no '=' + value) does
+    # NOT trip it, but a real literal token/secret/api_key/passwd WILL. The bare
+    # forms are word-started (\b) so a compound name (bot_token / api_token) that is
+    # just a local variable assignment is not over-matched.
+    ("bare_token",  re.compile(r"\btoken\s*[:=]\s*[\"']?[A-Za-z0-9_@./+=\-]{8,}")),
+    ("bare_secret", re.compile(r"\bsecret\s*[:=]\s*[\"']?[A-Za-z0-9_@./+=\-]{8,}")),
+    ("bare_api_key", re.compile(r"\bapi[_-]?key\s*[:=]\s*[\"']?[A-Za-z0-9_@./+=\-]{8,}")),
+    ("bare_passwd",  re.compile(r"\bpasswd\s*[:=]\s*[\"']?[A-Za-z0-9_@./+=\-]{8,}")),
 ]
 
 
@@ -93,7 +119,7 @@ def _should_skip(path: Path) -> bool:
     name = path.name
     if any(name.endswith(sfx) for sfx in EXCLUDE_BY_NAME_SUFFIX):
         return True
-    if name.endswith(ENV_TEMPLATE_SUFFIX):          # *.env.example
+    if name.endswith(ENV_TEMPLATE_SUFFIXES):         # *.env.example / .sample / ...
         return True
     if path.resolve() == SELF:                       # this test file
         return True
@@ -108,8 +134,9 @@ def _in_scope(path: Path) -> bool:
     # fixed top-level files
     if name in SCOPE_FILENAMES:
         return True
-    # a real .env file any depth (templates are already excluded by _should_skip)
-    if name == ENV_SUFFIX or name.endswith(ENV_SUFFIX):
+    # a real .env file of ANY variant, any depth (templates stay out):
+    # .env, .env.local, .env.production, .env.development, .env.dev, ...
+    if _env_in_scope_name(name):
         return True
     # directory-scoped globs
     for d, exts in SCOPE_DIRS:
@@ -128,6 +155,16 @@ def _has_marker(text: str) -> bool:
     return any(MARKER in line for line in text.splitlines())
 
 
+def _rel(path: Path, root: Path = ROOT) -> str:
+    """A path's display name: relative to `root` when under it, else the bare
+    name — so scan_file() is safe to call on a tmp planted file (a finding on a
+    path outside ROOT must not crash the scanner)."""
+    try:
+        return str(path.relative_to(root))
+    except ValueError:
+        return str(path.name)
+
+
 def scan_file(path: Path):
     """Return a list of (relpath, lineno, pattern_name, snippet) findings.
 
@@ -137,7 +174,7 @@ def scan_file(path: Path):
     try:
         text = path.read_text(encoding="utf-8")
     except UnicodeDecodeError:
-        return [("binary-unreadable", "n/a", str(path.relative_to(ROOT)), "")]
+        return [("binary-unreadable", "n/a", _rel(path), "")]
     except OSError:
         return []
     if _has_marker(text):                            # allowlist marker -> skip
@@ -147,7 +184,7 @@ def scan_file(path: Path):
         for name, rx in PATTERNS:
             for m in rx.finditer(line):
                 snippet = line.strip()[:120]
-                findings.append((str(path.relative_to(ROOT)), lineno, name, snippet))
+                findings.append((_rel(path), lineno, name, snippet))
     return findings
 
 
@@ -204,6 +241,11 @@ def test_patterns_detect_planted_fakes():
         "telegram_bot_token": "TELEGRAM_BOT_TOKEN=123456789:AAH_real_bot_token",
         "telegram_chat_id": "TELEGRAM_CHAT_ID=123456789",
         "password_literal": "db_password=supersecret12345",
+        "aws_secret_key": "AWS_SECRET_ACCESS_KEY=ABCDEFGHIJKLMNOPQRST01234567890123456789",
+        "bare_token": "token=deadbeefdeadbeef",
+        "bare_secret": "secret=0123456789abcdef",
+        "bare_api_key": "api_key=supersecretapiKEY12",
+        "bare_passwd": "passwd=mypassword12345",
     }
     for name, sample in planted.items():
         rx = dict(PATTERNS)[name]
@@ -219,6 +261,73 @@ def test_allowlist_marker_is_skipped(tmp_path):
         "# secret-guard:allowlist\n"
         "# infra passes the token through from the environment, never hardcodes it\n"
         "  TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}\n",
+        encoding="utf-8",
+    )
+    assert scan_file(f) == []
+
+
+# ---------------------------------------------------------------------------
+# issue #9 / #10-reviewer gap coverage
+#   (a) .env.* variants must be in scope (a .env.local could carry a live token)
+#   (b) widen catchers: AWS 40-char secret + bare token=/secret=/api_key=/passwd=
+#   but a bare variable *reference* (no literal) must NOT be flagged.
+# ---------------------------------------------------------------------------
+def test_dotted_env_variants_are_in_scope():
+    """(gap a) .env.local / .env.production / .env.development / .env.dev must be
+    pulled INTO the curated scope — only a bare `.env` was covered before."""
+    for name in (".env", ".env.local", ".env.production",
+                 ".env.development", ".env.dev", ".env.staging"):
+        assert _env_in_scope_name(name), f"real env variant {name!r} should be in scope"
+
+
+def test_env_templates_stay_out_of_scope():
+    """The template variants must NOT be in scope (they carry no secret)."""
+    for name in (".env.example", "app.env.sample", "prod.env.template", ".env.dist"):
+        assert not _env_in_scope_name(name), f"template {name!r} must stay out of scope"
+
+
+def test_planted_dotted_env_is_detected(tmp_path):
+    """(gap a, teeth) a real token written to a .env.* variant is found by
+    scan_file — so a committed .env.local leak is caught, not silently skipped."""
+    for variant in (".env.local", ".env.production", ".env.development"):
+        f = tmp_path / variant
+        f.write_text("TELEGRAM_BOT_TOKEN=123456789:ABCdefABCdefABCdefABC\n",
+                     encoding="utf-8")
+        findings = scan_file(f)
+        assert findings, f"a planted token in {variant} must be flagged"
+        assert any("telegram" in name for _, _, name, _ in findings), \
+            f"the planted token in {variant} must trip the telegram pattern"
+
+
+def test_aws_and_bare_secret_catchers_have_teeth(tmp_path):
+    """(gap b) a 40-char AWS secret + bare token=/secret=/api_key=/passwd= with a
+    value are ALL caught — each planted file yields at least one finding."""
+    plants = [
+        ("aws.env",  "AWS_SECRET_ACCESS_KEY=ABCDEFGHIJKLMNOPQRST01234567890123456789\n"),
+        ("tok.yaml", "token=deadbeefdeadbeef\n"),
+        ("sec.cfg",  "secret=0123456789abcdef\n"),
+        ("key.env",  "api_key=supersecretapiKEY12\n"),
+        ("pw.cfg",   "passwd=mypassword12345\n"),
+    ]
+    for fn, content in plants:
+        f = tmp_path / fn
+        f.write_text(content, encoding="utf-8")
+        findings = scan_file(f)
+        assert findings, f"{fn} ({content!r}) should be flagged but was clean"
+
+
+def test_bare_var_reference_not_flagged(tmp_path):
+    """(gap b / no false-positive) a BARE variable reference — reading a secret
+    key from the environment WITHOUT a literal value — must NOT trip the guard.
+    This is exactly what `os.environ.get('TELEGRAM_BOT_TOKEN')` looks like in real
+    delivery code, and the no-secret scan must NOT flag it."""
+    f = tmp_path / "clean_ref.py"
+    f.write_text(
+        "import os\n"
+        "bot = os.environ.get(\"TELEGRAM_BOT_TOKEN\", \"\")\n"
+        "chat = os.environ.get(\"TELEGRAM_CHAT_ID\", \"\")\n"
+        "if not bot or not chat:\n"
+        "    raise SystemExit(\"no telegram creds\")\n",
         encoding="utf-8",
     )
     assert scan_file(f) == []

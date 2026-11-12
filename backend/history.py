@@ -50,6 +50,16 @@ CREATE INDEX IF NOT EXISTS idx_obs_sku_time ON observations(sku, observed_at);
 # artifact. A stray / stale / accumulated on-disk .db must NOT leak into the API
 # (issue #10 "no .db leak"). So DEFAULT_DB is a no-op for reads — only an
 # explicit caller that passes a path (a test fixture / a probe) ever opens one.
+#
+# ---- FORWARD-LOCK / issue #9 --------------------------------------------
+# The production READ path ALWAYS passes an in-memory conn down to the helpers
+# below (`ensure_history` builds `:memory:` and the API/refresh never pass a
+# bare `conn=None`). A FUTURE bare caller that calls `record/series/metrics/...`
+# with no conn would hit `conn or connect()` and OPEN the on-disk `DEFAULT_DB`
+# (.db) — which no reader ever uses — and could leak a stale/accumulated .db
+# back into the picture. The `# FWD-LOCK(#9)` markers at each `conn or
+# connect()` site below are the guard: keep passing an in-memory conn; never
+# let a bare call silently read a stale .db.
 # --------------------------------------------------------------------------
 def connect(path: Optional[str] = None) -> sqlite3.Connection:
     """Open (creating if needed) and init the schema. Returns a connection.
@@ -89,6 +99,8 @@ def record(items: list[dict], source: str = "costco",
     """
     own = conn is None
     conn = conn or connect()
+    # FWD-LOCK(#9): the prod read path always passes an in-memory conn; a future
+    # bare conn=None would open DEFAULT_DB (.db) and leak a stale one — keep passing conn.
     cur = ts or datetime.now().isoformat()
     inserted = 0
     for item in items:
@@ -133,6 +145,8 @@ def series(sku: str, conn: Optional[sqlite3.Connection] = None) -> list[tuple[st
     """Chronological observations for a sku: list of (observed_at, price, source-flag)."""
     own = conn is None
     conn = conn or connect()
+    # FWD-LOCK(#9): the prod read path always passes an in-memory conn; a future
+    # bare conn=None would open DEFAULT_DB (.db) and leak a stale one — keep passing conn.
     rows = conn.execute(
         "SELECT observed_at, price, source FROM observations WHERE sku=? "
         "ORDER BY observed_at ASC",
@@ -153,6 +167,8 @@ def metrics(sku: str, conn: Optional[sqlite3.Connection] = None) -> dict:
     """
     own = conn is None
     conn = conn or connect()
+    # FWD-LOCK(#9): the prod read path always passes an in-memory conn; a future
+    # bare conn=None would open DEFAULT_DB (.db) and leak a stale one — keep passing conn.
     rows = conn.execute(
         "SELECT observed_at, price, name, tag, synthetic FROM observations WHERE sku=? "
         "ORDER BY observed_at ASC",
@@ -208,6 +224,8 @@ def seed_from_snapshot(items: list[dict], days: int = 14,
     """
     own = conn is None
     conn = conn or connect()
+    # FWD-LOCK(#9): the prod read path always passes an in-memory conn; a future
+    # bare conn=None would open DEFAULT_DB (.db) and leak a stale one — keep passing conn.
     now = now or datetime.now()
     inserted = 0
     for item in items:
@@ -476,6 +494,8 @@ def all_sellers(conn: Optional[sqlite3.Connection] = None) -> list[str]:
     """
     own = conn is None
     conn = conn or connect()
+    # FWD-LOCK(#9): the prod read path always passes an in-memory conn; a future
+    # bare conn=None would open DEFAULT_DB (.db) and leak a stale one — keep passing conn.
     rows = conn.execute("SELECT DISTINCT sku FROM observations ORDER BY sku").fetchall()
     skus = [str(r["sku"]) for r in rows]
     if own:

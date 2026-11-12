@@ -146,9 +146,32 @@ pytest -q                                       # 10 檔測試
 
 - **前端** → GitHub Pages：CI 的 `deploy-frontend` 綠即在 master 部署（已上線；
   Pages 來源 = GitHub Actions + `github-pages` Environment）。
-- **告警投遞** → `backend/.env` 填 `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID`，
-  或 CI 用 `refresh-costco.yml` 的 `sink: telegram|github`（見 §Roadmap：尚未接）。
+- **告警投遞** → 預設 `sink=log`（排程跑不污染、不建立 issue）。要真正送到人手上，
+  見下「#### 接 Telegram / GitHub 告警投遞（#9）」子節。
 - **後端** → Railway / Fly.io / 自己的 VPS（`python main.py` 監聽 8000）。
+
+#### 接 Telegram / GitHub 告警投遞（#9）
+
+sink 預設 `log`（排程跑不污染、不建立 issue、不需任何 secret）。真正投遞只需把
+credential 放進 **repo Secrets**（絕不進 repo），再用 workflow 的 `sink` input 選 sink：
+
+1. 到 `Settings → Secrets and variables → Actions` 新增兩個 secret：
+   - `TELEGRAM_BOT_TOKEN`（@BotFather 給的 token — 放 repo secret，**絕不**寫進任何檔案）
+   - `TELEGRAM_CHAT_ID`（你的 chat / channel id — 同上）
+   - GitHub sink 只用免費的 built-in `GITHUB_TOKEN`（`refresh-costco.yml` 已注入）。
+2. 觸發 `refresh-costco.yml` 並選 `sink`：手動 dispatch 選 `sink=telegram`（或
+   `sink=github`；留白 / 排程預設仍是 `log`，不投遞）。workflow 以 env 方式讀
+   `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID`（`secrets` 上下文的引用，非 literal），
+   程式碼在缺 credential 時只 `log` 一則 skip notice 並回傳 0 —— CI 絕不會因缺
+   secret 而紅，也**絕不把 token 印進 log**。dedup 靠 git-SSOT 的 `alerts_state.json`，
+   每事件只投一次、一次只投一批 comment。
+
+> **無密碼入庫護欄（#10 護欄，#9 強化）**：`.gitignore` 已擋 `.env*`（僅保留範本
+> `.env.example`），no-secrets CI 也擋下任何 `.env*`（含 `.env.local` /
+> `.env.production` / `.env.development` / `.env.dev`）、bare `token` / `secret` /
+> `api_key` / `passwd`（任一配 8 字元以上 value）、以及 40 字元的 AWS secret ——
+> 但**不會**誤報 `os.environ.get('TELEGRAM_BOT_TOKEN')` 這類裸變數參考（只有配上
+> literal value 才變紅）。
 
 ---
 
@@ -161,7 +184,7 @@ pytest -q                                       # 10 檔測試
 - Crypto 現階段移除（純 Costco 範圍）
 
 ### 待做（下一步可接）
-- [ ] **告警真正送到 Telegram / GitHub**（現為 `log`，需 bot secret / 授權）
+- [x] **告警真正送到 Telegram / GitHub**（#9）：預設 `sink=log`（不污染）；`sink=telegram` 讀 repo secret 的 `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID`；`sink=github` 用免費 `GITHUB_TOKEN` 投摘要 comment（dedup 每事件一次）。詳上「接 Telegram / GitHub 告警投遞」子節。
 - [ ] **Watchlist 可攜**（現只存 localStorage，換裝置/清快取會丟）
 - [ ] **`.db` 汙染護欄**（CI 加「無密碼入庫 + history_data.json 重跑 byte 一致」）
 - [ ] 容器化跑法（`docker-compose.yml` 已起，待擴）

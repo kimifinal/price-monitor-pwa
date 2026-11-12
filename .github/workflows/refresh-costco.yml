@@ -58,5 +58,11 @@ jobs:
         # or telegram (needs TELEGRAM_BOT_TOKEN+CHAT_ID; no-ops without creds).
         # --limit caps what is *sent*; the dedup state still advances on the full set.
         env:
+          # github sink only needs the free GITHUB_TOKEN; the telegram sink reads
+          # these from the repo Secrets. When a secret isn't set it resolves to an
+          # EMPTY string, so the sink detects no creds and falls back to the log
+          # sink (CI-safe: no auto-delivery, no failure). NEVER a literal in-file.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python3 scripts/notify_alerts.py --sink "${{ github.event.inputs.sink || 'log' }}" --limit "${{ github.event.inputs.limit || '10' }}"

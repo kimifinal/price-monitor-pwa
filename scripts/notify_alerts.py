@@ -80,8 +80,10 @@ def main() -> int:
     metrics_list = [history.metrics(s, conn) for s in history.all_sellers(conn)]
 
     # 2. Deduped scan against the durable state, GATED by the watchlist (#4).
+    #    log_skipped=True so a synthetic/only-backfill SKU that would have tripped
+    #    an alarm is logged (a skip note) but NEVER delivered.
     state = load_state(str(BACKEND / "alerts_state.json"))
-    fresh, new_state = scan(metrics_list, state=state, watchlist=wl)
+    fresh, new_state = scan(metrics_list, state=state, watchlist=wl, log_skipped=True)
     print(f"scan: {len(metrics_list)} skus, {len(watchlist.skus(wl))} watched, "
           f"{len(fresh)} new alert(s), sink={sink}")
 
