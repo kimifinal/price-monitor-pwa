@@ -23,9 +23,13 @@ on:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    # The new snapshot must be committed, so this job gets contents:write.
+    # The new snapshot must be committed, so this job gets contents:write. The
+    # alert sink (sink=github) may find/create/comment a '🔔 價格警報' issue, so
+    # it also needs issues:write — otherwise emit_github's GITHUB_TOKEN 403s and
+    # the github path silently no-ops.
     permissions:
       contents: write
+      issues: write
     steps:
       - uses: actions/checkout@v4
 
