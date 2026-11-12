@@ -63,27 +63,22 @@ jobs:
   # Deploy frontend to GitHub Pages. Gated on frontend job being green: it will
   # NOT run (queued -> skipped) if lint/unit/coverage/e2e failed.
   #
-  # ISSUE #6 AC1 / AC2 / AC3 — the "部署收尾" safe subset:
-  #   • AC1 (continue-on-error): LEAVE on. The deploy does NOT block CI yet. This
-  #     is the LAST step to flip to a real gate once Pages is live (AC2 done).
-  #   • AC2 (FUTURE TODO — needs the user's GitHub account, NOT the repo): a
-  #     fine-grained PAT with the `pages: write` scope added to the Actions
-  #     secret (e.g. PAGES_PAT) AND a `github-pages` environment created at the
-  #     repo level, both bound to the repo's Actions. GitHub's own GITHUB_TOKEN
-  #     does NOT carry Pages write, so deploy currently 404s. Do NOT commit any
-  #     secret/token into the repo — configure that on the user's GitHub account.
-  #     Exact steps: (1) create a fine-grained PAT, repo-scoped, add the Pages
-  #     access with "Write" ; (2) Settings -> Actions -> Secrets -> add
-  #     PAGES_PAT=ghp_... ; (3) Settings -> Actions -> Environments -> New
-  #     environment "github-pages". Until then, keep continue-on-error: true.
-  #   • AC3 (live URL): no live-URL requirement in this pass — the reachability
-  #     check below is continue-on-error so it can't turn CI red while AC2 is
-  #     pending. It will start passing automatically a moment after AC2 lands.
+  # ISSUE #6 AC1 / AC2 / AC3 — now FULLY resolved (no PAT, no secret in repo):
+  #   AC2 was "Pages not enabled in the account", NOT a permission gap. The
+  #   built-in GITHUB_TOKEN carries `pages: write` (declared below) AS LONG AS the
+  #   account side is set up, which needs only TWO repo settings:
+  #     1) Settings -> Pages -> Build and deployment -> Source = "GitHub Actions"
+  #     2) Settings -> Actions -> Environments -> New environment "github-pages"
+  #        (Deployment branches = Any branch / master)
+  #   No fine-grained PAT, no PAGES_PAT secret, no id-token swap required.
+  #   (The earlier "needs a PAT" note was incorrect — GITHUB_TOKEN has pages:write
+  #    when the workflow declares it, which this job does on `pages: write`.)
+  #   AC1 (continue-on-error) and AC3 (live-URL check) are now BLOCKING: a deploy
+  #   failure / an unreachable site turns CI red, by design.
   deploy-frontend:
     needs: frontend
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
-    continue-on-error: true   # AC1: non-blocking until AC2 (Pages PAT) is configured
     environment: github-pages
     permissions:
       contents: read
@@ -111,21 +106,27 @@ jobs:
       - name: Deploy Pages
         uses: actions/deploy-pages@v4
       # AC3 (issue #6): a live-URL reachability HEAD check of the freshly
-      # deployed Pages site. `continue-on-error: true` so it is NON-BLOCKING —
-      # Pages is not live until AC2 (the user's Page PAT) is configured, and
-      # this job as a whole is continue-on-error. It starts passing on its own
-      # the moment AC2 lands; it can never turn the pipeline red in the meantime.
-      - name: Verify live Pages URL (AC3 reachability — non-blocking)
+      # deployed Pages site — now BLOCKING (Pages is live; AC2 done). A non-200
+      # means the deploy did not reach Pages and fails the pipeline.
+      - name: Verify live Pages URL (AC3 reachability — blocking)
         working-directory: frontend
-        continue-on-error: true
         run: |
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY##*/}"
           SITE="https://${OWNER}.github.io/${REPO}/index.html"
           echo "Probing deployed site: $SITE"
-          # 200 = reachable; anything else -> 'not live yet' (expected).
-          curl -fsSL --max-time 30 -o /dev/null -w "http=%{http_code}\n" "$SITE" \
-            || echo "⚠ live URL not reachable yet (expected until AC2); CI stays green (continue-on-error)."
+          # A non-200 / connection failure FAILS this step => CI red until the
+          # deploy actually reaches Pages. GH Pages first activation can lag a
+          # couple of minutes, so retry a few times; 200 on any attempt passes,
+          # no 200 after the retries fails the pipeline (a real gate).
+          for i in 1 2 3 4 5 6; do
+            code=$(curl -fsSL --max-time 30 -o /dev/null -w "%{http_code}" "$SITE" || echo "000")
+            echo "attempt $i: http=$code"
+            [ "$code" = "200" ] && exit 0
+            sleep 20
+          done
+          echo "❌ live URL not reachable after retries (Pages not deployed?)"
+          exit 1
 
   # ---- Backend: install -> test -> (deploy API in prod) ----
   backend:
