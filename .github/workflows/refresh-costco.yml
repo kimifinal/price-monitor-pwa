@@ -5,10 +5,12 @@ name: Refresh Costco Snapshot
 #
 on:
   schedule:
-    - cron: '0 4 * * *'   # daily ~04:00 UTC — scheduled runs use the SAFE default
+    - cron: '0 4 * * *'   # daily ~04:00 UTC — scheduled runs default to sink=telegram
   workflow_dispatch:
-    # A manual trigger can choose a delivery sink; scheduled runs fall back to the
-    # safe defaults (sink=log: scan + log only, never auto-creates an issue).
+    # A manual trigger can choose a delivery sink; a manual run left with no `sink`
+    # stays on the SAFE default (sink=log: scan + log only, non-polluting).
+    # Scheduled cron runs, by contrast, default to sink=telegram (a daily digest),
+    # and no-op to log if the Telegram secrets aren't set (CI stays green).
     inputs:
       sink:
         description: delivery sink — log (no delivery) / github (digest comment) / telegram
@@ -56,11 +58,12 @@ jobs:
 
       - name: Scan + deliver alerts (#2 — reuses the price_verdict SSOT)
         # Reads the persisted history, fires an alert per SKU that crosses an alarm
-        # verdict AND isn't already in the dedup state. Default sink is 'log' so
-        # scheduled runs stay non-polluting (no issue is auto-created). A manual
-        # dispatch picks github (digest comment — uses only the free GITHUB_TOKEN)
-        # or telegram (needs TELEGRAM_BOT_TOKEN+CHAT_ID; no-ops without creds).
-        # --limit caps what is *sent*; the dedup state still advances on the full set.
+        # verdict AND isn't already in the dedup state. Routing: use the explicit
+        # `sink` input if given; else a SCHEDULED run defaults to 'telegram' (a daily
+        # digest to you), while a MANUAL run with no input stays on the safe 'log'
+        # default. If the Telegram secrets are absent the sink no-ops to log (CI
+        # stays green, no delivery). --limit caps what is *sent*; the dedup state
+        # still advances on the full set.
         env:
           # github sink only needs the free GITHUB_TOKEN; the telegram sink reads
           # these from the repo Secrets. When a secret isn't set it resolves to an
@@ -69,4 +72,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python3 scripts/notify_alerts.py --sink "${{ github.event.inputs.sink || 'log' }}" --limit "${{ github.event.inputs.limit || '10' }}"
+        run: python3 scripts/notify_alerts.py --sink "${{ github.event.inputs.sink || (github.event_name == 'schedule' && 'telegram') || 'log' }}" --limit "${{ github.event.inputs.limit || '10' }}"
