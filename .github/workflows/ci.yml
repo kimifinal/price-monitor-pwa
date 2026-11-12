@@ -144,3 +144,44 @@ jobs:
       - name: Backend tests
         working-directory: backend
         run: pytest -q
+      # ---- Issue #10 idempotence guard (AC "history_data.json 重跑 byte 一致") ----
+      # Re-render the offline snapshot from the current SSOT and require it to be
+      # byte-identical to the COMMITTED one. A rotted/stale committed snapshot
+      # makes `git diff --exit-code` non-empty and FAILS this step (blocking).
+      # Pure-Python render via TestClient + JSON SSOT: fully offline, no network.
+      - name: Snapshot reproducible (issue #10 idempotence — re-render == committed)
+        working-directory: backend
+        run: |
+          set -euo pipefail
+          PYTHONPATH=backend python ../scripts/render_history_snapshot.py
+          if ! git -C .. diff --exit-code -- frontend/public/snapshot/costco-history.json; then
+            echo "❌ Committed offline snapshot is STALE — not byte-identical to a fresh render."
+            echo "   Re-run: python3 scripts/render_history_snapshot.py (then commit)."
+            git -C .. diff -- frontend/public/snapshot/costco-history.json
+            exit 1
+          fi
+          echo "✅ Snapshot is byte-identical to a fresh render (idempotent)."
+
+  # ---- Issue #10 "無密碼入庫" — NO-SECRET / NO-PASSWORD guard — BLOCKING + offline ----
+  # Scans the curated source/config surface (backend/**/*.py, frontend/src,
+  # .github/**/*.yml, docker-compose.yml, README.md, real *.env) for leaked
+  # secrets and fails on any match. It is deliberately offline-safe (the pytest
+  # is stdlib-only — no network, no .db, no node_modules, *.lock, .coverage, or
+  # history_data.json in its curated scope), and self-excludes itself + allowlisted
+  # files (marker `secret-guard:allowlist`, *.env.example). docker-compose.yml is
+  # allowlisted because it legitimately injects TELEGRAM_* from the environment.
+  secrets-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - name: Install backend deps (scanner runs under pytest; offline)
+        working-directory: backend
+        run: pip install -r requirements.txt
+      - name: No-secret / no-password scan (BLOCKING — fails on any match)
+        working-directory: backend
+        run: PYTHONPATH=backend python -m pytest -q tests/test_no_secrets.py

@@ -20,14 +20,14 @@ import sys
 BACKEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend"))
 OUT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend", "public", "snapshot"))
 
-sys.path.insert(0, BACKEND_DIR)
-os.chdir(BACKEND_DIR)
+# NOTE: BACKEND_DIR is placed on `sys.path` and `os.chdir` is performed LAZILY,
+# inside render_snapshot(), not at import time — so merely importing this module
+# (e.g. from the idempotence pytest) has NO side effects that could disturb a
+# shared test session (no import-time chdir). The renderer rebuilds the snapshot
+# from the JSON SSOT only (history_data.json + DEMO_BASKET), never a .db.
 
-from fastapi.testclient import TestClient  # noqa: E402
-import main as backend_main  # noqa: E402  (avoid clobbering the module with the render() fn)
 
-
-def enrich_costco_series(client: TestClient, payload: dict) -> dict:
+def enrich_costco_series(client, payload: dict) -> dict:
     """/api/costco/history items have metrics+verdict but no per-point series;
     fetch each sku's series so the offline snapshot can draw a sparkline."""
     for item in payload.get("items", []):
@@ -40,29 +40,56 @@ def enrich_costco_series(client: TestClient, payload: dict) -> dict:
     return payload
 
 
+def render_snapshot(out_dir=OUT_DIR, backend_dir=BACKEND_DIR) -> str:
+    """Render the offline snapshot JSON for /api/costco/history to
+    `out_dir/costco-history.json` and return the exact bytes-as-text written.
+
+    Byte-deterministic for a given SSOT: the same inputs produce identical
+    bytes (the idempotence invariant — issue #10 "history_data.json 重跑 byte
+    一致"). The JSON is dumped with a fixed `indent` + `ensure_ascii=False` and
+    per-sku series in the same stable order the backend returns, so two renders
+    are byte-identical.
+
+    Side effects are local: it puts `backend_dir` on `sys.path`, `chdir`s to it
+    so `import main` resolves the data paths the way the script does, then
+    restores the original cwd. Rendering builds the in-memory store purely from
+    JSON (see history.ensure_history), so it never opens a .db.
+    """
+    backend_dir = os.path.abspath(str(backend_dir))
+    if str(backend_dir) not in sys.path:
+        sys.path.insert(0, str(backend_dir))
+    os.makedirs(out_dir, exist_ok=True)
+    prev_cwd = os.getcwd()
+    os.chdir(backend_dir)
+    try:
+        from fastapi.testclient import TestClient
+        import main as backend_main
+        client = TestClient(backend_main.app)
+        costco = client.get("/api/costco/history").json()
+        enrich_costco_series(client, costco)
+        payload = {
+            "snapshot_for": "/api/costco/history",
+            "generated_by": "scripts/render_history_snapshot.py",
+            "count": costco.get("count", 0),
+            "items": costco.get("items", []),
+        }
+        text = json.dumps(payload, ensure_ascii=False, indent=2)
+    finally:
+        os.chdir(prev_cwd)
+    out_path = os.path.join(os.path.abspath(str(out_dir)), "costco-history.json")
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(text)
+    return text
+
+
 def main() -> None:
-    client = TestClient(backend_main.app)
-    costco = client.get("/api/costco/history").json()
-    enrich_costco_series(client, costco)
-
-    os.makedirs(OUT_DIR, exist_ok=True)
-    with open(os.path.join(OUT_DIR, "costco-history.json"), "w", encoding="utf-8") as f:
-        json.dump(
-            {
-                "snapshot_for": "/api/costco/history",
-                "generated_by": "scripts/render_history_snapshot.py",
-                "count": costco.get("count", 0),
-                "items": costco.get("items", []),
-            },
-            f,
-            ensure_ascii=False,
-            indent=2,
-        )
-
+    out_dir = OUT_DIR
+    text = render_snapshot(out_dir=out_dir)
+    payload = json.loads(text)
     print(
-        f"wrote {OUT_DIR}/costco-history.json "
-        f"({len(costco.get('items', []))} items, "
-        f"{sum(1 for i in costco.get('items', []) if i.get('series'))} with series)"
+        f"wrote {out_dir}/costco-history.json "
+        f"({len(payload.get('items', []))} items, "
+        f"{sum(1 for i in payload.get('items', []) if i.get('series'))} with series)"
     )
 
 

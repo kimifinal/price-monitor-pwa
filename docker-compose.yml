@@ -1,5 +1,10 @@
 # Optional: run the full stack locally with Docker (for when you add a DB).
 # Right now the backend is in-memory, so `docker compose up` just starts the API.
+#
+# secret-guard:allowlist
+# This file legitimately *injects* TELEGRAM_BOT_TOKEN/CHAT_ID from the host
+# environment (via ${VAR:-}) — it never hardcodes a secret, so issue #10's
+# no-secret guard whitelists it via this marker rather than flagging a match.
 version: "3.9"
 services:
   api:

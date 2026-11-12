@@ -22,5 +22,8 @@ frontend/workbox-*.js
 # OS
 .DS_Store
 
-# price-history SQLite store (auto-seeded, not source)
+# price-history SQLite store (auto-seeded, not source). ANY stray .db is
+# transient/ignored so a stale on-disk store can never be re-committed and leak
+# into the JSON-derived API — the API rebuilds purely from history_data.json.
+*.db
 backend/price_history.db

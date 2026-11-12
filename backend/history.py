@@ -42,6 +42,14 @@ CREATE INDEX IF NOT EXISTS idx_obs_sku_time ON observations(sku, observed_at);
 
 # --------------------------------------------------------------------------
 # connection
+#
+# JSON IS THE SSOT; .db IS TRANSIENT. `price_history.db` (DEFAULT_DB) is a
+# scratch file that the on-disk path may create, but nothing that the API or the
+# refresh job *reads* for history ever opens it: `ensure_history` (the API's
+# read-model entry) ALWAYS rebuilds a fresh in-memory store from the JSON
+# artifact. A stray / stale / accumulated on-disk .db must NOT leak into the API
+# (issue #10 "no .db leak"). So DEFAULT_DB is a no-op for reads — only an
+# explicit caller that passes a path (a test fixture / a probe) ever opens one.
 # --------------------------------------------------------------------------
 def connect(path: Optional[str] = None) -> sqlite3.Connection:
     """Open (creating if needed) and init the schema. Returns a connection.
@@ -49,6 +57,10 @@ def connect(path: Optional[str] = None) -> sqlite3.Connection:
     `path=None` uses the DEFAULT_DB module global — resolved at call time so
     tests can monkeypatch `history.DEFAULT_DB` to an isolated tmp file.
     `path=':memory:'` gives an in-memory DB for tests.
+
+    NOTE: `path=None` (DEFAULT_DB) is only ever used when a caller PASSES a store;
+    the API's `ensure_history` never asks for it — it rebuilds in-memory from
+    JSON, so a stale on-disk .db cannot leak into a request.
     """
     if path is None:
         path = DEFAULT_DB
@@ -427,9 +439,19 @@ def ensure_history(conn: Optional[sqlite3.Connection] = None,
     an alternate source coexists in the SAME series + verdict layer even before a
     single real scrape. Backfill stays synthetic so the real-only alert scanner
     can never fire on it.
+
+    **JSON is the SSOT of last; .db is transient and ignored.** When `conn` is
+    None this ALWAYS rebuilds a brand-new in-memory store from the JSON artifact
+    (`persist_path`, default `history_data.json`) and NEVER opens the on-disk
+    `price_history.db`. A stale or accumulated `.db` therefore cannot leak into
+    the API's series/metrics — issue #10's "no .db leak" guard. Only a `conn`
+    that an explicit caller passes (a test fixture / leak probe) is honoured.
     """
     own = conn is None
-    conn = conn or connect()
+    if conn is None:
+        # Rebuild purely from JSON, in-memory — NEVER open the on-disk .db even
+        # when one exists. This is the no-.db-leak guarantee (issue #10).
+        conn = connect(":memory:")
     obs = load_observations(persist_path)
     if obs:
         replay(conn, obs)
