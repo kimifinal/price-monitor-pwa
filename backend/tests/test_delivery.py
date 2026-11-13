@@ -354,3 +354,49 @@ def test_env_issue_number_parsing(monkeypatch):
     assert _env_issue_number() is None
     monkeypatch.setenv("ALERT_ISSUE", "  99  ")
     assert _env_issue_number() == 99
+
+
+# --------------------------------------------------------------------------- #
+# (d) (#15) delivery is OBSERVABLE: each sink prints the HTTP status, so a bad
+#     token / transient failure shows up in CI logs instead of being swallowed.
+# --------------------------------------------------------------------------- #
+def test_telegram_logs_http_status_on_success(monkeypatch, capsys):
+    """A 200 send prints the status + OK (the signal CI can grep to self-verify)."""
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "0")
+    monkeypatch.setenv("TELEGRAM_CHAT_ID", "42")
+    fake = lambda req, timeout=10: _Resp(200)
+    assert emit_telegram(scan([M()], state={})[0], http_post=fake) == 1
+    out = capsys.readouterr().out
+    assert "HTTP 200" in out and "OK" in out
+
+
+def test_telegram_logs_failure_not_silent(monkeypatch, capsys):
+    """A non-200 and a transport exception are BOTH surfaced in the log (not caught
+    -> not sent, but visible)."""
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "0")
+    monkeypatch.setenv("TELEGRAM_CHAT_ID", "42")
+
+    # case 1: a non-200 response -> FAILED in the log, 0 sent
+    fake500 = lambda req, timeout=10: _Resp(500)
+    assert emit_telegram(scan([M()], state={})[0], http_post=fake500) == 0
+    out1 = capsys.readouterr().out
+    assert "HTTP 500" in out1 and "FAILED" in out1
+
+    # case 2: a transport exception -> also printed, not swallowed
+    import urllib.error
+    def boom(req, timeout=10):
+        raise urllib.error.URLError("boom")
+    assert emit_telegram(scan([M()], state={})[0], http_post=boom) == 0
+    out2 = capsys.readouterr().out
+    assert "POST failed" in out2
+
+
+def test_github_logs_http_status_on_success(monkeypatch, capsys):
+    monkeypatch.setenv("GITHUB_TOKEN", "ghtok")
+    monkeypatch.delenv("ALERT_ISSUE", raising=False)
+    gh = GitHubFake(issue_number=7)
+    a = {"sku": "149699", "name": "ANKER 67W", "verdict": "all_time_low",
+         "label": "歷史最低 👍", "drop_pct": 20.0, "price": 800, "currency": "TWD",
+         "url": "https://www.costco.com/p/149699"}
+    assert emit_github([a], http_post=gh) == 1
+    assert "HTTP 200" in capsys.readouterr().out

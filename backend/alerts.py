@@ -339,10 +339,17 @@ def emit_telegram(alerts: list[dict], http_post=None,
         req = urllib.request.Request(
             url, data=payload, method="POST",
             headers={"Content-Type": "application/json"})
+        # (#15) print the HTTP status so a bad token / transient failure is OBSERVABLE
+        # in CI logs instead of silently swallowed by the except below.
         try:
             with http_post(req, timeout=10) as resp:
-                sent += 1 if resp.status == 200 else 0
-        except (urllib.error.URLError, OSError, ValueError):
+                status = getattr(resp, "status", None)
+                ok = status == 200
+                sent += 1 if ok else 0
+                print(f"[alert][telegram] {a.get('sku')} -> HTTP {status} "
+                      f"{'OK' if ok else 'FAILED'}")
+        except (urllib.error.URLError, OSError, ValueError) as exc:
+            print(f"[alert][telegram] {a.get('sku')} -> POST failed: {type(exc).__name__}")
             # Never echo url/token on failure — the credential lives in the URL.
             continue
     return sent
@@ -437,14 +444,22 @@ def emit_github(alerts: list[dict], token: str = "",
     url = f"{base}/{num}/comments"
     data = json.dumps({"body": body}).encode("utf-8")
     req = urllib.request.Request(url, data=data, method="POST", headers=headers)
+    status = None
     try:
         with http_post(req, timeout=30) as resp:
-            ok = resp.status == 200
-    except (urllib.error.URLError, OSError, ValueError, TypeError):
-        ok = False
+            status = getattr(resp, "status", None)
+            ok = status == 200
+    except (urllib.error.URLError, OSError, ValueError, TypeError) as exc:
+        # (#15) surface a transport failure in CI instead of silently zeroing it out.
+        print(f"[alert][github] -> POST failed: {type(exc).__name__} "
+              f"(dedup 狀態仍已推進)")
+        return 0
+    # (#15) print the HTTP status so a bad token / transient 4xx/5xx is observable
+    # in CI logs instead of being swallowed here.
+    print(f"[alert][github] -> HTTP {status}")
     if ok:
         return len(alerts)
-    print("[alert:github] 投遞 comment 失敗（dedup 狀態仍已推進）")
+    print(f"[alert:github] 投遞 comment 失敗 (HTTP {status}, dedup 狀態仍已推進)")
     return 0
 
 
