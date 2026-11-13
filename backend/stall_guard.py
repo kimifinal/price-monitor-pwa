@@ -46,9 +46,29 @@ STATE_KEYS = (
 # --------------------------------------------------------------------------
 # pure detection
 # --------------------------------------------------------------------------
+def _syn_is_zero(v) -> bool:
+    """True iff a ``synthetic`` flag *normalizes* to 0 (a genuine observation).
+
+    Tolerates a string '0' (some JSON serializers stringify ints, so a stray '0'
+    must STILL count as a real point) but NEVER a truthy value: 1, True, or any
+    other non-zero are backfill/synthetic and must NOT count. ``bool`` is an
+    ``int`` subclass (``int(True) == 1``), so the naive ``int(v) == 0`` would
+    wrongly treat ``True`` as a landing and a non-zero bool would slip through;
+    the exact-membership test below rejects it.
+    """
+    return v in (0, "0")
+
+
 def _is_real(row) -> bool:
-    """A landing only counts a genuine scraped observation, not a backfill."""
-    return isinstance(row, dict) and row.get("source") == "costco" and row.get("synthetic") == 0
+    """A landing counts ONLY a genuine scraped observation, not a backfill.
+
+    ``synthetic`` is normalized via :func:`_syn_is_zero`: a string '0' counts,
+    while 1 / True / any other non-zero must never masquerade as a real costco
+    point (a bool True, an int subclass == 1, would otherwise count as real).
+    """
+    return (isinstance(row, dict)
+            and row.get("source") == "costco"
+            and _syn_is_zero(row.get("synthetic")))
 
 
 def real_rows(rows) -> list:
@@ -56,30 +76,56 @@ def real_rows(rows) -> list:
     return [r for r in (rows or []) if _is_real(r)]
 
 
-def _ts_key(observed_at) -> tuple:
-    """A total-order key for an ISO-8601 ``observed_at``.
+def _ts_dt(observed_at):
+    """Parse an ISO-8601 ``observed_at`` to a ``datetime`` — or ``None`` if bad.
 
-    Parses to a datetime when possible (chronological), and falls back to the raw
-    string when it cannot be parsed — the two branches never compare against each
-    other (the int tag is the first tuple element), so the order is total and
-    never raises. Real costco rows are all ``YYYY-MM-DDTHH:MM:SS`` so they parse.
+    An UNPARSEABLE timestamp is UNORDERABLE: the old ``(1, raw)`` fallback sorted
+    it ABOVE every parseable ``(0, dt)`` row, so a single malformed real could
+    either *fabricate* a landing or, worse, win the baseline's "newest" and then
+    *silently mask* every later landing — defeating the guard. Callers therefore
+    DROPP it (never rank it) and warn loudly so the drop is never silent.
     """
-    s = str(observed_at)
     try:
-        return (0, datetime.datetime.fromisoformat(s))
+        return datetime.datetime.fromisoformat(str(observed_at))
     except (ValueError, TypeError):
-        return (1, s)
+        return None
+
+
+def _warn_dropped(dropped: list) -> None:
+    """Loud, non-silent notice for each UNIQUE real point dropped because its
+    observed_at is UNPARSEABLE — so a swallowed landing is visible in the CI log.
+
+    Dedup to one WARNING per (source, sku, observed_at) so a malformed point
+    present in BOTH baseline and worktree warns once, not twice.
+    """
+    seen = set()
+    for r in dropped:
+        key = (str(r.get("source")), r.get("sku"), str(r.get("observed_at")))
+        if key in seen:
+            continue
+        seen.add(key)
+        sys.stderr.write(
+            f"WARNING: [stall-guard] real point observed_at={r.get('observed_at')!r} "
+            f"(source={r.get('source')!r}/sku={r.get('sku')!r}) has an UNPARSEABLE "
+            f"observed_at — excluded from the landing/max computation (not counted)\n"
+        )
 
 
 def _latest_observed(real: list) -> Optional[str]:
-    """The newest ``observed_at`` (a string) among real rows, by TIME not order."""
+    """The newest ``observed_at`` (a string) among real rows, by TIME not order.
+
+    UNORDERABLE (unparseable) reals are skipped — a bad stamp may never win the
+    max.
+    """
     best = None
-    best_key = None
+    best_dt = None
     for r in real:
         oa = r.get("observed_at")
-        k = _ts_key(oa)
-        if best_key is None or k > best_key:
-            best_key = k
+        dt = _ts_dt(oa)
+        if dt is None:
+            continue
+        if best_dt is None or dt > best_dt:
+            best_dt = dt
             best = oa
     return best
 
@@ -90,31 +136,48 @@ def detect_new_real(prev_rows, cur_rows) -> dict:
     ``prev_rows`` is the pre-refresh baseline (the committed history this run
     started with); ``cur_rows`` is the post-refresh worktree history. A "new real
     point" is a real point in ``cur`` whose ``observed_at`` is strictly later than
-    the baseline's newest real ``observed_at`` — a pure TIME comparison, so the
-    order the arrays happen to be written in is irrelevant.
+    the baseline's newest *orderable* real ``observed_at`` — a pure TIME
+    comparison, so the order the arrays happen to be written in is irrelevant.
+
+    A real point with an UNPARSEABLE observed_at is UNORDERABLE: it must neither
+    become the max nor count as new. It is DROPPED from BOTH the baseline and the
+    new-landing set, and a WARNING is printed so a swallowed real point is never
+    silent (the two failure modes a bad stamp defeats: a *fabricated* landing, and
+    a baseline that silently *swallows every later* landing).
 
     Returns a result dict with: ``landed`` (new_count > 0), ``new_count``,
-    ``new_last_observed_at`` (newest new point by time), ``prev_last_observed_at``,
-    ``prev_count`` / ``cur_count`` (real-point counts only).
+    ``new_last_observed_at`` (newest NEW point, by time), ``prev_last_observed_at``,
+    ``prev_count`` / ``cur_count`` (counts over ALL real points, parseable or not).
     """
     prev_real = real_rows(prev_rows)
     cur_real = real_rows(cur_rows)
 
-    prev_last = _latest_observed(prev_real)
-    prev_key = _ts_key(prev_last) if prev_last is not None else None
+    # Drop UNORDERABLE (unparseable observed_at) reals from BASELINE and the NEW
+    # set, warning about each unique drop so nothing is swallowed silently.
+    prev_order = [r for r in prev_real if _ts_dt(r.get("observed_at")) is not None]
+    cur_order = [r for r in cur_real if _ts_dt(r.get("observed_at")) is not None]
+    _warn_dropped(
+        [r for r in prev_real if _ts_dt(r.get("observed_at")) is None]
+        + [r for r in cur_real if _ts_dt(r.get("observed_at")) is None]
+    )
+
+    prev_last = _latest_observed(prev_order)
+    prev_dt = _ts_dt(prev_last)  # None when there is no orderable baseline
 
     new_count = 0
     new_last: Optional[str] = None
-    new_last_key = None
-    for r in cur_real:
+    new_last_dt = None
+    for r in cur_order:
         oa = r.get("observed_at")
-        k = _ts_key(oa)
-        # No baseline => everything real counts as new. Otherwise only a point
-        # strictly later than the baseline's newest real point qualifies.
-        if prev_key is None or k > prev_key:
+        dt = _ts_dt(oa)  # parseable by construction (cur_order dropped the bad rows)
+        # No orderable baseline => every orderable real counts as new. Otherwise
+        # only a point STRICTLY LATER than the baseline's newest qualifies. Ties
+        # (two NEW points sharing the SAME observed_at, both > the baseline) count
+        # their full multiplicity — each is a genuine landing.
+        if prev_dt is None or dt > prev_dt:
             new_count += 1
-            if new_last_key is None or k > new_last_key:
-                new_last_key = k
+            if new_last_dt is None or dt > new_last_dt:
+                new_last_dt = dt
                 new_last = oa
 
     return {

@@ -86,16 +86,52 @@ jobs:
         # quiet day into a failed run. A NO-landing only hard-fails when this run opts
         # in: the `fail` workflow_dispatch input, or a STALL_GUARD_FAIL repo variable.
         env:
-          # Scheduled runs have no `fail` input (=> "" => warn mode). A manual run can
-          # flip it; CI also honors a STALL_GUARD_FAIL repo variable either way.
-          STALL_GUARD_FAIL: "${{ inputs.fail }}"
+          # WARN-NOT-FAIL by default: a scheduled run has NO `fail` input (=> empty =>
+          # warn), and a manual run CAN flip it. The repo-level STALL_GUARD_FAIL
+          # VARIABLE wins when it is SET while the input is unset; otherwise an
+          # explicitly-set input is honored. NOTE: the OLD `${{ inputs.fail }}` form
+          # clobbered any repo-level var on a scheduled run (the empty `inputs.fail`
+          # overwrote it, breaking the "a manual run can flip it; CI also honors a
+          # STALL_GUARD_FAIL repo variable either way" promise). `vars.STALL_GUARD_FAIL
+          # || inputs.fail` keeps a SET repo var intact while still letting an
+          # explicitly-set input win when the var is unset.
+          STALL_GUARD_FAIL: "${{ vars.STALL_GUARD_FAIL || inputs.fail }}"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -uo pipefail
           # (a) pre-refresh baseline = the COMMITTED history this run started with
           BASE="${{ steps.baseline.outputs.sha }}"
           BASELINE="$(mktemp)"
-          git show "$BASE:backend/history_data.json" > "$BASELINE"
+          # Fetch the COMMITTED baseline WITHOUT aborting under `set -uo` (no -e): a
+          # missing pre-image must be HANDLED below, not crash the step here.
+          git show "$BASE:backend/history_data.json" > "$BASELINE" 2>/dev/null || true
+          # FAIL mode mirrors stall_guard.main(): a truthy STALL_GUARD_FAIL (a repo var
+          # the `vars.STALL_GUARD_FAIL || inputs.fail` env above can no longer clobber)
+          # makes a no-landing / bad-baseline HARD-FAIL; otherwise warn-not-fail.
+          case "${STALL_GUARD_FAIL:-}" in
+            1|true|True|yes) FAIL_MODE=1 ;;
+            *) FAIL_MODE=0 ;;
+          esac
+          # GUARD the baseline read (the git show above is unguarded under set -uo):
+          # if the committed baseline object is MISSING (BASE predates
+          # backend/history_data.json, or the path is absent) OR the read came back
+          # EMPTY, we must NOT fall through to the guard's "no baseline => every real
+          # point counts as new" branch — that would emit a FALSE '✅ landed' that
+          # MASKS a real stall (the exact opposite of what the guard exists to do). On
+          # a bad baseline: loud error, hard-fail in FAIL_MODE, else warn-not-fail.
+          baseline_ok=0
+          if git cat-file -e "$BASE:backend/history_data.json" 2>/dev/null && [ -s "$BASELINE" ]; then
+            baseline_ok=1
+          fi
+          if [ "$baseline_ok" -ne 1 ]; then
+            echo "::error::[stall-guard] no usable pre-refresh baseline: 'git show ${BASE}:backend/history_data.json' empty/absent"
+            if [ "$FAIL_MODE" -eq 1 ]; then
+              echo "::error::[stall-guard] (fail mode) hard-failing instead of a false '✅ landed' that would mask the stall"
+              exit 1
+            fi
+            echo "WARNING: [stall-guard] refusing the all-reals-as-new false positive — warn-not-fail (CI stays green, no silent stall)"
+            exit 0
+          fi
           # (b) POST-refresh worktree history is backend/history_data.json.
           # (c)+(d) detect + print the LOUD [stall-guard] line so the log self-proves.
           # (e) on a landing the guard rewrites backend/refresh_state.json (the SSOT);
