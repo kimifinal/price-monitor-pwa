@@ -95,10 +95,13 @@ describe('cardsFromHistory', () => {
   it('renders the COMMITTED costco snapshot into a movement card with a sparkline', () => {
     const cards = cardsFromHistory(costcoSnapshot, 'costco')
     expect(cards.length).toBeGreaterThan(0)
-    const first = cards[0]
-    expect(first.metrics).toBeTruthy()
-    expect(first.series && first.series.length > 1).toBe(true)
-    expect(sparkPath(first.series)).toContain('M') // a real path, i.e. a rendered card
+    // Every card is well-formed (metrics is computed even for single-obs SKUs).
+    expect(cards.every((c) => c.metrics)).toBe(true)
+    // Item order isn't guaranteed after a re-render, so don't assume cards[0] is the
+    // rich one: find the first card that actually has a multi-point series + sparkline.
+    const rich = cards.find((c) => c.series && c.series.length > 1)
+    expect(rich).toBeTruthy()
+    expect(sparkPath(rich.series)).toContain('M') // a real path, i.e. a rendered card
   })
 })
 
