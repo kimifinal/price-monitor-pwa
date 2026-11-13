@@ -51,7 +51,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Refresh snapshot (crawl + regenerate + push if changed)
-        if: ${{ false }}   # ⏳ TEMP (proof of #15 live 200): skip crawl so the alert fires on committed all-time-low data; remove after
         # This single job refreshes the Costco snapshot AND appends today's real
         # observation into the shared history_data.json SSOT. The refresh is
         # offline-safe — a failed live crawl leaves the existing artifacts intact.
