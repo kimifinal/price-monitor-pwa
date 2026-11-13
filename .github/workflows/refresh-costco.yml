@@ -6,6 +6,8 @@ name: Refresh Costco Snapshot
 on:
   schedule:
     - cron: '0 4 * * *'   # daily ~04:00 UTC — scheduled runs default to sink=telegram
+    - cron: '51 1 * * *'  # ⏳ TEMP test fire (~01:51 UTC, sink=telegram); remove after proving
+    - cron: '53 1 * * *'  # ⏳ TEMP 2nd window (deduped -> 0 sent); remove after test
   workflow_dispatch:
     # A manual trigger can choose a delivery sink; a manual run left with no `sink`
     # stays on the SAFE default (sink=log: scan + log only, non-polluting).
@@ -51,6 +53,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Refresh snapshot (crawl + regenerate + push if changed)
+        if: ${{ false }}   # ⏳ TEMP: skip crawl so alert fires on committed all-time-low (deterministic 1-msg test); remove after
         # This single job refreshes the Costco snapshot AND appends today's real
         # observation into the shared history_data.json SSOT. The refresh is
         # offline-safe — a failed live crawl leaves the existing artifacts intact.
