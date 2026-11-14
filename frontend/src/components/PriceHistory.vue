@@ -65,7 +65,7 @@ const srcText = computed(() =>
       <span class="ph-now">${{ Number(card.current || 0).toLocaleString() }}</span>
       <span class="ph-pts" v-if="points">{{ points }} 點</span>
       <a v-if="card.url" :href="card.url" target="__blank" rel="noopener"
-         class="ph-link">查看 →</a>
+         class="ph-link" aria-label="開啟該商品產品網頁（新分頁）">查看 →</a>
     </div>
   </div>
 </template>
