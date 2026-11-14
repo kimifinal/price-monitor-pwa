@@ -13,6 +13,9 @@ import {
   saveWatchlist,
   resetWatchlist,
   wouldAlert,
+  serializeWatchlist,
+  deserializeWatchlist,
+  buildExportBlob,
 } from '../lib/watchlist.js'
 
 const props = defineProps({
@@ -79,15 +82,122 @@ function reset() {
   list.value = resetWatchlist().map(coerce)
   persist()
 }
+
+// ---- #11: portable export/import (offline, no network) ----
+const showExport = ref(false)
+const showImport = ref(false)
+const exportJson = ref('')
+const importText = ref('')
+const importMsg = ref('')
+
+function doExport() {
+  exportJson.value = serializeWatchlist(rows.value)
+  showExport.value = true
+  showImport.value = false
+}
+
+async function copyExport() {
+  try {
+    await navigator.clipboard.writeText(exportJson.value)
+    importMsg.value = '已複製到剪貼簿。'
+  } catch {
+    importMsg.value = '無法複製，請手動選取。'
+  }
+}
+
+function downloadExport() {
+  const blob = buildExportBlob(rows.value)
+  if (!blob) {
+    importMsg.value = '瀏覽器不支援下載。'
+    return
+  }
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'watchlist.json'
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+  importMsg.value = '已下載 watchlist.json。'
+}
+
+function doImport() {
+  const { entries, errors } = deserializeWatchlist(importText.value)
+  if (errors.length) {
+    importMsg.value = `匯入跳過 ${errors.length} 筆：${errors
+      .map((e) => `${e.sku ?? '?'}` ? `${e.sku}: ${e.error}` : e.error)
+      .join('；')}`
+  }
+  // merge: last-wins dedup
+  const map = new Map(list.value.map((e) => [e.sku, e]))
+  for (const e of entries) {
+    map.set(e.sku, { ...e, threshold: e.threshold ? { ...e.threshold } : {} })
+  }
+  list.value = [...map.values()]
+  importText.value = ''
+  showImport.value = false
+  persist()
+}
 </script>
 
 <template>
   <section class="watchlist-editor" data-testid="watchlist-editor">
     <div class="we-head">
       <h2>🎯 個人化追蹤（{{ rows.length }}）</h2>
-      <button class="we-reset" type="button" data-testid="we-reset" @click="reset">
-        恢復預設
-      </button>
+      <div class="we-head-actions">
+        <button class="we-export" type="button" data-testid="we-export" @click="doExport">
+          匯出
+        </button>
+        <button class="we-import" type="button" data-testid="we-import-toggle" @click="showImport = !showImport; showExport = false">
+          匯入
+        </button>
+        <button class="we-reset" type="button" data-testid="we-reset" @click="reset">
+          恢復預設
+        </button>
+      </div>
+    </div>
+
+    <!-- Export panel -->
+    <div v-if="showExport" class="we-io-panel" data-testid="we-export-panel">
+      <p class="we-io-hint" data-testid="we-export-hint">
+        複製後端 JSON 給其他裝置或備份用：
+      </p>
+      <textarea
+        class="we-export-json"
+        :value="exportJson"
+        rows="6"
+        readonly
+        data-testid="we-export-raw"
+      ></textarea>
+      <div class="we-io-actions">
+        <button class="we-copy" type="button" data-testid="we-copy" @click="copyExport">
+          複製到剪貼簿
+        </button>
+        <button class="we-download" type="button" data-testid="we-download" @click="downloadExport">
+          下載 JSON
+        </button>
+      </div>
+    </div>
+
+    <!-- Import panel -->
+    <div v-if="showImport" class="we-io-panel" data-testid="we-import-panel">
+      <p class="we-io-hint">貼上匯出的 JSON：</p>
+      <textarea
+        v-model="importText"
+        class="we-import-json"
+        rows="6"
+        placeholder='"[ ... ]"'
+        data-testid="we-import-raw"
+      ></textarea>
+      <div class="we-io-actions">
+        <button class="we-do-import" type="button" data-testid="we-do-import" @click="doImport">
+          確認匯入
+        </button>
+        <span v-if="importMsg" class="we-import-msg" :data-testid="`we-import-msg`">
+          {{ importMsg }}
+        </span>
+      </div>
     </div>
 
     <p v-if="isEmpty" class="we-empty" data-testid="we-empty">
@@ -315,5 +425,81 @@ function reset() {
 .we-add-btn {
   background: #4a3f7a;
   color: #efeaff;
+}
+
+/* ---- #11: export / import ---- */
+.we-head-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.we-export,
+.we-import {
+  font-size: 12px;
+  color: #b0a8c8;
+  background: #1b1830;
+  border: 1px solid #2a2740;
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.we-export {
+  background: #1a3a2a;
+  border-color: #3a6a5a;
+  color: #8ae0b0;
+}
+.we-import {
+  background: #3a1a3a;
+  border-color: #6a3a5a;
+  color: #e0a0c8;
+}
+.we-io-panel {
+  border: 1px solid #2a2740;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px 0 0 0;
+  background: #0f0d18;
+}
+.we-io-hint {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  color: #8a86a8;
+}
+.we-export-json,
+.we-import-json {
+  width: 100%;
+  box-sizing: border-box;
+  background: #141218;
+  color: #efeaff;
+  border: 1px solid #2a2740;
+  border-radius: 6px;
+  padding: 7px 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  resize: vertical;
+  min-height: 80px;
+}
+.we-io-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.we-copy,
+.we-download,
+.we-do-import {
+  font-size: 12px;
+  color: #efeaff;
+  background: #4a3f7a;
+  border: 1px solid #3a3560;
+  border-radius: 6px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+.we-import-msg {
+  font-size: 11px;
+  color: #8ae0b0;
 }
 </style>

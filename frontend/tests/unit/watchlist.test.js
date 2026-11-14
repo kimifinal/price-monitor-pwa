@@ -79,8 +79,92 @@ describe('lib/watchlist.js — offline persistence', () => {
 })
 
 // =====================================================================
-// components/WatchlistEditor.vue — DISPLAY + EDIT, offline
+// lib/watchlist.js — #11: portable export/import lib
 // =====================================================================
+import {
+  serializeWatchlist,
+  deserializeWatchlist,
+  buildExportBlob,
+} from '../../src/lib/watchlist.js'
+
+describe('lib/watchlist.js — #11: serialize / deserialize / export', () => {
+  it('(a) serialize→deserialize roundtrip: same skus / names / thresholds', () => {
+    const input = [
+      { sku: '149699', name: 'ANKER', threshold: { target: 1069 } },
+      { sku: '153876', name: 'JBL', threshold: { min_drop_pct: 15 } },
+      { sku: '161367' }, // no threshold
+    ]
+    const json = serializeWatchlist(input)
+    const { entries, errors } = deserializeWatchlist(json)
+    expect(errors).toEqual([])
+    expect(entries.map((e) => e.sku).sort()).toEqual(['149699', '153876', '161367'])
+    const bySku = Object.fromEntries(entries.map((e) => [e.sku, e]))
+    expect(bySku['149699'].name).toBe('ANKER')
+    expect(bySku['149699'].threshold).toEqual({ target: 1069 })
+    expect(bySku['153876'].threshold).toEqual({ min_drop_pct: 15 })
+    expect(bySku['161367'].threshold).toBeUndefined()
+  })
+
+  it('(b) serialize dedups by sku, last occurrence wins', () => {
+    const input = [
+      { sku: '999', name: 'first', threshold: { target: 1 } },
+      { sku: '999', name: 'second', threshold: { target: 2 } },
+    ]
+    const json = serializeWatchlist(input)
+    const entries = deserializeWatchlist(json).entries
+    expect(entries).toHaveLength(1)
+    expect(entries[0]).toMatchObject({ sku: '999', name: 'second', threshold: { target: 2 } })
+  })
+
+  it('(c) import entry missing sku → skipped, error recorded', () => {
+    const json = JSON.stringify([{ name: 'no sku' }, { sku: '1', name: 'ok' }])
+    const { entries, errors } = deserializeWatchlist(json)
+    expect(errors).toHaveLength(1)
+    expect(errors[0].error).toContain('缺少 sku')
+    expect(entries).toHaveLength(1)
+    expect(entries[0].sku).toBe('1')
+  })
+
+  it('(d) threshold with bad key → silently dropped to {}', () => {
+    const json = JSON.stringify([{ sku: '1', threshold: { foo: 1, target: 100 } }])
+    const { entries, errors } = deserializeWatchlist(json)
+    expect(errors).toEqual([])
+    expect(entries[0].threshold).toEqual({ target: 100 })
+  })
+
+  it('(e) empty JSON array → empty entries, no errors', () => {
+    const { entries, errors } = deserializeWatchlist('[]')
+    expect(entries).toEqual([])
+    expect(errors).toEqual([])
+  })
+
+  it('(f) mixed valid + invalid → valid imported, bad recorded in errors', () => {
+    const json = [
+      { sku: '1', name: 'ok' },
+      'not-an-object',
+      {}, // no sku
+      { sku: '3', name: 'also-ok', threshold: { target: 50 } },
+    ]
+    const { entries, errors } = deserializeWatchlist(JSON.stringify(json))
+    expect(entries.map((e) => e.sku).sort()).toEqual(['1', '3'])
+    expect(errors).toHaveLength(2) // one for 'not-an-object', one for '{}' (missing sku)
+  })
+
+  it('(g) serializeWatchlist output is valid JSON with trailing newline', () => {
+    const json = serializeWatchlist([{ sku: '1', name: 'X' }])
+    expect(json.endsWith('\n')).toBe(true)
+    const parsed = JSON.parse(json)
+    expect(parsed).toHaveLength(1)
+    expect(parsed[0].sku).toBe('1')
+  })
+
+  it('buildExportBlob returns null when Blob global is absent (SSR safe)', () => {
+    const savedBlob = globalThis.Blob
+    delete globalThis.Blob
+    expect(buildExportBlob([{ sku: '1' }])).toBeNull()
+    globalThis.Blob = savedBlob // restore
+  })
+})
 describe('WatchlistEditor.vue — display + offline edit', () => {
   it('displays the watchlist from a passed-in list, no network', async () => {
     globalThis.localStorage.clear()

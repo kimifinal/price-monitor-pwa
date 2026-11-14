@@ -142,3 +142,117 @@ export function wouldAlert(m, watchlist) {
   if (!entry) return false                      // not watched
   return thresholdMet(m, entry)
 }
+
+// =====================================================================
+// #11: portable watchlist — export / import  (all offline, no network)
+// =====================================================================
+
+/**
+ * Serialize a watchlist to a JSON string.
+ * Semantically matches backend `watchlist.save()`: same shape
+ * `{sku, name?, threshold?:{target?, min_drop_pct?}}`, dedup by sku (last-wins),
+ * threshold keys filtered to the known set, JSON-indented 1-space like the
+ * backend `json.dumps(..., indent=1)`. Pure — no side effects.
+ *
+ * @param {WatchEntry[]} list
+ * @returns {string}  A JSON string (+ trailing newline)
+ */
+export function serializeWatchlist(list) {
+  const map = new Map() // last-wins dedup
+  for (const e of (Array.isArray(list) ? list : [])) {
+    if (!e || e.sku == null) continue
+    const sku = String(e.sku)
+    map.set(sku, { sku, name: e.name, threshold: e.threshold })
+  }
+  const clean = [...map.values()].map((e) => {
+    const out = { sku: e.sku }
+    if (e.name != null) out.name = String(e.name)
+    if (e.threshold && typeof e.threshold === 'object' && !Array.isArray(e.threshold)) {
+      const th = {}
+      if (e.threshold.target != null && !Number.isNaN(Number(e.threshold.target))) {
+        th.target = Number(e.threshold.target)
+      }
+      if (e.threshold.min_drop_pct != null && !Number.isNaN(Number(e.threshold.min_drop_pct))) {
+        th.min_drop_pct = Number(e.threshold.min_drop_pct)
+      }
+      if (Object.keys(th).length > 0) out.threshold = th
+    }
+    return out
+  })
+  // 1-space indent mirrors the backend json.dumps(..., indent=1); trailing newline
+  return JSON.stringify(clean, null, 1) + '\n'
+}
+
+/**
+ * Create a Blob from a watchlist for an offline download.
+ * Returns null if `Blob` is unavailable (SSR/test without global).
+ * Pure — does not call URL.createObjectURL (the UI does that).
+ *
+ * @param {WatchEntry[]} list
+ * @returns {Blob|null}
+ */
+export function buildExportBlob(list) {
+  if (typeof Blob === 'undefined') return null
+  return new Blob([serializeWatchlist(list)], { type: 'application/json' })
+}
+
+/**
+ * Parse a JSON string back into a valid watchlist with full input validation.
+ *
+ * Accepts a JSON array of entry-like objects.
+ * - Invalid JSON syntax        → { entries: [], errors: [{ error }] }
+ * - non-array root            → { entries: [], errors: [{ error }] }
+ * - entry without sku          → skipped, error recorded
+ * - threshold keys filtered to {target, min_drop_pct}
+ * - dedup by sku, last-wins
+ *
+ * @param {string} jsonStr
+ * @returns {{ entries: WatchEntry[], errors: Array<{ sku?: string, error: string }> }}
+ */
+export function deserializeWatchlist(jsonStr) {
+  const errors = []
+  let raw
+  try {
+    raw = JSON.parse(jsonStr)
+  } catch (e) {
+    return { entries: [], errors: [{ error: `無效 JSON: ${e.message}` }] }
+  }
+  const input = Array.isArray(raw) ? raw : null
+  if (!input) {
+    return { entries: [], errors: [{ error: 'JSON 根節點必須是陣列' }] }
+  }
+  const map = new Map() // sku → entry, last-wins
+  for (const item of input) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) {
+      errors.push({ sku: String(item ?? ''), error: '不是物件' })
+      continue
+    }
+    const sku = item.sku
+    if (sku == null || sku === '') {
+      errors.push({ sku: String(sku), error: '缺少 sku' })
+      continue
+    }
+    const key = String(sku)
+    const out = { sku: key }
+    if (item.name != null) out.name = String(item.name)
+    if (
+      item.threshold &&
+      typeof item.threshold === 'object' &&
+      !Array.isArray(item.threshold)
+    ) {
+      const th = {}
+      if (item.threshold.target != null && !Number.isNaN(Number(item.threshold.target))) {
+        th.target = Number(item.threshold.target)
+      }
+      if (
+        item.threshold.min_drop_pct != null &&
+        !Number.isNaN(Number(item.threshold.min_drop_pct))
+      ) {
+        th.min_drop_pct = Number(item.threshold.min_drop_pct)
+      }
+      if (Object.keys(th).length > 0) out.threshold = th
+    }
+    map.set(key, out)
+  }
+  return { entries: [...map.values()], errors }
+}
