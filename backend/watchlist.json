@@ -3,28 +3,42 @@
   "name": "ANKER A2674 336 GaN 67W 急速充電器 2入組",
   "sku": "149699",
   "threshold": {
-   "target": 1100
+   "target": 1069
   }
  },
  {
-  "name": "BOSE Solo Soundbar 電視音響 II",
-  "sku": "3062725",
+  "name": "JBL Live 670NC 耳罩式降噪藍牙耳機",
+  "sku": "153876",
   "threshold": {
-   "min_drop_pct": 15
+   "target": 1899
   }
  },
  {
-  "name": "Samsung 55吋 Mini LED 4K AI 量子智慧顯示器",
-  "sku": "161520",
+  "name": "Soundcore AeroClip 開放式藍牙耳夾耳機",
+  "sku": "161367",
   "threshold": {
-   "target": 18000
+   "target": 2079
   }
  },
  {
-  "name": "DeWALT 得偉 乾濕兩用吸塵器",
-  "sku": "6677010",
+  "name": "飛利浦 55吋 4K QLED Google TV 顯示器 55PQT8530/96",
+  "sku": "153526",
   "threshold": {
-   "min_drop_pct": 15
+   "target": 12599
+  }
+ },
+ {
+  "name": "iClever BTH18 炫光無線兒童耳機",
+  "sku": "156974",
+  "threshold": {
+   "target": 849
+  }
+ },
+ {
+  "name": "Hawk 360° 旋轉升降螢幕架 附抽屜",
+  "sku": "162427",
+  "threshold": {
+   "target": 669
   }
  }
 ]
