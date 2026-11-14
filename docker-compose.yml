@@ -1,16 +1,77 @@
-# Optional: run the full stack locally with Docker (for when you add a DB).
-# Right now the backend is in-memory, so `docker compose up` just starts the API.
+# Price Monitor — docker-compose.yml
+#
+# docker compose up builds + starts:
+#   api     : FastAPI backend (in-memory SSOT, JSON mounted as a named volume)
+#   refresh : one-shot scrape + JSON append
+#   render  : one-shot HTML snapshot renderer
+#
+# JSON SSOT files live in a named volume so refresh updates persist across
+# `docker compose restart` and can be inspected / git-diffed on the host.
+#
+# Usage:
+#   docker compose up               # build + start all
+#   docker compose up -d            # background
+#   docker compose up --build refresh # rebuild + run just the refresh
+#   docker compose down -v          # stop + remove the volume
 #
 # secret-guard:allowlist
 # This file legitimately *injects* TELEGRAM_BOT_TOKEN/CHAT_ID from the host
 # environment (via ${VAR:-}) — it never hardcodes a secret, so issue #10's
 # no-secret guard whitelists it via this marker rather than flagging a match.
-version: "3.9"
+
 services:
+  # ---- FastAPI API server ----
   api:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     ports:
       - "8000:8000"
     environment:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+    volumes:
+      - ssot-data:/app/backend/ssot
+    networks:
+      - monitor
+
+  # ---- One-shot: scrape live Costco + append to JSON SSOT ----
+  refresh:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    command: ["bash", "-c", "cd /app && python scripts/refresh_snapshot.py"]
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+    volumes:
+      - ssot-data:/app/backend/ssot
+    depends_on:
+      - api
+    restart: "no"
+    networks:
+      - monitor
+
+  # ---- One-shot: render HTML history snapshot from JSON SSOT ----
+  render:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    command: ["bash", "-c", "cd /app && python scripts/render_history_snapshot.py"]
+    volumes:
+      - ssot-data:/app/backend/ssot
+    depends_on:
+      - api
+    restart: "no"
+    networks:
+      - monitor
+
+# ---- named volume: JSON SSOT shared between services ----
+volumes:
+  ssot-data:
+    driver: local
+
+# ---- internal bridge network ----
+networks:
+  monitor:
+    driver: bridge
