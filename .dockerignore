@@ -1,0 +1,38 @@
+# git + version control
+.git/
+.gitignore
+
+# node_modules and frontend build (not needed in backend image)
+node_modules/
+frontend/node_modules/
+**/node_modules/
+
+# Python virtual environments
+.venv/
+**/.venv/
+**/__pycache__/
+*.pyc
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+
+# Test artifacts
+coverage/
+*.lcov
+**/playwright-report/
+**/test-results/
+
+# Env / secrets
+.env
+**.env
+secrets.local
+
+# Editor
+.idea/
+.vscode/
+*.tmp
+
+# Docs / pipeline (not in image)
+docs/
+pipeline/

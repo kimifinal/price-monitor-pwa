@@ -142,6 +142,38 @@ python main.py                                  # uvicorn :8000
 pytest -q                                       # 10 檔測試
 ```
 
+## 容器化（Docker）
+
+`docker-compose.yml` 起三個服務（build context = 專案根目錄）：
+
+```
+api      →  uvicorn :8000              (FastAPI 全路由 + JSON SSOT 在內存)
+refresh  →  python scripts/refresh_snapshot.py   (一次任務，追加到 JSON SSOT)
+render   →  python scripts/render_history_snapshot.py (一次任務，渲染 HTML)
+```
+
+```bash
+# 一鍵起全棧（api + refresh + render）
+docker compose up
+
+# 背景執行
+docker compose up -d
+
+# 只看 API + 重構
+docker compose up --build refresh
+
+# 停 + 刪 volume
+docker compose down -v
+```
+
+**Volume 語義**：`ssot-data` 掛載到 `/app/backend/ssot`，
+`refresh` 的 JSON 更新會留在 volume 裡，`docker compose restart` 不丟。
+
+**注意**：`.dockerignore` 排除 `node_modules / .git / .venv / **/*node_modules/`，
+Dockerfile 只裝 `requirements.txt` + `uvicorn[standard]`。
+
+---
+
 ## 上線
 
 - **前端** → GitHub Pages：CI 的 `deploy-frontend` 綠即在 master 部署（已上線；
