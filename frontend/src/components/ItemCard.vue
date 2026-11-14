@@ -30,7 +30,7 @@ function remove() {
       <span class="target">/ 目標 ${{ item.target?.toFixed(2) }}</span>
     </div>
     <p class="msg" :class="{ hot: isAlerting() }">{{ msg() }}</p>
-    <a v-if="item.url" :href="item.url" target="_blank" rel="noopener">查看 →</a>
+    <a v-if="item.url" :href="item.url" target="_blank" rel="noopener" aria-label="開啟該商品產品網頁（新分頁）">查看 →</a>
   </div>
 </template>
 
