@@ -1,6 +1,6 @@
 """Offline snapshot of Costco 3C + 家電 PDP prices.
 
-Refreshed 2026-11-13 via BFS crawl of Costco PDP "相關推薦" links
+Refreshed 2026-11-14 via BFS crawl of Costco PDP "相關推薦" links
 (15 家電 + 15 3C items, all real SKUs).
 Used by the API (live=False default) and by the offline unit tests so CI stays
 offline-safe and free of 429 limits.

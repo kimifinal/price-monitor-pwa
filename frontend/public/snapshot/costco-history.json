@@ -13,10 +13,10 @@
       "high": 12999.0,
       "drop_pct_from_high": 0.0,
       "at_all_time_low": true,
-      "points": 2,
-      "real_points": 2,
+      "points": 3,
+      "real_points": 3,
       "first_seen": "2026-11-12T00:00:00",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -30,6 +30,11 @@
         },
         {
           "observed_at": "2026-11-13T00:00:00",
+          "price": 12999.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
           "price": 12999.0,
           "source": "costco"
         }
@@ -142,10 +147,10 @@
       "high": 1035.27,
       "drop_pct_from_high": 20.3,
       "at_all_time_low": true,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -236,6 +241,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 825.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 825.0,
+          "source": "costco"
         }
       ]
     },
@@ -249,10 +259,10 @@
       "high": 14999.0,
       "drop_pct_from_high": 0.0,
       "at_all_time_low": true,
-      "points": 2,
-      "real_points": 2,
+      "points": 3,
+      "real_points": 3,
       "first_seen": "2026-11-12T00:00:00",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -268,6 +278,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 14999.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 14999.0,
+          "source": "costco"
         }
       ]
     },
@@ -281,10 +296,10 @@
       "high": 5448.91,
       "drop_pct_from_high": 15.6,
       "at_all_time_low": true,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -373,6 +388,11 @@
         },
         {
           "observed_at": "2026-11-13T00:00:00",
+          "price": 4599.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
           "price": 4599.0,
           "source": "costco"
         }
@@ -582,10 +602,10 @@
       "high": 14799.0,
       "drop_pct_from_high": 0.0,
       "at_all_time_low": true,
-      "points": 2,
-      "real_points": 2,
+      "points": 3,
+      "real_points": 3,
       "first_seen": "2026-11-12T00:00:00",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -601,6 +621,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 14799.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 14799.0,
+          "source": "costco"
         }
       ]
     },
@@ -614,10 +639,10 @@
       "high": 12536.81,
       "drop_pct_from_high": 20.2,
       "at_all_time_low": true,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -708,6 +733,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 9999.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 9999.0,
+          "source": "costco"
         }
       ]
     },
@@ -721,10 +751,10 @@
       "high": 1375.12,
       "drop_pct_from_high": 0.4,
       "at_all_time_low": false,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "near_high",
         "label": "接近高點",
@@ -815,6 +845,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 1369.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 1369.0,
+          "source": "costco"
         }
       ]
     },
@@ -828,10 +863,10 @@
       "high": 1599.0,
       "drop_pct_from_high": 0.0,
       "at_all_time_low": true,
-      "points": 2,
-      "real_points": 2,
+      "points": 3,
+      "real_points": 3,
       "first_seen": "2026-11-12T00:00:00",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -845,6 +880,11 @@
         },
         {
           "observed_at": "2026-11-13T00:00:00",
+          "price": 1599.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
           "price": 1599.0,
           "source": "costco"
         }
@@ -957,10 +997,10 @@
       "high": 16439.82,
       "drop_pct_from_high": 16.7,
       "at_all_time_low": true,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -1051,6 +1091,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 13699.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 13699.0,
+          "source": "costco"
         }
       ]
     },
@@ -1064,10 +1109,10 @@
       "high": 15799.0,
       "drop_pct_from_high": 0.0,
       "at_all_time_low": false,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "near_high",
         "label": "接近高點",
@@ -1158,6 +1203,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 15799.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 15799.0,
+          "source": "costco"
         }
       ]
     },
@@ -1198,10 +1248,10 @@
       "high": 34139.27,
       "drop_pct_from_high": 18.6,
       "at_all_time_low": true,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -1292,6 +1342,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 27799.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 27799.0,
+          "source": "costco"
         }
       ]
     },
@@ -1305,10 +1360,10 @@
       "high": 765.13,
       "drop_pct_from_high": 21.7,
       "at_all_time_low": true,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -1399,6 +1454,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 599.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 599.0,
+          "source": "costco"
         }
       ]
     },
@@ -1412,10 +1472,10 @@
       "high": 2899.0,
       "drop_pct_from_high": 0.0,
       "at_all_time_low": true,
-      "points": 2,
-      "real_points": 2,
+      "points": 3,
+      "real_points": 3,
       "first_seen": "2026-11-12T00:00:00",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -1431,6 +1491,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 2899.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 2899.0,
+          "source": "costco"
         }
       ]
     },
@@ -1444,10 +1509,10 @@
       "high": 2399.0,
       "drop_pct_from_high": 0.0,
       "at_all_time_low": false,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "near_high",
         "label": "接近高點",
@@ -1538,6 +1603,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 2399.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 2399.0,
+          "source": "costco"
         }
       ]
     },
@@ -1551,10 +1621,10 @@
       "high": 25999.0,
       "drop_pct_from_high": 0.0,
       "at_all_time_low": true,
-      "points": 2,
-      "real_points": 2,
+      "points": 3,
+      "real_points": 3,
       "first_seen": "2026-11-12T00:00:00",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -1570,6 +1640,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 25999.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 25999.0,
+          "source": "costco"
         }
       ]
     },
@@ -1583,10 +1658,10 @@
       "high": 12557.32,
       "drop_pct_from_high": 22.8,
       "at_all_time_low": true,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -1675,6 +1750,11 @@
         },
         {
           "observed_at": "2026-11-13T00:00:00",
+          "price": 9699.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
           "price": 9699.0,
           "source": "costco"
         }
@@ -1889,10 +1969,10 @@
       "high": 1079.0,
       "drop_pct_from_high": 0.0,
       "at_all_time_low": false,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "near_high",
         "label": "接近高點",
@@ -1983,6 +2063,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 1079.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 1079.0,
+          "source": "costco"
         }
       ]
     },
@@ -1996,10 +2081,10 @@
       "high": 8420.91,
       "drop_pct_from_high": 16.9,
       "at_all_time_low": true,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -2088,6 +2173,11 @@
         },
         {
           "observed_at": "2026-11-13T00:00:00",
+          "price": 6999.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
           "price": 6999.0,
           "source": "costco"
         }
@@ -2200,10 +2290,10 @@
       "high": 1299.0,
       "drop_pct_from_high": 0.0,
       "at_all_time_low": true,
-      "points": 2,
-      "real_points": 2,
+      "points": 3,
+      "real_points": 3,
       "first_seen": "2026-11-12T00:00:00",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -2217,6 +2307,11 @@
         },
         {
           "observed_at": "2026-11-13T00:00:00",
+          "price": 1299.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
           "price": 1299.0,
           "source": "costco"
         }
@@ -2329,10 +2424,10 @@
       "high": 979.0,
       "drop_pct_from_high": 0.0,
       "at_all_time_low": true,
-      "points": 2,
-      "real_points": 2,
+      "points": 3,
+      "real_points": 3,
       "first_seen": "2026-11-12T00:00:00",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -2346,6 +2441,11 @@
         },
         {
           "observed_at": "2026-11-13T00:00:00",
+          "price": 979.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
           "price": 979.0,
           "source": "costco"
         }
@@ -2361,10 +2461,10 @@
       "high": 34999.0,
       "drop_pct_from_high": 0.0,
       "at_all_time_low": true,
-      "points": 2,
-      "real_points": 2,
+      "points": 3,
+      "real_points": 3,
       "first_seen": "2026-11-12T00:00:00",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -2380,6 +2480,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 34999.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 34999.0,
+          "source": "costco"
         }
       ]
     },
@@ -2393,10 +2498,10 @@
       "high": 1711.67,
       "drop_pct_from_high": 19.4,
       "at_all_time_low": true,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -2487,6 +2592,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 1379.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 1379.0,
+          "source": "costco"
         }
       ]
     },
@@ -2500,10 +2610,10 @@
       "high": 2599.0,
       "drop_pct_from_high": 0.0,
       "at_all_time_low": false,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "near_high",
         "label": "接近高點",
@@ -2592,6 +2702,11 @@
         },
         {
           "observed_at": "2026-11-13T00:00:00",
+          "price": 2599.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
           "price": 2599.0,
           "source": "costco"
         }
@@ -2806,10 +2921,10 @@
       "high": 13999.0,
       "drop_pct_from_high": 0.0,
       "at_all_time_low": true,
-      "points": 2,
-      "real_points": 2,
+      "points": 3,
+      "real_points": 3,
       "first_seen": "2026-11-12T00:00:00",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -2823,6 +2938,11 @@
         },
         {
           "observed_at": "2026-11-13T00:00:00",
+          "price": 13999.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
           "price": 13999.0,
           "source": "costco"
         }
@@ -2838,10 +2958,10 @@
       "high": 11999.0,
       "drop_pct_from_high": 0.0,
       "at_all_time_low": true,
-      "points": 2,
-      "real_points": 2,
+      "points": 3,
+      "real_points": 3,
       "first_seen": "2026-11-12T00:00:00",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -2857,6 +2977,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 11999.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 11999.0,
+          "source": "costco"
         }
       ]
     },
@@ -2870,10 +2995,10 @@
       "high": 15230.88,
       "drop_pct_from_high": 21.5,
       "at_all_time_low": true,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -2964,6 +3089,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 11949.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 11949.0,
+          "source": "costco"
         }
       ]
     },
@@ -2977,10 +3107,10 @@
       "high": 844.63,
       "drop_pct_from_high": 0.7,
       "at_all_time_low": false,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "near_high",
         "label": "接近高點",
@@ -3069,6 +3199,11 @@
         },
         {
           "observed_at": "2026-11-13T00:00:00",
+          "price": 839.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
           "price": 839.0,
           "source": "costco"
         }
@@ -3181,10 +3316,10 @@
       "high": 5111.17,
       "drop_pct_from_high": 16.9,
       "at_all_time_low": true,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -3275,6 +3410,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 4249.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 4249.0,
+          "source": "costco"
         }
       ]
     },
@@ -3288,10 +3428,10 @@
       "high": 10228.4,
       "drop_pct_from_high": 20.3,
       "at_all_time_low": true,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -3382,6 +3522,11 @@
           "observed_at": "2026-11-13T00:00:00",
           "price": 8149.0,
           "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
+          "price": 8149.0,
+          "source": "costco"
         }
       ]
     },
@@ -3395,10 +3540,10 @@
       "high": 4034.88,
       "drop_pct_from_high": 15.8,
       "at_all_time_low": true,
-      "points": 17,
-      "real_points": 3,
+      "points": 18,
+      "real_points": 4,
       "first_seen": "2026-10-29T16:46:26.200725",
-      "last_seen": "2026-11-13T00:00:00",
+      "last_seen": "2026-11-14T00:00:00",
       "verdict": {
         "verdict": "all_time_low",
         "label": "歷史最低 👍",
@@ -3487,6 +3632,11 @@
         },
         {
           "observed_at": "2026-11-13T00:00:00",
+          "price": 3399.0,
+          "source": "costco"
+        },
+        {
+          "observed_at": "2026-11-14T00:00:00",
           "price": 3399.0,
           "source": "costco"
         }
