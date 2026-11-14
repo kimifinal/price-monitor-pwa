@@ -1,0 +1,90 @@
+/* style.css — CSS design-token single source of truth (issue #21, Phase 1).
+ *
+ * Every colour / spacing / radius / type value in the UI is *defined* here once,
+ * then referenced as var(--token) in each component <style> block. The token
+ * VALUES are the EXACT hex/px that were previously hard-coded, so resolving a
+ * var() renders byte-identically to before — a pure "renaming", zero visual risk.
+ * To theme later (e.g. prefers-color-scheme: light) override :root in ONE place.
+ */
+
+@layer tokens, base, components, utilities;
+
+@layer tokens {
+  :root {
+    /* ---- Color (中性，略帶紫，維持品牌調) ----
+     * Values == the hex that was hard-coded in the 5 component <style> blocks.
+     */
+    /* 中性背景 / 表層 */
+    --bg:         #0f0d13;
+    --surface:    #141218;
+    --surface-1:  #1b1830;
+    --surface-2:  #0f0d18;
+    --border:     #2a2740;
+    --border-2:   #3a3560;
+
+    /* 文字 */
+    --text:       #efeaff;  /* 主 */
+    --text-2:     #b0a8c8;  /* 次要 */
+    --text-3:     #8a86a8;  /* 輔助 / caption */
+    --muted:      #555555;  /* 停用 / 無資料 */
+
+    /* 品牌 accent（紫） */
+    --accent:     #4a3f7a;
+    --accent-2:   #3a3560;
+
+    /* 狀態色 */
+    --success:    #4caf50;  /* 歷史最低 / 成功 */
+    --success-tx: #8ae0b0;  /* 成功文字 */
+    --good-deal:  #8bc34a;  /* 接近低點 */
+    --warn:       #e6a23c;  /* 接近高點 */
+    --danger:     #e07a7a;  /* 移除 / 危險 */
+    --danger-b:   #4a3345;  /* 危險邊框 */
+    --sku:        #f0c000;  /* SKU 強調 */
+    --link:       #8fb4ff;  /* 連結 */
+
+    /* #11 匯出 / 匯入 控制鍵（WatchlistEditor）— 值為當前 hex，零視覺變動 */
+    --export-bg:      #1a3a2a;
+    --export-border:  #3a6a5a;
+    --import-bg:      #3a1a3a;
+    --import-border:  #6a3a5a;
+    --import-text:    #e0a0c8;
+
+    /* ---- 字型 ---- */
+    --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", monospace;
+    --font-base: var(--font-sans);
+
+    /* 字型 scale（fluid；目前僅定義，Phase 1 不改現有固定 px 以確保零視覺差） */
+    --fs-h1:   clamp(1.5rem, 4vw, 2rem);
+    --fs-h2:   clamp(1.15rem, 3vw, 1.35rem);
+    --fs-body: 1rem;
+    --fs-sm:   0.85rem;
+    --fs-cap:  0.72rem;
+    --fs-num:  var(--fs-body);
+
+    /* ---- 間距 scale ---- */
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-5: 24px;
+    --sp-6: 32px;
+    --sp-8: 48px;
+
+    /* ---- 圓角 scale ---- */
+    --radius-sm:   8px;
+    --radius:      12px;
+    --radius-lg:   16px;
+    --radius-pill: 999px;
+  }
+}
+
+@layer base {
+  /* 根字型修正：原本 font-family 只設在 .app，導致 body 基底 fallback 到
+   * 襯線體（Times）。設在 html 讓整份文件以無襯線為基底；.app 仍以
+   * --font-sans 延伸同一來源，視覺不變。 */
+  html {
+    font-family: var(--font-base);
+    -webkit-font-smoothing: antialiased;
+  }
+}

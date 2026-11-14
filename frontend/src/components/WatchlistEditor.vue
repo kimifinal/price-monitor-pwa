@@ -277,9 +277,9 @@ function doImport() {
 
 <style scoped>
 .watchlist-editor {
-  background: #141218;
-  border: 1px solid #2a2740;
-  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 12px;
   margin-bottom: 16px;
 }
@@ -291,16 +291,16 @@ function doImport() {
 }
 .we-head h2 {
   font-size: 14px;
-  color: #efeaff;
+  color: var(--text);
   margin: 0;
 }
 .we-reset,
 .we-remove,
 .we-add-btn {
   font-size: 12px;
-  color: #b0a8c8;
-  background: #1b1830;
-  border: 1px solid #2a2740;
+  color: var(--text-2);
+  background: var(--surface-1);
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 5px 10px;
   cursor: pointer;
@@ -308,11 +308,11 @@ function doImport() {
   flex: none;
 }
 .we-reset {
-  background: #4a3f7a;
-  color: #efeaff;
+  background: var(--accent);
+  color: var(--text);
 }
 .we-empty {
-  color: #8a86a8;
+  color: var(--text-3);
   font-size: 12px;
   margin: 4px 0 0;
 }
@@ -327,8 +327,8 @@ function doImport() {
 
 /* ---- one card per watched item ---- */
 .we-row {
-  background: #1b1830;
-  border: 1px solid #2a2740;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px;
 }
@@ -340,7 +340,7 @@ function doImport() {
 .we-sku {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 11px;
-  color: #f0c000;
+  color: var(--sku);
   white-space: nowrap;
   flex: none;
 }
@@ -349,8 +349,8 @@ function doImport() {
   min-width: 0; /* allow flex to shrink so the value truncates with an ellipsis */
 }
 .we-remove {
-  color: #e07a7a;
-  border-color: #4a3345;
+  color: var(--danger);
+  border-color: var(--danger-b);
 }
 
 /* threshold fields: label stacked over each input; 2-col wide, 1-col narrow */
@@ -374,7 +374,7 @@ function doImport() {
 }
 .we-th-label {
   font-size: 11px;
-  color: #8a86a8;
+  color: var(--text-3);
   white-space: nowrap;
 }
 
@@ -385,9 +385,9 @@ function doImport() {
 .we-new-name {
   width: 100%;
   box-sizing: border-box;
-  background: #141218;
-  color: #efeaff;
-  border: 1px solid #2a2740;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 7px 8px;
   font-size: 13px;
@@ -397,10 +397,10 @@ function doImport() {
   display: inline-block;
   margin-top: 8px;
   font-size: 11px;
-  color: #8a86a8;
+  color: var(--text-3);
 }
 .we-fire[data-fire='true'] {
-  color: #4caf50;
+  color: var(--success);
   font-weight: bold;
 }
 
@@ -423,8 +423,8 @@ function doImport() {
   font-size: 13px;
 }
 .we-add-btn {
-  background: #4a3f7a;
-  color: #efeaff;
+  background: var(--accent);
+  color: var(--text);
 }
 
 /* ---- #11: export / import ---- */
@@ -436,43 +436,43 @@ function doImport() {
 .we-export,
 .we-import {
   font-size: 12px;
-  color: #b0a8c8;
-  background: #1b1830;
-  border: 1px solid #2a2740;
+  color: var(--text-2);
+  background: var(--surface-1);
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 5px 10px;
   cursor: pointer;
   white-space: nowrap;
 }
 .we-export {
-  background: #1a3a2a;
-  border-color: #3a6a5a;
-  color: #8ae0b0;
+  background: var(--export-bg);
+  border-color: var(--export-border);
+  color: var(--success-tx);
 }
 .we-import {
-  background: #3a1a3a;
-  border-color: #6a3a5a;
-  color: #e0a0c8;
+  background: var(--import-bg);
+  border-color: var(--import-border);
+  color: var(--import-text);
 }
 .we-io-panel {
-  border: 1px solid #2a2740;
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px;
   margin: 10px 0 0 0;
-  background: #0f0d18;
+  background: var(--surface-2);
 }
 .we-io-hint {
   margin: 0 0 8px 0;
   font-size: 12px;
-  color: #8a86a8;
+  color: var(--text-3);
 }
 .we-export-json,
 .we-import-json {
   width: 100%;
   box-sizing: border-box;
-  background: #141218;
-  color: #efeaff;
-  border: 1px solid #2a2740;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 7px 8px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -491,15 +491,15 @@ function doImport() {
 .we-download,
 .we-do-import {
   font-size: 12px;
-  color: #efeaff;
-  background: #4a3f7a;
-  border: 1px solid #3a3560;
+  color: var(--text);
+  background: var(--accent);
+  border: 1px solid var(--border-2);
   border-radius: 6px;
   padding: 5px 12px;
   cursor: pointer;
 }
 .we-import-msg {
   font-size: 11px;
-  color: #8ae0b0;
+  color: var(--success-tx);
 }
 </style>

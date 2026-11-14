@@ -149,17 +149,17 @@ function onWatchlistChange(wl) {
 
 <style>
 .app {
-  font-family: system-ui, -apple-system, sans-serif;
-  color: #efeaff;
-  background: #0f0d13;
+  font-family: var(--font-sans);
+  color: var(--text);
+  background: var(--bg);
   max-width: 480px;
   margin: 0 auto;
   padding: 16px;
 }
 .alerts {
-  background: #1b1830;
-  border: 1px solid #4a3f7a;
-  border-radius: 12px;
+  background: var(--surface-1);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
   padding: 12px;
   margin-bottom: 16px;
 }

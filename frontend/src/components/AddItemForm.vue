@@ -50,14 +50,14 @@ function submit() {
 }
 .add-form input,
 .add-form button {
-  background: #1b1830;
-  color: #efeaff;
-  border: 1px solid #2a2740;
-  border-radius: 8px;
+  background: var(--surface-1);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   padding: 8px;
 }
 .add-form button {
-  background: #4a3f7a;
+  background: var(--accent);
   cursor: pointer;
 }
 </style>
