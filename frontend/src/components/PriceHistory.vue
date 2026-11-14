@@ -20,14 +20,16 @@ const verdict = computed(() => priceVerdict(props.card?.metrics))
 const path = computed(() => sparkPath(props.card?.series || [], 240, 34, 2))
 
 // The sparkline colour tracks the verdict so a good deal visually pops.
+// Colours resolve through the token SSOT (style.css): same hexes, by reference,
+// so a hand-tuned token stays in one place. Structure/keys/fallback unchanged.
 const stroke = computed(() =>
   ({
-    all_time_low: '#4caf50',
-    good_deal: '#8bc34a',
-    stable: '#b0a8c8',
-    near_high: '#e6a23c',
-    unknown: '#555',
-  })[verdict.value.verdict] || '#b0a8c8',
+    all_time_low: 'var(--success)',
+    good_deal: 'var(--good-deal)',
+    stable: 'var(--text-2)',
+    near_high: 'var(--warn)',
+    unknown: 'var(--muted)',
+  })[verdict.value.verdict] || 'var(--text-2)',
 )
 
 const points = computed(() => props.card?.series?.length || props.card?.metrics?.points || 0)
@@ -70,8 +72,8 @@ const srcText = computed(() =>
 
 <style>
 .price-history {
-  background: #141218;
-  border: 1px solid #2a2740;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px 12px;
   margin-bottom: 8px;
@@ -81,23 +83,23 @@ const srcText = computed(() =>
   align-items: center;
   justify-content: space-between;
 }
-.ph-name { color: #efeaff; font-size: 14px; }
+.ph-name { color: var(--text); font-size: 14px; }
 .ph-tags {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.ph-src { font-size: 11px; color: #8a86a8; }
+.ph-src { font-size: 11px; color: var(--text-3); }
 .ph-badge { font-size: 12px; font-weight: 600; }
 .ph-spark { margin: 8px 0 4px; }
-.ph-no { color: #555; font-size: 12px; }
+.ph-no { color: var(--muted); font-size: 12px; }
 .ph-foot {
   display: flex;
   align-items: baseline;
   gap: 8px;
   font-size: 12px;
-  color: #b0a8c8;
+  color: var(--text-2);
 }
-.ph-now { color: #efeaff; font-weight: 600; font-size: 15px; }
-.ph-link { margin-left: auto; color: #8fb4ff; text-decoration: none; }
+.ph-now { color: var(--text); font-weight: 600; font-size: 15px; }
+.ph-link { margin-left: auto; color: var(--link); text-decoration: none; }
 </style>

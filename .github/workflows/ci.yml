@@ -24,6 +24,23 @@ jobs:
       - name: Install frontend deps
         working-directory: frontend
         run: npm install --cache .npm --foreground-deps
+      # ---- CSS design-token SSOT guard (issue #21 · Phase 1 · AC7) ----
+      # Defends the single source of truth: a RAW 6-digit hex may live ONLY in
+      # frontend/src/style.css, where the tokens are DEFINED. Every component
+      # colour must resolve through var(--token). style.css is a .css file, so
+      # scanning *.vue excludes it by construction (the glob cannot reach it).
+      # Fully OFFLINE (grep only: no npm install, no network) and BLOCKING, so a
+      # hand-typed colour like `border: 1px solid #abc123` in a component fails
+      # CI until it is tokenized.
+      - name: 'CSS token guard — no raw hex in components (SSOT #21)'
+        run: |
+          set -euo pipefail
+          if grep -rInE '#[0-9a-fA-F]{6}' frontend/src --include='*.vue'; then
+            echo "::error::Raw 6-digit hex in .vue components violates the CSS token SSOT."
+            echo "  Hex lives in frontend/src/style.css; reference var(--token) in components instead."
+            exit 1
+          fi
+          echo "✅ CSS token guard passed: no raw hex in .vue components."
       - name: Lint
         working-directory: frontend
         run: npm run lint

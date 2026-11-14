@@ -36,22 +36,22 @@ function remove() {
 
 <style>
 .item-card {
-  background: #141218;
-  border: 1px solid #2a2740;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px;
   margin-bottom: 8px;
 }
 .item-card[data-alert='true'] {
-  border-color: #4caf50;
-  box-shadow: 0 0 0 1px #4caf50 inset;
+  border-color: var(--success);
+  box-shadow: 0 0 0 1px var(--success) inset;
 }
 .remove-btn {
   font-size: 12px;
-  color: #b0a8c8;
+  color: var(--text-2);
 }
 .hot {
-  color: #4caf50;
+  color: var(--success);
   font-weight: bold;
 }
 </style>
