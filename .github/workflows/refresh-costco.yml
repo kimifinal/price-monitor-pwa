@@ -21,6 +21,15 @@ on:
         description: max alerts delivered this run (0 = no cap)
         default: "10"
         type: number
+      fail:
+        # #12 stall-guard fail mode. OFF by default: warn-not-fail (a legitimately
+        # empty day must not red the daily cron). Flip to "true" on a MANUAL run to
+        # EXERCISE / enforce the hard-fail path; CI also honors a STALL_GUARD_FAIL
+        # repo variable. Scheduled runs never see this input, so they stay warn.
+        description: "hard-fail the run when no real costco point lands (default off — warn-not-fail)"
+        default: "false"
+        type: choice
+        options: ["false", "true"]
 
 jobs:
   refresh:
@@ -50,11 +59,99 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+      - name: Capture pre-refresh history baseline (#12)
+        # The Stall-guard below compares the POST-refresh worktree history against
+        # this run's PRE-refresh committed history. Capture the SHA now, before the
+        # refresh step can advance HEAD, so the baseline is the true "before".
+        id: baseline
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Refresh snapshot (crawl + regenerate + push if changed)
         # This single job refreshes the Costco snapshot AND appends today's real
         # observation into the shared history_data.json SSOT. The refresh is
         # offline-safe — a failed live crawl leaves the existing artifacts intact.
         run: python3 scripts/refresh_snapshot.py
+
+      - name: Stall-guard (#12 — prove a real costco point landed this refresh)
+        # AC1/AC2/AC3 for "排程快照真的落地護欄": a scheduled crawl that fails
+        # silently must NOT go unnoticed. So — after the refresh step — assert that a
+        # NEW real costco point actually appended into history_data.json (detect_new_real
+        # over the pre-refresh baseline vs the post-refresh worktree), print it LOUD so
+        # the CI log self-proves "landed" vs "not", and on a landing (re)write the
+        # git-tracked refresh_state.json "last successful refresh" SSOT + carry it.
+        #
+        # WARN-NOT-FAIL BY DEFAULT: a legitimately empty day (Costco had no new price,
+        # or a same-day re-run) must NOT red the daily cron. "Not silent" is satisfied
+        # by the loud + logged + recorded [stall-guard] warning, not by turning every
+        # quiet day into a failed run. A NO-landing only hard-fails when this run opts
+        # in: the `fail` workflow_dispatch input, or a STALL_GUARD_FAIL repo variable.
+        env:
+          # WARN-NOT-FAIL by default: a scheduled run has NO `fail` input (=> empty =>
+          # warn), and a manual run CAN flip it. The repo-level STALL_GUARD_FAIL
+          # VARIABLE wins when it is SET while the input is unset; otherwise an
+          # explicitly-set input is honored. NOTE: the OLD `${{ inputs.fail }}` form
+          # clobbered any repo-level var on a scheduled run (the empty `inputs.fail`
+          # overwrote it, breaking the "a manual run can flip it; CI also honors a
+          # STALL_GUARD_FAIL repo variable either way" promise). `vars.STALL_GUARD_FAIL
+          # || inputs.fail` keeps a SET repo var intact while still letting an
+          # explicitly-set input win when the var is unset.
+          STALL_GUARD_FAIL: "${{ vars.STALL_GUARD_FAIL || inputs.fail }}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -uo pipefail
+          # (a) pre-refresh baseline = the COMMITTED history this run started with
+          BASE="${{ steps.baseline.outputs.sha }}"
+          BASELINE="$(mktemp)"
+          # Fetch the COMMITTED baseline WITHOUT aborting under `set -uo` (no -e): a
+          # missing pre-image must be HANDLED below, not crash the step here.
+          git show "$BASE:backend/history_data.json" > "$BASELINE" 2>/dev/null || true
+          # FAIL mode mirrors stall_guard.main(): a truthy STALL_GUARD_FAIL (a repo var
+          # the `vars.STALL_GUARD_FAIL || inputs.fail` env above can no longer clobber)
+          # makes a no-landing / bad-baseline HARD-FAIL; otherwise warn-not-fail.
+          case "${STALL_GUARD_FAIL:-}" in
+            1|true|True|yes) FAIL_MODE=1 ;;
+            *) FAIL_MODE=0 ;;
+          esac
+          # GUARD the baseline read (the git show above is unguarded under set -uo):
+          # if the committed baseline object is MISSING (BASE predates
+          # backend/history_data.json, or the path is absent) OR the read came back
+          # EMPTY, we must NOT fall through to the guard's "no baseline => every real
+          # point counts as new" branch — that would emit a FALSE '✅ landed' that
+          # MASKS a real stall (the exact opposite of what the guard exists to do). On
+          # a bad baseline: loud error, hard-fail in FAIL_MODE, else warn-not-fail.
+          baseline_ok=0
+          if git cat-file -e "$BASE:backend/history_data.json" 2>/dev/null && [ -s "$BASELINE" ]; then
+            baseline_ok=1
+          fi
+          if [ "$baseline_ok" -ne 1 ]; then
+            echo "::error::[stall-guard] no usable pre-refresh baseline: 'git show ${BASE}:backend/history_data.json' empty/absent"
+            if [ "$FAIL_MODE" -eq 1 ]; then
+              echo "::error::[stall-guard] (fail mode) hard-failing instead of a false '✅ landed' that would mask the stall"
+              exit 1
+            fi
+            echo "WARNING: [stall-guard] refusing the all-reals-as-new false positive — warn-not-fail (CI stays green, no silent stall)"
+            exit 0
+          fi
+          # (b) POST-refresh worktree history is backend/history_data.json.
+          # (c)+(d) detect + print the LOUD [stall-guard] line so the log self-proves.
+          # (e) on a landing the guard rewrites backend/refresh_state.json (the SSOT);
+          #      on a no-landing it writes nothing, so "stalled since when" stays visible.
+          #      No --e here so we get to read the guard's exit code before deciding.
+          python3 backend/stall_guard.py \
+            --prev "$BASELINE" \
+            --cur backend/history_data.json \
+            --state backend/refresh_state.json
+          GUARD_RC=$?
+          # (e-2) if a landing wrote a fresh SSOT, carry it in its own commit + push so
+          #        it survives the ephemeral runner. A no-landing leaves it clean: no-op.
+          if git status --porcelain -- backend/refresh_state.json | grep -q .; then
+            git add backend/refresh_state.json
+            git commit -m "chore(stall-guard)[#12]: record last refresh" >/dev/null 2>&1 || true
+            git push >/dev/null 2>&1 || true
+          fi
+          # WARN-not-fail: a no-landing warns (exit 0). Only FAIL mode (guard exited
+          # non-zero) propagates to the job, so a quiet day stays green.
+          exit "$GUARD_RC"
 
       - name: Scan + deliver alerts (#2 — reuses the price_verdict SSOT)
         # Reads the persisted history, fires an alert per SKU that crosses an alarm
