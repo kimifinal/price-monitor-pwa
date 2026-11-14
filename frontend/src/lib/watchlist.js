@@ -32,10 +32,12 @@ export const WATCHLIST_KEY = KEY
 // No fetch: the PWA works fully offline from this default; localStorage then lets a
 // user edit it without a server round-trip.
 export const DEFAULT_WATCHLIST = [
-  { sku: '149699', name: 'ANKER A2674 336 GaN 67W 急速充電器 2入組', threshold: { target: 1100 } },
-  { sku: '3062725', name: 'BOSE Solo Soundbar 電視音響 II', threshold: { min_drop_pct: 15 } },
-  { sku: '161520', name: 'Samsung 55吋 Mini LED 4K AI 量子智慧顯示器', threshold: { target: 18000 } },
-  { sku: '6677010', name: 'DeWALT 得偉 乾濕兩用吸塵器', threshold: { min_drop_pct: 15 } },
+  { sku: '149699', name: 'ANKER A2674 336 GaN 67W 急速充電器 2入組', threshold: { target: 1069 } },
+  { sku: '153876', name: 'JBL Live 670NC 耳罩式降噪藍牙耳機', threshold: { target: 1899 } },
+  { sku: '161367', name: 'Soundcore AeroClip 開放式藍牙耳夾耳機', threshold: { target: 2079 } },
+  { sku: '153526', name: '飛利浦 55吋 4K QLED Google TV 顯示器 55PQT8530/96', threshold: { target: 12599 } },
+  { sku: '156974', name: 'iClever BTH18 炫光無線兒童耳機', threshold: { target: 849 } },
+  { sku: '162427', name: 'Hawk 360° 旋轉升降螢幕架 附抽屜', threshold: { target: 669 } },
 ]
 
 // Deep-clone one entry so edits never mutate a passed-in prop or the seed.

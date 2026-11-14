@@ -87,6 +87,28 @@ def test_committed_demo_watchlist_is_watchlist(tmp_path):
         assert all(k in ("target", "min_drop_pct") for k in th)
 
 
+def test_default_watchlist_is_the_six_suggested_costco_items(tmp_path):
+    """#14: the committed default watchlist is the 6 SKU list the user approved
+    (SKU + name + target, all from the real 30-SKU costco snapshot). A future
+    edit that drops or moves an item is caught here — a guard on the guard."""
+    EXPECTED = [
+        ("149699", "ANKER A2674 336 GaN 67W 急速充電器 2入組", 1069),
+        ("153876", "JBL Live 670NC 耳罩式降噪藍牙耳機", 1899),
+        ("161367", "Soundcore AeroClip 開放式藍牙耳夾耳機", 2079),
+        ("153526", "飛利浦 55吋 4K QLED Google TV 顯示器 55PQT8530/96", 12599),
+        ("156974", "iClever BTH18 炫光無線兒童耳機", 849),
+        ("162427", "Hawk 360° 旋轉升降螢幕架 附抽屜", 669),
+    ]
+    wl = watchlist.load(watchlist.WATCHLIST_PATH)
+    by_sku = {str(e["sku"]): e for e in wl}
+    # exactly the 6 SKUs — no more, no fewer
+    assert set(by_sku) == {s for s, _, _ in EXPECTED}
+    for sku, name, target in EXPECTED:
+        e = by_sku[sku]
+        assert e["name"] == name
+        assert e["threshold"]["target"] == target
+
+
 # ---------------- threshold_met: target price vs min drop% ----------------
 
 def test_threshold_met_target_price_uses_should_alert():
