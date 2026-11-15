@@ -1,6 +1,6 @@
 """Offline snapshot of Costco 3C + 家電 PDP prices.
 
-Refreshed 2026-11-14 via BFS crawl of Costco PDP "相關推薦" links
+Refreshed 2026-11-15 via BFS crawl of Costco PDP "相關推薦" links
 (15 家電 + 15 3C items, all real SKUs).
 Used by the API (live=False default) and by the offline unit tests so CI stays
 offline-safe and free of 429 limits.
@@ -111,15 +111,6 @@ DEMO_BASKET = [
     "category_path": "https://www.costco.com.tw/Digital-Mobile/Laptops-Computers/Keyboards-Mice-Computer-Accessories/SteelSeries-Qck-Performance-Mouse-Pad-XL-Control/p/157689"
   },
   {
-    "name": "Backbone Mamba 人體工學全網椅",
-    "price": 4599.0,
-    "currency": "TWD",
-    "sku": "144129",
-    "url": "https://www.costco.com.tw/Furniture-Kitchen/Furniture/Computer-Desk-Chair-Sets/Backbone-Mamba-Mesh-Ergonomic-Chair/p/144129",
-    "tag": "3C",
-    "category_path": "https://www.costco.com.tw/Furniture-Kitchen/Furniture/Computer-Desk-Chair-Sets/Backbone-Mamba-Mesh-Ergonomic-Chair/p/144129"
-  },
-  {
     "name": "PowerA 任天堂官方授權 有線耳機 卡比 NSHS0299-01",
     "price": 979.0,
     "currency": "TWD",
@@ -129,22 +120,31 @@ DEMO_BASKET = [
     "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Video-Games-Consoles/PowerA-Officially-Licensed-Nintendo-Wired-Headphones-Kirby-NSHS0299-01/p/158849"
   },
   {
-    "name": "HP 14吋筆記型電腦 EliteBook 6 G1q",
-    "price": 34999.0,
+    "name": "Jabra Evolve 10 頭戴式 USB 有線耳機麥克風",
+    "price": 799.0,
     "currency": "TWD",
-    "sku": "160448",
-    "url": "https://www.costco.com.tw/Digital-Mobile/Laptops-Computers/Laptops/HP-14-inch-Laptop-EliteBook-6-G1q/p/160448",
+    "sku": "156907",
+    "url": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Jabra-Evolve-10-Wired-Headset-with-Noise-Cancelling-Microphone/p/156907",
     "tag": "3C",
-    "category_path": "https://www.costco.com.tw/Digital-Mobile/Laptops-Computers/Laptops/HP-14-inch-Laptop-EliteBook-6-G1q/p/160448"
+    "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Jabra-Evolve-10-Wired-Headset-with-Noise-Cancelling-Microphone/p/156907"
   },
   {
-    "name": "Flexispot 氣壓式升降邊桌",
-    "price": 1599.0,
+    "name": "Soodatek CAT.7 FFTP 雙屏蔽 10Gpbs 超高速網路線 RJ45 5公尺",
+    "price": 245.0,
     "currency": "TWD",
-    "sku": "149915",
-    "url": "https://www.costco.com.tw/Furniture-Kitchen/Furniture/Computer-Desk-Chair-Sets/Flexispot-Adjustable-Side-Table/p/149915",
+    "sku": "154298",
+    "url": "https://www.costco.com.tw/Digital-Mobile/Laptops-Computers/Keyboards-Mice-Computer-Accessories/Soodatek-CAT7-FFTP-Double-Shielded-10Gpbs-High-Speed-Ethernet-Cable-RJ45-5-m/p/154298",
     "tag": "3C",
-    "category_path": "https://www.costco.com.tw/Furniture-Kitchen/Furniture/Computer-Desk-Chair-Sets/Flexispot-Adjustable-Side-Table/p/149915"
+    "category_path": "https://www.costco.com.tw/Digital-Mobile/Laptops-Computers/Keyboards-Mice-Computer-Accessories/Soodatek-CAT7-FFTP-Double-Shielded-10Gpbs-High-Speed-Ethernet-Cable-RJ45-5-m/p/154298"
+  },
+  {
+    "name": "Tresanti 電動升降桌",
+    "price": 5999.0,
+    "currency": "TWD",
+    "sku": "1646074",
+    "url": "https://www.costco.com.tw/Furniture-Kitchen/Furniture/Computer-Desk-Chair-Sets/Tresanti-Adjustable-Desk/p/1646074",
+    "tag": "3C",
+    "category_path": "https://www.costco.com.tw/Furniture-Kitchen/Furniture/Computer-Desk-Chair-Sets/Tresanti-Adjustable-Desk/p/1646074"
   },
   {
     "name": "BOSE Solo Soundbar 電視音響 II",
