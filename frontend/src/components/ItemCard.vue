@@ -10,6 +10,8 @@ const emit = defineEmits(['remove'])
 // Import the alert decision from the single source of truth.
 // NOTE: this component does NOT re-derive the rule; it only renders.
 import { shouldAlert, alertMessage } from '../lib/monitor.js'
+// TWD 幣制展示 SSOT (issue #25): prices render via moneyTWD — no ".00", TWD prefix.
+import { moneyTWD } from '../lib/format.js'
 
 const isAlerting = () => shouldAlert(props.item)
 const msg = () => alertMessage(props.item)
@@ -26,8 +28,8 @@ function remove() {
       <button class="remove-btn" @click="remove">刪除</button>
     </div>
     <div class="item-price">
-      <span class="price">${{ item.price?.toFixed(2) || '0.00' }}</span>
-      <span class="target">/ 目標 ${{ item.target?.toFixed(2) }}</span>
+      <span class="price">{{ moneyTWD(item.price) }}</span>
+      <span class="target">/ 目標 {{ moneyTWD(item.target) }}</span>
     </div>
     <p class="msg" :class="{ hot: isAlerting() }">{{ msg() }}</p>
     <a v-if="item.url" :href="item.url" target="_blank" rel="noopener" aria-label="開啟該商品產品網頁（新分頁）">查看 →</a>

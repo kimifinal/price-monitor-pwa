@@ -8,6 +8,8 @@
 // with a small source badge (🛒 costco). No per-source verdict logic.
 import { computed } from 'vue'
 import { priceVerdict, sparkPath } from '../lib/monitor.js'
+// TWD 幣制展示 SSOT (issue #25): current price carries a "TWD " prefix, no ".00".
+import { moneyTWD } from '../lib/format.js'
 
 const props = defineProps({
   // card: { name, current, source?, tag?, currency?,
@@ -62,7 +64,7 @@ const srcText = computed(() =>
       <span v-else class="ph-no">尚無歷史</span>
     </div>
     <div class="ph-foot">
-      <span class="ph-now">${{ Number(card.current || 0).toLocaleString() }}</span>
+      <span class="ph-now">{{ moneyTWD(card.current) }}</span>
       <span class="ph-pts" v-if="points">{{ points }} 點</span>
       <a v-if="card.url" :href="card.url" target="__blank" rel="noopener"
          class="ph-link" aria-label="開啟該商品產品網頁（新分頁）">查看 →</a>

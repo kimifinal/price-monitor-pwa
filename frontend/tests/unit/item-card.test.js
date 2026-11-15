@@ -8,8 +8,9 @@ describe('ItemCard.vue', () => {
       props: { item: { id: '1', name: 'Chiikawa 徽章', price: 100, target: 120 } },
     })
     expect(w.text()).toContain('Chiikawa 徽章')
-    expect(w.text()).toContain('$100.00')
-    expect(w.text()).toContain('$120.00')
+    // #25: TWD 幣制去小數 — prices carry a "TWD " prefix, no ".00".
+    expect(w.text()).toContain('TWD 100')
+    expect(w.text()).toContain('TWD 120')
   })
 
   it('marks the card hot (data-alert=true) when price <= target', () => {
