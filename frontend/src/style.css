@@ -128,6 +128,14 @@ a[href] {
   gap: 4px;
 }
 
+/* A3 — touch-action: ban double-tap-zoom on interactive controls (issue #29),
+   but KEEP pan/scroll (vs touch-action:none). Mobile touch-friendly. */
+button,
+[role='button'],
+a[href] {
+  touch-action: manipulation;
+}
+
 /* A2 — visible keyboard / AT focus. Use :focus-visible so the ring only shows
  * for keyboard / assistive-tech interaction (not a plain mouse click). It
  * resolves through the token SSOT (--accent-hover), never hard-coded hex. */
