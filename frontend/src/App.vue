@@ -7,6 +7,9 @@ import AddItemForm from './components/AddItemForm.vue'
 import ItemCard from './components/ItemCard.vue'
 import PriceHistory from './components/PriceHistory.vue'
 import WatchlistEditor from './components/WatchlistEditor.vue'
+// #25: loading-placeholders for the live section (no layout shift). Bound as
+// <skeleton-cards> in the template below.
+import SkeletonCards from './components/SkeletonCard.vue'
 
 const items = ref(loadItems())
 
@@ -54,12 +57,18 @@ const compareRows = computed(() =>
 // above still stand as the offline fallback. Kept in its own section so the
 // static 4-card compare demo (guarded by e2e) is untouched.
 const liveCards = ref([])
+// #25: true until the live (re)load settles. Drives the no-layout-shift skeleton
+// in the live section: skeleton while loading, real cards when loaded, a subtitle
+// only when truly empty (post-load, no data).
+const loading = ref(true)
 onMounted(async () => {
   try {
     const base = import.meta.env.BASE_URL || ''
     liveCards.value = await loadLiveHistory(base)
   } catch {
     liveCards.value = []
+  } finally {
+    loading.value = false
   }
 })
 
@@ -137,12 +146,17 @@ function onWatchlistChange(wl) {
       <p class="subtitle">
         由離線快取 / 快照驅動 — 無網路時仍渲染最新走勢與結論（離線 PWA · #6）
       </p>
-      <price-history
-        v-for="(card, i) in liveCards"
-        :key="`live-${i}`"
-        :card="card"
-      />
-      <p v-if="!liveCards.length" class="subtitle">正在載入離線快照…</p>
+      <!-- #25: skeleton while loading (no layout shift), real cards when loaded,
+           a "no data" subtitle only when truly empty after the load. -->
+      <template v-if="liveCards.length">
+        <price-history
+          v-for="(card, i) in liveCards"
+          :key="`live-${i}`"
+          :card="card"
+        />
+      </template>
+      <skeleton-cards v-else-if="loading" :count="3" />
+      <p v-else class="subtitle">尚無即時資料</p>
     </section>
   </div>
 </template>
