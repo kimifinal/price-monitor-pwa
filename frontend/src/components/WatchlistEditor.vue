@@ -1,5 +1,5 @@
 <script setup>
-// WatchlistEditor.vue — the #4 個人化 watchlist, DISPLAYED + EDITED offline.
+// WatchlistEditor.vue — the 6 default seed gate (⚙ 自動門檻 Gate), DISPLAYED + EDITED offline.
 //
 // It never talks to a server: it reads a static seed / localStorage and writes
 // back to localStorage (see lib/watchlist.js). Every change is persisted locally
@@ -144,7 +144,7 @@ function doImport() {
 <template>
   <section class="watchlist-editor" data-testid="watchlist-editor">
     <div class="we-head">
-      <h2>🎯 個人化追蹤（{{ rows.length }}）</h2>
+      <h2>⚙ 自動門檻 Gate（{{ rows.length }}）</h2>
       <div class="we-head-actions">
         <button class="we-export" type="button" data-testid="we-export" aria-label="匯出整個追蹤清單為 JSON" @click="doExport">
           匯出
