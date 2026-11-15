@@ -1,33 +1,32 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync, existsSync } from 'node:fs'
-import path from 'node:path'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
 
 // #22 Phase 2 — a11y CSS-source guard.
 //
 // The a11y pass (touch targets / :focus-visible ring / prefers-reduced-motion)
 // lives ENTIRELY in src/style.css — the design-token SSOT (issue #21). Vite's
-// production build minifies by stripping whitespace/comments only; selectors and
-// @media queries survive byte-for-byte, so the emitted dist/assets/*.css keeps
-// these. Asserting on the SOURCE that feeds the build is therefore deterministic
-// (no build step, offline-safe) AND equivalent to the emitted CSS.
+// production build only strips whitespace/comments; selectors and @media queries
+// survive byte-for-byte, so the emitted dist/assets/*.css keeps these. Asserting
+// on the SOURCE that feeds the build is deterministic (no build step, offline-safe)
+// AND equivalent to the emitted CSS.
 //
 // Guard intent: if a future change strips the :focus-visible ring or the
-// reduced-motion guard from style.css, this test turns CI red before that
-// regression can ship.
+// reduced-motion guard from style.css, this test turns CI red before
+// that regression can ship.
 //
-// Resolution: Vitest runs with cwd = the frontend/ package root (the dir
-// holding both src/ and tests/), but a run may also start from the repo root,
-// so try both and pick the first that exists.
-const candidates = [
-  path.join(process.cwd(), 'src', 'style.css'),
-  path.join(process.cwd(), 'frontend', 'src', 'style.css'),
-]
-const styleCssPath = candidates.find((p) => existsSync(p)) || candidates[0]
+// Resolution: resolve src/style.css relative to THIS test file via import.meta.url
+// (frontend/tests/unit -> frontend/src), independent of the process cwd. ESLint's
+// flat config declares no node global, so we deliberately avoid the cwd global.
+const here = dirname(fileURLToPath(import.meta.url))
+const styleCssPath = join(here, '..', '..', 'src', 'style.css')
 const styleCss = readFileSync(styleCssPath, 'utf8')
 
 describe('a11y CSS source guard (#22 Phase 2)', () => {
   it('resolves src/style.css (the pre-build design-token SSOT)', () => {
-    // Defensive: if nothing resolved we must fail loudly, not silently pass.
+    // Defensive: a wrong path throws here, failing loudly instead of silently
+    // passing the other assertions in this file.
     expect(styleCss.length).toBeGreaterThan(0)
   })
 
