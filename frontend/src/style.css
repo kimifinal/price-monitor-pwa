@@ -26,10 +26,11 @@
     --text:       #efeaff;  /* 主 */
     --text-2:     #b0a8c8;  /* 次要 */
     --text-3:     #8a86a8;  /* 輔助 / caption */
-    --muted:      #555555;  /* 停用 / 無資料 */
+    --muted:      #9088aa;  /* 停用 / 無資料（#22：#555555 對 --bg 僅 2.6:1，調亮至 AA 4.5:1；對最淺表層 --surface-1 仍 ≥5.1:1，保持語意仍偏暗） */
 
     /* 品牌 accent（紫） */
     --accent:     #4a3f7a;
+    --accent-hover: #6f5fc7; /* #22 a11y：可視焦點環 / hover，亮一檔——對 --bg 約 3.8:1、對各表層 ≥3.4:1，滿足 WCAG 1.4.11 非文字對比 */
     --accent-2:   #3a3560;
 
     /* 狀態色 */
@@ -86,5 +87,72 @@
   html {
     font-family: var(--font-base);
     -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* ============================================================
+ * #22 · Phase 2 — a11y / mobile touch targets
+ *
+ * This is a DELIBERATE a11y pass (unlike #21's zero-drift rename): painted
+ * sizes MAY grow so that every interactive control is tappable.
+ *
+ * These a11y rules are UNLAYERED (outside @layer) on purpose: an unlayered
+ * rule always outranks any @layer rule at equal specificity, so the touch
+ * floors, focus ring, and motion guard win the cascade deterministically even
+ * where a scoped component <style> sets competing props.
+ * They also emit verbatim through Vite's CSS minifier (minification only
+ * strips whitespace/comments; selectors + media queries survive), so the
+ * CSS-source guard test can assert on src/style.css as the pre-build SSOT.
+ * ============================================================ */
+
+/* A1 — touch targets: every interactive control gets a >= 44×44px HIT AREA.
+ * We set a *floor* (min-height/min-width), not fixed sized, so a control
+ * visually stays compact unless it is below 44px, but is always tappable.
+ * Text inputs/textarea get a 44px-tall row too (mobile-friendly). */
+button,
+[role='button'],
+a[href],
+input,
+textarea,
+select {
+  min-height: 44px;
+  box-sizing: border-box;
+}
+button,
+[role='button'],
+a[href] {
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* A2 — visible keyboard / AT focus. Use :focus-visible so the ring only shows
+ * for keyboard / assistive-tech interaction (not a plain mouse click). It
+ * resolves through the token SSOT (--accent-hover), never hard-coded hex. */
+button:focus-visible,
+[role='button']:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent-hover);
+  outline-offset: 2px;
+}
+
+/* A3 — respect the user's motion preference. The UI has no decorative motion
+ * today, but this catch-all DISABLES ANY transition / animation / :active
+ * micro-animation under prefers-reduced-motion, so the a11y contract cannot
+ * regress as features are added. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
   }
 }

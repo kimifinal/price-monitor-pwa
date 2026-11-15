@@ -146,13 +146,13 @@ function doImport() {
     <div class="we-head">
       <h2>🎯 個人化追蹤（{{ rows.length }}）</h2>
       <div class="we-head-actions">
-        <button class="we-export" type="button" data-testid="we-export" @click="doExport">
+        <button class="we-export" type="button" data-testid="we-export" aria-label="匯出整個追蹤清單為 JSON" @click="doExport">
           匯出
         </button>
-        <button class="we-import" type="button" data-testid="we-import-toggle" @click="showImport = !showImport; showExport = false">
+        <button class="we-import" type="button" data-testid="we-import-toggle" aria-label="開啟匯入面板，貼上 JSON" @click="showImport = !showImport; showExport = false">
           匯入
         </button>
-        <button class="we-reset" type="button" data-testid="we-reset" @click="reset">
+        <button class="we-reset" type="button" data-testid="we-reset" aria-label="恢復預設追蹤清單" @click="reset">
           恢復預設
         </button>
       </div>
@@ -171,10 +171,10 @@ function doImport() {
         data-testid="we-export-raw"
       ></textarea>
       <div class="we-io-actions">
-        <button class="we-copy" type="button" data-testid="we-copy" @click="copyExport">
+        <button class="we-copy" type="button" data-testid="we-copy" aria-label="複製 JSON 到剪貼簿" @click="copyExport">
           複製到剪貼簿
         </button>
-        <button class="we-download" type="button" data-testid="we-download" @click="downloadExport">
+        <button class="we-download" type="button" data-testid="we-download" aria-label="下載 watchlist.json 檔案" @click="downloadExport">
           下載 JSON
         </button>
       </div>
@@ -191,7 +191,7 @@ function doImport() {
         data-testid="we-import-raw"
       ></textarea>
       <div class="we-io-actions">
-        <button class="we-do-import" type="button" data-testid="we-do-import" @click="doImport">
+        <button class="we-do-import" type="button" data-testid="we-do-import" aria-label="確認匯入 JSON 內容" @click="doImport">
           確認匯入
         </button>
         <span v-if="importMsg" class="we-import-msg" :data-testid="`we-import-msg`">
@@ -220,7 +220,7 @@ function doImport() {
             placeholder="名稱（選填）"
             @change="onFieldChange"
           />
-          <button class="we-remove" type="button" data-testid="we-remove" @click="remove(i)">
+          <button class="we-remove" type="button" data-testid="we-remove" aria-label="移除這個追蹤項目" @click="remove(i)">
             移除
           </button>
         </div>
@@ -268,7 +268,7 @@ function doImport() {
         required
       />
       <input class="we-new-name" v-model="newName" placeholder="名稱（選填）" />
-      <button class="we-add-btn" type="submit" data-testid="we-add-btn">
+      <button class="we-add-btn" type="submit" data-testid="we-add-btn" aria-label="新增一個追蹤項目">
         新增
       </button>
     </form>
