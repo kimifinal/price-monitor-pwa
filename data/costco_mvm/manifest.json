@@ -1,0 +1,39 @@
+{
+  "url": "https://www.costco.com.tw/content/fy27p3-mvm2-weekday",
+  "scraped_at": "2026/11/16",
+  "method": "API JSON (SKU+品名) + 圖片(價格未 vision，需手動)",
+  "tabs": [
+    {
+      "tab_id": "fy27p3-mvm2-weekday",
+      "label": "平日限定 2026/10/26 ~ 11/20",
+      "count": 10,
+      "url": "https://www.costco.com.tw/content/fy27p3-mvm2-weekday"
+    },
+    {
+      "tab_id": "fy27p3-mvm2-w1",
+      "label": "優惠期間 2026/10/26 ~ 11/22",
+      "count": 65
+    },
+    {
+      "tab_id": "fy27p4-mvm2-cyber",
+      "label": "線上專屬 2026/11/27 ~ 12/06",
+      "count": 16
+    },
+    {
+      "tab_id": "fy27p4-mvm2-cyberland",
+      "label": "網購星期一 (敬請期待)",
+      "count": 0,
+      "note": "此 tab 尚未開放，CMS 回傳 0 個產品"
+    },
+    {
+      "tab_id": "fy27p4-mvm2-weekday",
+      "label": "平日限定 2026/11/30 ~ 12/18",
+      "count": 9
+    },
+    {
+      "tab_id": "fy27p4-mvm2-w2",
+      "label": "優惠期間 2026/11/30 ~ 12/20",
+      "count": 39
+    }
+  ]
+}
