@@ -60,17 +60,22 @@ Headers: User-Agent: <browser UA>, Accept: application/json, Referer: /search
 **重點**：`price` / `basePrice` / `stock` / `decalData` / `images` 都是 JSON **string**，
 需 `JSON.parse` 二次解。折扣 = `basePrice - price`。
 
-### 2. 分頁（唯一待解決點）
-- **實證 2026-11-16**：`page` / `skip` / `pageNo` / `cat=` 參數**全被搜索 API 忽略**
-  （都回 page 0 / 同一組結果）。
-- `query=""` 空字串 → 回全量 **`totalResults=10,049` 筆 / `totalPages=503`**（比帶 query 的 8,458 多）。
-- 結論：全量目錄 ~10,049 筆，但 GET search 無法跳頁。
-- **候選方案（v2 實作時逐一驗證）**：
-  - (A) 觀察前端搜尋頁 DOM/Network，找真實分頁請求（疑為 scroll 觸發 + `state`/token，
-        或 POST body，非 GET 參數）
-  - (B) 用瀏覽器攔截「點下一頁」的實際 request，還原參數格式
-  - (C) 若無分頁，改用 `query=` 多關鍵字分塊抓 + SKU 去重（10k 筆約 500 次 call）
-- **風險**：若分頁需 state token，純 curl 可能無法單機跑全量 → 需保留 browser fallback。
+### 2. 分頁 — **已解決 (2026-11-16)**
+
+**關鍵發現：分頁參數是 `currentPage`，不是 `page`。** URL bar 的 `?text=1&page=1` 是 SPA 路由參數，
+但實際 API 分頁用 `currentPage=N`。誤用 `page` 永遠回 page 0。
+
+```
+GET ...products/search?fields=FULL&query=1&pageSize=48&currentPage={N}&lang=zh_TW&curr=TWD
+```
+
+實證（query=1, pageSize=48）：
+- `currentPage` 0→6 單調分頁，每頁 48 筆，334 = 7×48 零重疊 ✓
+- 全 177 頁 ≈ 5 分鐘抓完 8,458 筆（每頁 ~1s，含 0.2s 延遲防 429）
+- 折扣自動偵測：`price < basePrice` 即為特價，PoC 5 頁抓到 5 筆
+
+**實作**：`data/costco_catalog/scrape_full.py` — 增量落檔、每 10 頁 save 一次、
+retries=3 + 指數退避防 300s kernel timeout 丟失進度。
 
 ## 資料模型（SSOT）
 
