@@ -6,6 +6,13 @@
  * coverage gate has a real, meaningful surface to protect.
  */
 
+// TWD 幣制展示 SSOT (issue #25): alertMessage routes its price display through
+// moneyTWD so the alert string carries a "TWD " prefix and no ".00". This is a
+// DISPLAY-only reference — it is NOT a decision function (shouldAlert /
+// priceVerdict / sparkPath / findEntry / thresholdMet / percentBelowTarget /
+// alertedItems / sortByUrgency all stay byte-unchanged below).
+import { moneyTWD } from './format.js'
+
 /**
  * A watched item.
  * @typedef {'name': string, 'url'?: string, 'price': number, 'target': number,
@@ -61,7 +68,7 @@ export function alertMessage(item) {
   const pct = Math.round(percentBelowTarget(item))
   const name = item.name || '未命名'
   if (pct >= 0) {
-    return `${name} 跌破目標價 $${item.target.toFixed(2)}（${pct}% 低於目標）`
+    return `${name} 跌破目標價 ${moneyTWD(item.target)}（${pct}% 低於目標）`
   }
   return `${name} 尚未到價，離目標還差 ${Math.abs(pct)}%`
 }

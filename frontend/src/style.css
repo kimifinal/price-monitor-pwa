@@ -164,3 +164,68 @@ select:focus-visible {
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================
+ * SKELETON-25 :: live-section loading placeholders (no layout shift).
+ *
+ * Fills the 即時比價 (live) section with shimmering placeholder cards while the
+ * offline snapshot loads, so the real price cards swap in with NO layout shift.
+ *
+ * The shimmer keyframe and every colour resolve through the design-token SSOT
+ * (issue 21) with no raw hex and no new token; the animation runs on the
+ * universal wildcard selector, so issue 22's prefers-reduced-motion guard
+ * (animation-duration 0.001ms) neutralises it. This block adds nothing that
+ * bypasses that guard.
+ * ============================================================ */
+
+/* The shimmer: a lighter band (--muted) glides across the --surface-1 base over
+ * a 200%-wide gradient, driven by the background-position keyframe below. */
+.skeleton-line {
+  display: block;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--surface-1) 25%, var(--muted) 37%, var(--surface-1) 63%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* Each placeholder mirrors a PriceHistory card's shape + footprint
+ * (head row + sparkline placeholder + foot row). min-height keeps the
+ * skeleton/loaded box the same size, so loading -> loaded shifts nothing. */
+.skeleton-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  min-height: 92px;
+  margin-bottom: 8px;
+}
+.skeleton-card .sk-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.skeleton-card .sk-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.skeleton-card .sk-spark {
+  height: 34px;
+  margin: 8px 0 4px;
+}
+.skeleton-card .sk-name { width: 45%; height: 14px; }
+.skeleton-card .sk-badge { width: 52px; height: 14px; }
+.skeleton-card .sk-now { width: 72px; height: 16px; }
+.skeleton-card .sk-pts { width: 36px; height: 12px; }
+
