@@ -32,7 +32,7 @@ function remove() {
       <span class="target">/ 目標 {{ moneyTWD(item.target) }}</span>
     </div>
     <p class="msg" :class="{ hot: isAlerting() }">{{ msg() }}</p>
-    <a v-if="item.url" :href="item.url" target="_blank" rel="noopener" aria-label="開啟該商品產品網頁（新分頁）">查看 →</a>
+    <a v-if="item.url" :href="item.url" target="_blank" rel="noopener" aria-label="開啟該商品產品網頁（新分頁）">查看</a>
   </div>
 </template>
 
@@ -41,7 +41,7 @@ function remove() {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 10px;
+  padding: 8px;
   margin-bottom: 8px;
 }
 .item-card[data-alert='true'] {
@@ -52,6 +52,9 @@ function remove() {
   font-size: 12px;
   color: var(--text-2);
 }
+.item-card a:active,
+.remove-btn:active { filter: brightness(1.2); }
+
 .hot {
   color: var(--success);
   font-weight: bold;

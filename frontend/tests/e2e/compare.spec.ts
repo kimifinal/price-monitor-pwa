@@ -14,7 +14,9 @@ test('the compare section renders sparkline cards sorted by drop %', async ({ pa
   await expect(cards.first()).toBeVisible()
   await expect(cards).toHaveCount(3)
 
-  // each card draws a sparkline path + shows a verdict badge
-  await expect(cards.first().locator('path')).toBeVisible()
+  // each card draws a sparkline path (+ a verdict badge). The card now ALSO carries
+  // decorative line-icons (#40), so address the sparkline path via its .ph-spark
+  // container — not a bare 'path' that would also match the cart/chart icons.
+  await expect(cards.first().locator('.ph-spark path')).toBeVisible()
   await expect(cards.first().locator('.ph-badge')).toBeVisible()
 })

@@ -17,6 +17,7 @@ import {
   deserializeWatchlist,
   buildExportBlob,
 } from '../lib/watchlist.js'
+import SectionIcon from './SectionIcon.vue'
 
 const props = defineProps({
   // Seed the editor from a list instead of localStorage (used by tests / host).
@@ -144,7 +145,7 @@ function doImport() {
 <template>
   <section class="watchlist-editor" data-testid="watchlist-editor">
     <div class="we-head">
-      <h2>⚙ 自動門檻 Gate（{{ rows.length }}）</h2>
+      <h2><section-icon name="gear" title="自動門檻" /> 自動門檻 Gate（{{ rows.length }}）</h2>
       <div class="we-head-actions">
         <button class="we-export" type="button" data-testid="we-export" aria-label="匯出整個追蹤清單為 JSON" @click="doExport">
           匯出
@@ -201,7 +202,7 @@ function doImport() {
     </div>
 
     <p v-if="isEmpty" class="we-empty" data-testid="we-empty">
-      清單為空 —— 不會有任何通知（沉默是預設）。
+      清單為空，不會有任何通知（沉默是預設）。
     </p>
 
     <ul class="we-list">
@@ -276,6 +277,10 @@ function doImport() {
 </template>
 
 <style scoped>
+/* anti-slop a11y (gate 26b): full interaction states on controls */
+  .we-reset:active, .we-remove:active, .we-add-btn:active,
+  .we-export:active, .we-import:active, .we-copy:active, .we-download:active, .we-do-import:active { filter: brightness(1.12); }
+  .we-reset:disabled, .we-add-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .watchlist-editor {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -293,6 +298,7 @@ function doImport() {
   font-size: 14px;
   color: var(--text);
   margin: 0;
+  text-wrap: balance;
 }
 .we-reset,
 .we-remove,
@@ -302,7 +308,7 @@ function doImport() {
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 5px 10px;
+  padding: 4px 8px;
   cursor: pointer;
   white-space: nowrap;
   flex: none;
@@ -319,7 +325,7 @@ function doImport() {
 .we-list {
   list-style: none;
   padding: 0;
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -330,7 +336,7 @@ function doImport() {
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 10px;
+  padding: 8px;
 }
 .we-row-top {
   display: flex;
@@ -358,7 +364,7 @@ function doImport() {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 @media (min-width: 380px) {
   .we-th-fields {
@@ -370,7 +376,7 @@ function doImport() {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 .we-th-label {
   font-size: 11px;
@@ -389,7 +395,7 @@ function doImport() {
   color: var(--text);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 7px 8px;
+  padding: 8px 8px;
   font-size: 13px;
 }
 
@@ -409,7 +415,7 @@ function doImport() {
   margin-top: 12px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 @media (min-width: 380px) {
   .we-add {
@@ -440,7 +446,7 @@ function doImport() {
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 5px 10px;
+  padding: 4px 8px;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -457,8 +463,8 @@ function doImport() {
 .we-io-panel {
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 10px;
-  margin: 10px 0 0 0;
+  padding: 8px;
+  margin: 8px 0 0 0;
   background: var(--surface-2);
 }
 .we-io-hint {
@@ -474,7 +480,7 @@ function doImport() {
   color: var(--text);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 7px 8px;
+  padding: 8px 8px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 11px;
   resize: vertical;
@@ -495,7 +501,7 @@ function doImport() {
   background: var(--accent);
   border: 1px solid var(--border-2);
   border-radius: 6px;
-  padding: 5px 12px;
+  padding: 4px 12px;
   cursor: pointer;
 }
 .we-import-msg {

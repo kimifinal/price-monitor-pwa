@@ -202,9 +202,10 @@ select:focus-visible {
  * skeleton/loaded box the same size, so loading -> loaded shifts nothing. */
 .skeleton-card {
   background: var(--surface);
+  color: var(--text);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 10px 12px;
+  padding: 8px 12px;
   min-height: 92px;
   margin-bottom: 8px;
 }
@@ -218,7 +219,7 @@ select:focus-visible {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 6px;
+  margin-top: 8px;
 }
 .skeleton-card .sk-spark {
   height: 34px;

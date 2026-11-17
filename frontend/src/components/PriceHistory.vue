@@ -5,11 +5,13 @@
 // sparkPath from the single source of truth (monitor.js).
 //
 // The card is source-agnostic: a Costco item flows through the SAME priceVerdict,
-// with a small source badge (🛒 costco). No per-source verdict logic.
+// with a small source line-icon (a cart, currentColor — not an emoji (sloplint 30a);
+// sloplint 30a). No per-source verdict logic.
 import { computed } from 'vue'
 import { priceVerdict, sparkPath } from '../lib/monitor.js'
 // TWD 幣制展示 SSOT (issue #25): current price carries a "TWD " prefix, no ".00".
 import { moneyTWD } from '../lib/format.js'
+import SectionIcon from './SectionIcon.vue'
 
 const props = defineProps({
   // card: { name, current, source?, tag?, currency?,
@@ -36,13 +38,14 @@ const stroke = computed(() =>
 
 const points = computed(() => props.card?.series?.length || props.card?.metrics?.points || 0)
 
-// Source badge: a Costco item wears a 🛒. The verdict stays the single SSOT.
+// Source badge: a Costco item wears a <section-icon name="cart"/> line-icon (#40, sloplint 30a:
+// no shopping-cart emoji). The verdict stays the single SSOT; srcText is text-only, the
+// icon is the badge's <section-icon> child, so the badge tints with the verdict colour.
 const source = computed(() => props.card?.source || props.card?.tag || 'costco')
-const kindIcon = computed(() => '🛒')
 const sourceLabel = computed(() => source.value)
 const currency = computed(() => props.card?.currency || '')
 const srcText = computed(() =>
-  `${kindIcon.value} ${sourceLabel.value}${currency.value ? ` · ${currency.value}` : ''}`,
+  `${sourceLabel.value}${currency.value ? ` · ${currency.value}` : ''}`,
 )
 </script>
 
@@ -51,8 +54,8 @@ const srcText = computed(() =>
     <div class="ph-head">
       <strong class="ph-name">{{ card.name || '未命名' }}</strong>
       <div class="ph-tags">
-        <span class="ph-src">{{ srcText }}</span>
-        <span class="ph-badge" :style="{ color: stroke }">📊 {{ verdict.label }}</span>
+        <span class="ph-src" data-icon="source"><section-icon name="cart" title="商品來源" /><span>{{ srcText }}</span></span>
+        <span class="ph-badge" :style="{ color: stroke }"><section-icon name="chart" title="價格結論" /><span>{{ verdict.label }}</span></span>
       </div>
     </div>
     <div class="ph-spark">
@@ -67,7 +70,7 @@ const srcText = computed(() =>
       <span class="ph-now">{{ moneyTWD(card.current) }}</span>
       <span class="ph-pts" v-if="points">{{ points }} 點</span>
       <a v-if="card.url" :href="card.url" target="__blank" rel="noopener"
-         class="ph-link" aria-label="開啟該商品產品網頁（新分頁）">查看 →</a>
+         class="ph-link" aria-label="開啟該商品產品網頁（新分頁）">查看</a>
     </div>
   </div>
 </template>
@@ -77,7 +80,7 @@ const srcText = computed(() =>
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 8px 12px;
   margin-bottom: 8px;
 }
 .ph-head {
@@ -91,6 +94,8 @@ const srcText = computed(() =>
   align-items: center;
   gap: 8px;
 }
+.ph-src,
+.ph-badge { display: inline-flex; align-items: center; gap: 4px; }
 .ph-src { font-size: 11px; color: var(--text-3); }
 .ph-badge { font-size: 12px; font-weight: 600; }
 .ph-spark { margin: 8px 0 4px; }
