@@ -44,33 +44,45 @@ describe('watchlist relabel source guard (#24)', () => {
     expect(editorVue.length).toBeGreaterThan(0)
   })
 
-  it('AC1a: App.vue manual list header reads 🎯 手動追蹤', () => {
-    // The user's manual list now owns 🎯 (his tracked-target items).
-    expect(appVue).toContain('🎯 手動追蹤')
+  it('AC1a: App.vue manual list header carries the target icon + 手動追蹤 text', () => {
+    // #40: the manual list owns the "target" line-icon (it was the 🎯 emoji).
+    // The discriminator moved from the emoji CHAR to the icon NAME — 1:1 semantics.
+    expect(appVue).toContain('name="target"')
+    expect(appVue).toContain('手動追蹤')
   })
 
-  it('AC1b/AC1c: gate header reads ⚙ 自動門檻 Gate in BOTH App.vue and the editor', () => {
-    // The system's gate seed moves to ⚙ in both places where it used to say 🎯 個人化.
-    expect(appVue).toContain('⚙ 自動門檻 Gate')
-    expect(editorVue).toContain('⚙ 自動門檻 Gate')
+  it('AC1b/AC1c: gate header carries the gear icon + 自動門檻 Gate in BOTH files', () => {
+    expect(appVue).toContain('name="gear"')
+    expect(appVue).toContain('自動門檻 Gate')
+    expect(editorVue).toContain('name="gear"')
+    expect(editorVue).toContain('自動門檻 Gate')
   })
 
-  it('AC1d: the old words (追蹤中 / 🎯 個人化) are gone from BOTH files', () => {
-    // No regression back to the pre-#24 copy in either the host page or the editor.
+  it('AC1d: the old words (追蹤中 / 個人化) are gone from BOTH files', () => {
+    // No regression back to the pre-#24 copy in either host page or editor.
     expect(appVue).not.toContain('追蹤中')
     expect(editorVue).not.toContain('追蹤中')
-    expect(appVue).not.toContain('🎯 個人化')
-    expect(editorVue).not.toContain('🎯 個人化')
+    expect(appVue).not.toContain('個人化')
+    expect(editorVue).not.toContain('個人化')
   })
 
-  it('AC2: 🎯 is not duplicated — gate headers carry ⚙, only App.vue manual list keeps 🎯', () => {
-    // 🎯 must appear exactly once across the whole UI: the App.vue manual-list header.
-    // The gate seed must be ⚙ (0× 🎯 in the editor). This is the anti-duplication core
-    // of #24 — a future change that re-stamps 🎯 on a gate header flips this red.
-    expect(count(appVue, '🎯')).toBe(1)
-    expect(count(editorVue, '🎯')).toBe(0)
-    // The gate headers now carry ⚙ in both files (proves the move, not just the removal).
-    expect(count(appVue, '⚙')).toBeGreaterThanOrEqual(1)
-    expect(count(editorVue, '⚙ 自動門檻 Gate')).toBeGreaterThanOrEqual(1)
+  it('AC2: target icon not duplicated — manual=App only, gate uses gear in both', () => {
+    // The anti-duplication core of #24, now in icon NAME instead of the emoji char:
+    // the manual "target" icon lives exactly once in App.vue and nowhere in the
+    // editor; the gate's "gear" icon is in BOTH. A future change that re-stamps a
+    // target icon on a gate header (or puts one manual icon on two surfaces) flips
+    // this red — same invariant, emoji-free.
+    expect(count(appVue, 'name="target"')).toBe(1)
+    expect(count(editorVue, 'name="target"')).toBe(0)
+    expect(count(appVue, 'name="gear"')).toBeGreaterThanOrEqual(1)
+    expect(count(editorVue, 'name="gear"')).toBeGreaterThanOrEqual(1)
+  })
+
+  it('AC3 #40: App.vue section headings carry line icons, not emoji', () => {
+    // The sloplint 30a migration: the headlined section titles are now icon + text,
+    // no raw emoji. Emoji are NOT banned project-wide — the editor's we-fire probe
+    // and code comments stay as-is — this only checks the App.vue headings.
+    const EMOJI = ['🔔', '🎯', '📊', '📡', '⚙']
+    for (const e of EMOJI) expect(appVue.includes(e)).toBe(false)
   })
 })

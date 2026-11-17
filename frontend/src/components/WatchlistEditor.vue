@@ -17,6 +17,7 @@ import {
   deserializeWatchlist,
   buildExportBlob,
 } from '../lib/watchlist.js'
+import SectionIcon from './SectionIcon.vue'
 
 const props = defineProps({
   // Seed the editor from a list instead of localStorage (used by tests / host).
@@ -144,7 +145,7 @@ function doImport() {
 <template>
   <section class="watchlist-editor" data-testid="watchlist-editor">
     <div class="we-head">
-      <h2>⚙ 自動門檻 Gate（{{ rows.length }}）</h2>
+      <h2><section-icon name="gear" title="自動門檻" /> 自動門檻 Gate（{{ rows.length }}）</h2>
       <div class="we-head-actions">
         <button class="we-export" type="button" data-testid="we-export" aria-label="匯出整個追蹤清單為 JSON" @click="doExport">
           匯出

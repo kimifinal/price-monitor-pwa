@@ -23,7 +23,7 @@ describe('PriceHistory.vue', () => {
     const card = { name: 'Mystery', current: 0, series: [], metrics: { points: 0 } }
     const w = mount(PriceHistory, { props: { card } })
     expect(w.text()).toContain('尚無歷史')
-    expect(w.find('path').exists()).toBe(false)
+    expect(w.find('.ph-spark path').exists()).toBe(false)
   })
 
   it('sets data-verdict so a good-deal card is visually distinguishable', () => {
@@ -46,6 +46,7 @@ describe('PriceHistory.vue', () => {
     }
     const w = mount(PriceHistory, { props: { card } })
     expect(w.get('.price-history').attributes('data-source')).toBe('costco')
-    expect(w.text()).toContain('🛒')
+    // #40: the source badge is a cart line-icon (sloplint 30a), not a 🛒 glyph.
+    expect(w.find('.ph-src[data-icon="source"]').exists()).toBe(true)
   })
 })

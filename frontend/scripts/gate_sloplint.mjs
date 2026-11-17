@@ -30,7 +30,9 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const EXCLUDE = new Set(['20', '30a', '48'])
+const EXCLUDE = new Set(['20', '48'])  // 30a (emoji-in-heading) un-deferred by #40: heading
+// icons are line-icon SVGs, so 30a is now enforceable. 20 = Hallmark stamp (cascade,
+// deferred); 48 = index.html hex (flash-frevent fallbacks are legitimate, deferred).
 
 // Reuse the node that is running this script, so it runs in exactly the CI node.
 const r = spawnSync(

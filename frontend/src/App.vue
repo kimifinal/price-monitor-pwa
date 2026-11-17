@@ -4,6 +4,7 @@ import { loadItems, saveItems } from './lib/storage.js'
 import { alertedItems, sortByUrgency } from './lib/monitor.js'
 import { loadLiveHistory } from './lib/history.js'
 import AddItemForm from './components/AddItemForm.vue'
+import SectionIcon from './components/SectionIcon.vue'
 import ItemCard from './components/ItemCard.vue'
 import PriceHistory from './components/PriceHistory.vue'
 import WatchlistEditor from './components/WatchlistEditor.vue'
@@ -102,7 +103,7 @@ function onWatchlistChange(wl) {
     </header>
 
     <section class="alerts" v-if="alerts.length">
-      <h2>🔔 已觸發 {{ alerts.length }} 筆</h2>
+      <h2><section-icon name="bell" title="已觸發通知" /> 已觸發 {{ alerts.length }} 筆</h2>
       <item-card
         v-for="item in alerts"
         :key="item.id"
@@ -112,7 +113,7 @@ function onWatchlistChange(wl) {
     </section>
 
     <section class="watchlist">
-      <h2>🎯 手動追蹤（{{ items.length }}）</h2>
+      <h2><section-icon name="target" title="手動追蹤清單" /> 手動追蹤（{{ items.length }}）</h2>
       <p class="subtitle">手動加入的名單，依緊迫度排序，目標價跌破現價就通知。</p>
       <add-item-form @add="onAdd" />
       <item-card
@@ -124,7 +125,7 @@ function onWatchlistChange(wl) {
     </section>
 
     <section class="personalize">
-      <h2>⚙ 自動門檻 Gate（離線可編輯）</h2>
+      <h2><section-icon name="gear" title="自動門檻" /> 自動門檻 Gate（離線可編輯）</h2>
       <p class="subtitle">
         每項的「觸發開關」，只有清單內、且達到目標價 / 最低降幅門檻的品項才會通知；清單為空則永遠沉默。
       </p>
@@ -132,7 +133,7 @@ function onWatchlistChange(wl) {
     </section>
 
     <section class="price-history" data-section="compare">
-      <h2>📊 歷史價格比價 · 3C / 家電</h2>
+      <h2><section-icon name="chart" title="歷史價格比價" /> 歷史價格比價 · 3C / 家電</h2>
       <p class="subtitle">依近期降幅排序，綠色 = 歷史最低、可考慮入手</p>
       <price-history
         v-for="card in compareRows"
@@ -142,7 +143,7 @@ function onWatchlistChange(wl) {
     </section>
 
     <section class="price-history" data-section="live">
-      <h2>📡 即時比價（離線可用）</h2>
+      <h2><section-icon name="signal" title="即時比價" /> 即時比價（離線可用）</h2>
       <p class="subtitle">
         由離線快取 / 快照驅動，無網路時仍渲染最新走勢與結論（離線 PWA · #6）
       </p>
