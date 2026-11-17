@@ -44,7 +44,7 @@ function submit() {
 <style>
 .add-form {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
   margin-bottom: 12px;
 }
@@ -59,5 +59,10 @@ function submit() {
 .add-form button {
   background: var(--accent);
   cursor: pointer;
+}
+.add-form button:active { filter: brightness(1.15); }
+.add-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

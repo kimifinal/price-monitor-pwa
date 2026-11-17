@@ -41,6 +41,20 @@ jobs:
             exit 1
           fi
           echo "✅ CSS token guard passed: no raw hex in .vue components."
+      # ---- Anti-AI-slop design guard (issue #38 · Hallmark sloplint) ----
+      # BLOCKING on enforceable Floor/Reflex gates. Sloplint is a zero-dep Node
+      # checker (vendored at frontend/scripts/sloplint.mjs) with a thin enforcer
+      # (frontend/scripts/gate_sloplint.mjs); the anti-slop vocabulary lives in
+      # its gates.md (human mirror: pipeline/design-anti-slop-gates.md). Three
+      # gate families are DEFERRED + excluded in the enforcer with reasons logged
+      # in issue #38:
+      #   20  Hallmark stamp  -> we keep design in design.md + pipeline/
+      #   30a emoji-in-heading -> collides with the tested #24 relabel invariant
+      #   48  colour-in-index.html -> a dark flash-fill that mirrors --bg/--text
+      # (raw hex inside .vue is already blocked by the CSS-token guard above).
+      - name: 'Sloplint — anti-AI-slop design guard (BLOCKING, enforceable gates)'
+        working-directory: frontend
+        run: node scripts/gate_sloplint.mjs
       - name: Lint
         working-directory: frontend
         run: npm run lint

@@ -113,7 +113,7 @@ function onWatchlistChange(wl) {
 
     <section class="watchlist">
       <h2>🎯 手動追蹤（{{ items.length }}）</h2>
-      <p class="subtitle">手動加入的名單，依緊迫度排序——目標價跌破現價就通知。</p>
+      <p class="subtitle">手動加入的名單，依緊迫度排序，目標價跌破現價就通知。</p>
       <add-item-form @add="onAdd" />
       <item-card
         v-for="item in sorted"
@@ -126,7 +126,7 @@ function onWatchlistChange(wl) {
     <section class="personalize">
       <h2>⚙ 自動門檻 Gate（離線可編輯）</h2>
       <p class="subtitle">
-        每項的「觸發開關」—只有清單內、且達到目標價 / 最低降幅門檻的品項才會通知；清單為空則永遠沉默。
+        每項的「觸發開關」，只有清單內、且達到目標價 / 最低降幅門檻的品項才會通知；清單為空則永遠沉默。
       </p>
       <watchlist-editor @change="onWatchlistChange" />
     </section>
@@ -144,7 +144,7 @@ function onWatchlistChange(wl) {
     <section class="price-history" data-section="live">
       <h2>📡 即時比價（離線可用）</h2>
       <p class="subtitle">
-        由離線快取 / 快照驅動 — 無網路時仍渲染最新走勢與結論（離線 PWA · #6）
+        由離線快取 / 快照驅動，無網路時仍渲染最新走勢與結論（離線 PWA · #6）
       </p>
       <!-- #25: skeleton while loading (no layout shift), real cards when loaded,
            a "no data" subtitle only when truly empty after the load. -->

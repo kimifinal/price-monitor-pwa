@@ -67,7 +67,7 @@ const srcText = computed(() =>
       <span class="ph-now">{{ moneyTWD(card.current) }}</span>
       <span class="ph-pts" v-if="points">{{ points }} 點</span>
       <a v-if="card.url" :href="card.url" target="__blank" rel="noopener"
-         class="ph-link" aria-label="開啟該商品產品網頁（新分頁）">查看 →</a>
+         class="ph-link" aria-label="開啟該商品產品網頁（新分頁）">查看</a>
     </div>
   </div>
 </template>
@@ -77,7 +77,7 @@ const srcText = computed(() =>
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 8px 12px;
   margin-bottom: 8px;
 }
 .ph-head {
