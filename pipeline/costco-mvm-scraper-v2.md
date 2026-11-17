@@ -117,3 +117,39 @@ costco_mvm_scraper.ts（重做）
 - `catalogScraper.fallback`：API 404 → 用 fixture 快照，不 crash
 - `detectChange`：price_drop / out_of_stock / new_item 三情境
 - 禁 vision 依賴（全改 HTTP API）
+- 上述「禁 vision」僅適用於 item 層；MVM 檔期內容仍須 vision，見下節。
+
+---
+
+## § 分工：API 可全自動 vs 只能半自動 (vision) — 2026-11-17 實測
+
+> 狀態更新：上段「待辦（v2 實作前）」的解分頁 / 全量 8,458 已於 2026-11-16~17
+> 解決——空 `query=` + `currentPage` 分頁 → 全量 **10,049** 筆，落
+> `data/costco_catalog/products.full.json`。此節取代其定位。
+
+### ✅ 可全自動（全量 API，免 vision）— item 層
+`detectChange` 直接比 `decals` + `price`/`basePrice`/`stock` 的 daily diff 即可自動抓：
+- **降價 / 特價**：`price < basePrice`，或 `decals` 新增「限時特價 / 優惠特價」
+- **缺貨**：`stock.stockLevelStatus` → `outOfStock`
+- **新品 / 標籤變**：新增 SKU，或 `decals` 新增「網路獨家 / 新品推薦」
+
+`decals` 現值分布（全量 10,049 筆）：限時特價 170、優惠特價 66、網路獨家 4,693、新品推薦 386。
+
+### ❌ 只能半自動 — MVM 檔期內容
+「某個 MVM 檔期內有哪些商品 + 檔期日期」這層**公開 API 抓不到**（2026-11-17 實測）：
+- `/rest/v2/taiwan/promotions?type=<mvm|mvm2|promotion|...>` 一律回 **`AccessDenied`**；連帶
+  homepage cookie 也開不了 → 是 server 端 auth 閘，非少傳參數
+- content 頁 `/content/fy27pX-mvm2-*` 是**純 SPA**：HTML 0 商品資料（0 CJK / 0 SKU / 0 price），
+  curl 抓不到，須瀏覽器攔截其內部 XHR
+- homepage 未列現行檔期 slug（頁內 `mvm-w1~7` 是舊 config 雜訊 `{"key":"/fy21p1-autumnmvm-w*","value":"/savings"}`，
+  非現行 `/content/fy27*` 連結）→ 無可靠訊號「預測下一個新檔期」
+
+⇒ 抓 MVM 檔期內容維持 v1 方案：**Playwright 截圖 + vision 抽價**（或瀏覽器攔 XHR）。
+
+### 分工小結
+
+| 需求 | 路徑 | 全自動? |
+|---|---|---|
+| 降價 / 特價 / 缺貨 / 新品（item 層） | 全量 API + `decals` diff | ✅ 全自動 |
+| MVM 檔期內容（策展分組 + 檔期日期 + 該組商品） | 維持截圖 + vision | ❌ 半自動 |
+| 偵測「有新 MVM 檔期出現」（活動層） | 無可靠公開 HTTP 訊號 | ❌ 半自動（靠 vision 比對） |
