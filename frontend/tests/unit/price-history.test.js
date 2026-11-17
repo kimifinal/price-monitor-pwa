@@ -15,7 +15,7 @@ describe('PriceHistory.vue', () => {
     expect(w.text()).toContain('BOSE Solo Soundbar')
     expect(w.text()).toContain('8,149')
     expect(w.text()).toContain('歷史最低') // verdict from monitor.js, not the component
-    expect(w.find('path').exists()).toBe(true) // a sparkline is drawn
+    expect(w.find('.ph-spark path').exists()).toBe(true) // a sparkline (in .ph-spark) is drawn; #40 icons live in .ph-tags, not .ph-spark
     expect(w.get('a').attributes('href')).toBe('https://example.com/sku')
   })
 
