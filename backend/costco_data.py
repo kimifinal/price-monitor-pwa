@@ -1,6 +1,6 @@
 """Offline snapshot of Costco 3C + 家電 PDP prices.
 
-Refreshed 2026-11-17 via BFS crawl of Costco PDP "相關推薦" links
+Refreshed 2026-11-18 via BFS crawl of Costco PDP "相關推薦" links
 (15 家電 + 15 3C items, all real SKUs).
 Used by the API (live=False default) and by the offline unit tests so CI stays
 offline-safe and free of 429 limits.
@@ -84,15 +84,6 @@ DEMO_BASKET = [
     "category_path": "https://www.costco.com.tw/Digital-Mobile/Mobile-Tablets/Mobile-Tablets-Accessories/Acer-Gaming-USB-A-to-USB-C-1-m-White-USB-C-to-USB-C-12-m-White-USB-C-to-USB-C-2-m-White-Silicone-Braided-Cable-3-Pack-Set/p/153862"
   },
   {
-    "name": "JLab Epic Sport ANC 3 運動降噪真無線藍牙耳機",
-    "price": 2899.0,
-    "currency": "TWD",
-    "sku": "153868",
-    "url": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Epic-Sport-ANC-3-True-Wireless-Earbuds/p/153868",
-    "tag": "3C",
-    "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Epic-Sport-ANC-3-True-Wireless-Earbuds/p/153868"
-  },
-  {
     "name": "Apple AirPods 5",
     "price": 4249.0,
     "currency": "TWD",
@@ -102,13 +93,31 @@ DEMO_BASKET = [
     "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Apple-AirPods-5/p/169089"
   },
   {
-    "name": "SteelSeries 賽睿 Qck Performance 滑鼠墊 XL-Control",
+    "name": "JLab Epic Sport ANC 3 運動降噪真無線藍牙耳機",
+    "price": 2899.0,
+    "currency": "TWD",
+    "sku": "153868",
+    "url": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Epic-Sport-ANC-3-True-Wireless-Earbuds/p/153868",
+    "tag": "3C",
+    "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Epic-Sport-ANC-3-True-Wireless-Earbuds/p/153868"
+  },
+  {
+    "name": "Apple AirPods 5 配備無線充電盒",
+    "price": 4899.0,
+    "currency": "TWD",
+    "sku": "169090",
+    "url": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Apple-AirPods-5-with-Wireless-Charging-Case/p/169090",
+    "tag": "3C",
+    "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Apple-AirPods-5-with-Wireless-Charging-Case/p/169090"
+  },
+  {
+    "name": "PHILIPS 百年紀念半開放頭戴式藍牙耳機-TAH2000",
     "price": 1299.0,
     "currency": "TWD",
-    "sku": "157689",
-    "url": "https://www.costco.com.tw/Digital-Mobile/Laptops-Computers/Keyboards-Mice-Computer-Accessories/SteelSeries-Qck-Performance-Mouse-Pad-XL-Control/p/157689",
+    "sku": "159895",
+    "url": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Philips-Centennial-Semi-Open-Bluetooth-Headphones-TAH2000/p/159895",
     "tag": "3C",
-    "category_path": "https://www.costco.com.tw/Digital-Mobile/Laptops-Computers/Keyboards-Mice-Computer-Accessories/SteelSeries-Qck-Performance-Mouse-Pad-XL-Control/p/157689"
+    "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Philips-Centennial-Semi-Open-Bluetooth-Headphones-TAH2000/p/159895"
   },
   {
     "name": "PowerA 任天堂官方授權 有線耳機 卡比 NSHS0299-01",
@@ -136,15 +145,6 @@ DEMO_BASKET = [
     "url": "https://www.costco.com.tw/Digital-Mobile/Laptops-Computers/Keyboards-Mice-Computer-Accessories/Soodatek-CAT7-FFTP-Double-Shielded-10Gpbs-High-Speed-Ethernet-Cable-RJ45-5-m/p/154298",
     "tag": "3C",
     "category_path": "https://www.costco.com.tw/Digital-Mobile/Laptops-Computers/Keyboards-Mice-Computer-Accessories/Soodatek-CAT7-FFTP-Double-Shielded-10Gpbs-High-Speed-Ethernet-Cable-RJ45-5-m/p/154298"
-  },
-  {
-    "name": "Tresanti 電動升降桌",
-    "price": 5999.0,
-    "currency": "TWD",
-    "sku": "1646074",
-    "url": "https://www.costco.com.tw/Furniture-Kitchen/Furniture/Computer-Desk-Chair-Sets/Tresanti-Adjustable-Desk/p/1646074",
-    "tag": "3C",
-    "category_path": "https://www.costco.com.tw/Furniture-Kitchen/Furniture/Computer-Desk-Chair-Sets/Tresanti-Adjustable-Desk/p/1646074"
   },
   {
     "name": "BOSE Solo Soundbar 電視音響 II",
@@ -237,24 +237,6 @@ DEMO_BASKET = [
     "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/Sony-31-Channel-BRAVIA-Theatre-Bar-5-Soundbar-with-Wireless-Subwoofer-HT-B500/p/162420"
   },
   {
-    "name": "DeWALT 得偉 乾濕兩用吸塵器",
-    "price": 3399.0,
-    "currency": "TWD",
-    "sku": "6677010",
-    "url": "https://www.costco.com.tw/Televisions-Appliances/Small-Appliances/Vacuums-Floor-Care/DeWALT-DryWet-Vacuum/p/6677010",
-    "tag": "家電",
-    "category_path": "https://www.costco.com.tw/Televisions-Appliances/Small-Appliances/Vacuums-Floor-Care/DeWALT-DryWet-Vacuum/p/6677010"
-  },
-  {
-    "name": "創維 75吋 4K QLED HSR120 AI卡拉OK 聯網液晶顯示器 75Q750GK",
-    "price": 25999.0,
-    "currency": "TWD",
-    "sku": "153992",
-    "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/70-79-TVs/Skyworth-75-Inch-4K-QLED-HSR120-AI-Karaoke-Smart-Monitor-75Q750GK/p/153992",
-    "tag": "家電",
-    "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/70-79-TVs/Skyworth-75-Inch-4K-QLED-HSR120-AI-Karaoke-Smart-Monitor-75Q750GK/p/153992"
-  },
-  {
     "name": "飛利浦 55吋 4K Google TV 顯示器 55PUH7630/96",
     "price": 13699.0,
     "currency": "TWD",
@@ -280,6 +262,24 @@ DEMO_BASKET = [
     "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/TOSHIBA-50-inch-4K-QLED-VIDAA-Smart-Monitor-50M450RP/p/162414",
     "tag": "家電",
     "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/TOSHIBA-50-inch-4K-QLED-VIDAA-Smart-Monitor-50M450RP/p/162414"
+  },
+  {
+    "name": "東芝 Regza 55型 QLED144Hz 全陣列背光智慧顯示器 55Z670NT",
+    "price": 18999.0,
+    "currency": "TWD",
+    "sku": "156638",
+    "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/Toshiba-Regza-55-inch-Full-Array-QLED-144Hz-Smart-Monitor-55Z670NT/p/156638",
+    "tag": "家電",
+    "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/Toshiba-Regza-55-inch-Full-Array-QLED-144Hz-Smart-Monitor-55Z670NT/p/156638"
+  },
+  {
+    "name": "TCL 55吋 C7L 頂級 SQD-Mini LED 量子智能連網液晶顯示器 不含視訊盒 55C7L | Cos...",
+    "price": 29999.0,
+    "currency": "TWD",
+    "sku": "161713",
+    "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/TCL-55-inch-C7L-Premium-SQD-Mini-LED-Smart-Monitor-without-Tuner-Box-55C7L/p/161713",
+    "tag": "家電",
+    "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/TCL-55-inch-C7L-Premium-SQD-Mini-LED-Smart-Monitor-without-Tuner-Box-55C7L/p/161713"
   }
 ]
 
