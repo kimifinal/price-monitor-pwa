@@ -11,11 +11,26 @@ import WatchlistEditor from './components/WatchlistEditor.vue'
 // #25: loading-placeholders for the live section (no layout shift). Bound as
 // <skeleton-cards> in the template below.
 import SkeletonCards from './components/SkeletonCard.vue'
+// MVM 檔期目錄 (offline-baked catalog). loadMvmCatalog reads the committed
+// snapshot in src/data/mvm.json, so this section renders ALL 6 檔期 with no
+// network — mirroring how loadLiveHistory keeps the 比價 cards offline-safe.
+import MvmCatalog from './components/MvmCatalog.vue'
+import { loadMvmCatalog } from './lib/mvm.js'
 
 const items = ref(loadItems())
 
 const alerts = computed(() => alertedItems(items.value))
 const sorted = computed(() => sortByUrgency(items.value))
+
+// --- MVM 檔期目錄（離線 baked，6 檔期） -----------------------------------
+// Baked in src/data/mvm.json, so the WHOLE catalog renders offline with no
+// fetch — mirroring how loadLiveHistory keeps the 比價 cards offline-safe. The
+// default active tab is the first 檔期 carrying products (MvmCatalog picks it;
+// an empty 檔期 never owns the first screen).
+const mvm = loadMvmCatalog()
+const mvmTabs = mvm.tabs
+const mvmPriceTypes = mvm.priceTypes
+const mvmSourceDate = mvm.sourceDate
 
 // --- 歷史價格比價 demo -------------------------------------------------------
 // An offline sample series (no backend needed in the PWA). In production this
@@ -158,6 +173,16 @@ function onWatchlistChange(wl) {
       </template>
       <skeleton-cards v-else-if="loading" :count="3" />
       <p v-else class="subtitle">尚無即時資料</p>
+    </section>
+
+    <!-- MVM 檔期目錄 (B4): the offline-baked 6-檔期 catalog. Self-styles; lazy
+         grid renders only the active 檔期's cards. All 6 tabs are reachable. -->
+    <section class="mvm" data-section="mvm">
+      <MvmCatalog
+        :tabs="mvmTabs"
+        :price-types="mvmPriceTypes"
+        :source-date="mvmSourceDate"
+      />
     </section>
   </div>
 </template>

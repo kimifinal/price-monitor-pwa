@@ -1,0 +1,1130 @@
+{
+  "source": "Costco",
+  "source_date": "2026/11/16",
+  "price_types": {
+    "online_only": {
+      "label": "僅限好市多線上購物",
+      "badge": "橙色購物車圖示",
+      "meaning": "只有線上賣 賣場 沒有 或 賣場 售價 更高"
+    },
+    "store_online_diff": {
+      "label": "賣場售價 / 線上亦有優惠",
+      "badge": "橙色 '【賣場售價】' 標 + 橙色 '線上購物亦有優惠 售價以官網為準'",
+      "meaning": "這個價格 是賣場 的  線上 還 有 更 低 的 價"
+    },
+    "store_only": {
+      "label": "賣場獨家 / 平日限定",
+      "badge": "無  線上  標籤",
+      "meaning": "只有 賣場  有  沒有  線上"
+    }
+  },
+  "tabs": [
+    {
+      "tab_id": "fy27p3-mvm2-weekday",
+      "label": "平日限定",
+      "period": "2026/10/26 ~ 11/20",
+      "url": "https://www.costco.com.tw/content/fy27p3-mvm2-weekday",
+      "price_type": "store_only",
+      "description": "平日限定優惠，僅限實體賣場，週六不適用",
+      "n_products": "~10 (已 於 前 次 抓 取)"
+    },
+    {
+      "tab_id": "fy27p3-mvm2-w1",
+      "label": "優惠期間",
+      "period": "2026/10/26 ~ 11/22",
+      "url": "https://www.costco.com.tw/content/fy27p3-mvm2-w1",
+      "price_type": "online_online_diff",
+      "description": "週末/線上購物 優惠，賣場/線上 均有但 售價 可能 不同",
+      "n_products": 66,
+      "products": [
+        {
+          "name": "五月花 厚棒抽取式衛生紙 100抽X60入",
+          "sku": 154795,
+          "orig": 1149,
+          "promo": 919,
+          "discount": 230,
+          "type": "online_only",
+          "cat": "家清"
+        },
+        {
+          "name": "明治 明倍適 營養補充杯 草莓少甜 125mlX36",
+          "sku": 244328,
+          "orig": 1899,
+          "promo": 1519,
+          "discount": 380,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "明治 明倍適 營養補充杯 香蕉口味 125mlX36",
+          "sku": 144329,
+          "orig": 1899,
+          "promo": 1519,
+          "discount": 380,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "舒適牌 水次元5 刮鬍刀組 1刀架+9刀片",
+          "sku": 208576,
+          "orig": 519,
+          "promo": 399,
+          "discount": 120,
+          "type": "online_only",
+          "cat": "個護"
+        },
+        {
+          "name": "KOHLER 電熱毛巾架 110V",
+          "sku": 143489,
+          "orig": 8399,
+          "promo": 6699,
+          "discount": 1700,
+          "type": "online_only",
+          "cat": "家電"
+        },
+        {
+          "name": "TCL 12公斤 變頻直立式洗衣機 P312TLG",
+          "sku": 149471,
+          "orig": 9999,
+          "promo": 7999,
+          "discount": 2000,
+          "type": "online_only",
+          "cat": "家電"
+        },
+        {
+          "name": "LOOPLOOP TAG 物品尋找器 AT-10 含配件四入組",
+          "sku": 147738,
+          "orig": 1499,
+          "promo": 1199,
+          "discount": 300,
+          "type": "online_only",
+          "cat": "3C"
+        },
+        {
+          "name": "MIO MIVUE MP05 前後雙2K 1440P 行車記錄器 附32GB",
+          "sku": 152185,
+          "orig": 3489,
+          "promo": 2789,
+          "discount": 700,
+          "type": "online_only",
+          "cat": "3C"
+        },
+        {
+          "name": "ADIDAS 女休閒鞋 6-9 棕",
+          "sku": 158277,
+          "orig": 1259,
+          "promo": 999,
+          "discount": 260,
+          "type": "online_only",
+          "cat": "服飾"
+        },
+        {
+          "name": "NEOFLAM 雙耳四格多功能煎鍋 28cm",
+          "sku": 124266,
+          "orig": 1769,
+          "promo": 1369,
+          "discount": 400,
+          "type": "online_only",
+          "cat": "廚房"
+        },
+        {
+          "name": "CONAIR 美康雅 二合一手持掛燙熨斗 GS308TW",
+          "sku": 153085,
+          "orig": 1999,
+          "promo": 1379,
+          "discount": 620,
+          "type": "online_only",
+          "cat": "家電"
+        },
+        {
+          "name": "ELECTROLUX 32公升氣炸烤箱 EOT3215XFG",
+          "sku": 138032,
+          "orig": 4699,
+          "promo": 3759,
+          "discount": 940,
+          "type": "online_only",
+          "cat": "家電"
+        },
+        {
+          "name": "CASA 雙人記憶釋壓床墊 152X190X5",
+          "sku": 111405,
+          "orig": 3999,
+          "promo": 3199,
+          "discount": 800,
+          "type": "online_only",
+          "cat": "家品"
+        },
+        {
+          "name": "BLACKMORES 澳佳寶 DHA精粹濃縮 120顆",
+          "sku": 125360,
+          "orig": 1769,
+          "promo": 1409,
+          "discount": 360,
+          "type": "online_only",
+          "cat": "保健"
+        },
+        {
+          "name": "威德 一日補給50+ 30包",
+          "sku": 217619,
+          "orig": 1299,
+          "promo": 1039,
+          "discount": 260,
+          "type": "online_only",
+          "cat": "保健"
+        },
+        {
+          "name": "善存 舒眠益生菌 120粒",
+          "sku": 990255,
+          "orig": 1969,
+          "promo": 1574,
+          "discount": 395,
+          "type": "online_only",
+          "cat": "保健"
+        },
+        {
+          "name": "SAMSUNG 65吋MINILED 4K UA65M1EHAXXZW",
+          "sku": 161519,
+          "orig": 24999,
+          "promo": 19999,
+          "discount": 5000,
+          "type": "store_online_diff",
+          "cat": "3C"
+        },
+        {
+          "name": "LG 315公升雙頻雙門冰箱 GN-L312SV",
+          "sku": 159183,
+          "orig": 17999,
+          "promo": 14399,
+          "discount": 3600,
+          "type": "store_online_diff",
+          "cat": "家電"
+        },
+        {
+          "name": "ELECTROLUX 無線吸塵器 WQ71-2BSWF",
+          "sku": 153289,
+          "orig": 6899,
+          "promo": 5199,
+          "discount": 1700,
+          "type": "store_online_diff",
+          "cat": "家電"
+        },
+        {
+          "name": "TCL 75吋MINILED 75C6K",
+          "sku": 153555,
+          "orig": 34799,
+          "promo": 27799,
+          "discount": 7000,
+          "type": "store_online_diff",
+          "cat": "3C"
+        },
+        {
+          "name": "PHILIPS 智能三刀頭電鬍刀 S6830/95",
+          "sku": 157741,
+          "orig": 4389,
+          "promo": 3489,
+          "discount": 900,
+          "type": "store_online_diff",
+          "cat": "個護"
+        },
+        {
+          "name": "BACKBONE MAMBA 人體工學全網椅 70X63X124-134",
+          "sku": 144129,
+          "orig": 5699,
+          "promo": 4499,
+          "discount": 1200,
+          "type": "online_only",
+          "cat": "家具"
+        },
+        {
+          "name": "TRESANTI 電動升降桌 120X60X75-119",
+          "sku": 1646074,
+          "orig": 6299,
+          "promo": 4899,
+          "discount": 1400,
+          "type": "online_only",
+          "cat": "家具"
+        },
+        {
+          "name": "OSRAM 白光20W LED燈泡 4入",
+          "sku": 147360,
+          "orig": 749,
+          "promo": 599,
+          "discount": 150,
+          "type": "online_only",
+          "cat": "家品"
+        },
+        {
+          "name": "OSRAM 自然光20W LED燈泡 4入",
+          "sku": 147361,
+          "orig": 749,
+          "promo": 599,
+          "discount": 150,
+          "type": "online_only",
+          "cat": "家品"
+        },
+        {
+          "name": "CETAPHIL 舒特膚 長效潤膚乳 591mlX2",
+          "sku": 137176,
+          "orig": 615,
+          "promo": 465,
+          "discount": 150,
+          "type": "online_only",
+          "cat": "個護"
+        },
+        {
+          "name": "LOOPLOOP 磁吸USB充電線 黑色 3入組",
+          "sku": 153378,
+          "orig": 699,
+          "promo": 539,
+          "discount": 160,
+          "type": "online_only",
+          "cat": "3C"
+        },
+        {
+          "name": "LOOPLOOP 磁吸USB充電線 白色 3入組",
+          "sku": 153379,
+          "orig": 699,
+          "promo": 539,
+          "discount": 160,
+          "type": "online_only",
+          "cat": "3C"
+        },
+        {
+          "name": "CALIPHIL 紐西蘭羊毛被 雙人 180X210",
+          "sku": 137368,
+          "orig": 2399,
+          "promo": 1899,
+          "discount": 500,
+          "type": "online_only",
+          "cat": "家品"
+        },
+        {
+          "name": "CALIPHIL 紐西蘭羊毛被 雙人大 210X240",
+          "sku": 137369,
+          "orig": 2999,
+          "promo": 2349,
+          "discount": 650,
+          "type": "online_only",
+          "cat": "家品"
+        },
+        {
+          "name": "SENSODYNE 長效抗敏牙膏 184gX4",
+          "sku": 1450843,
+          "orig": 689,
+          "promo": 535,
+          "discount": 154,
+          "type": "online_only",
+          "cat": "個護"
+        },
+        {
+          "name": "SENSODYNE 3D薄型軟毛牙刷 8入",
+          "sku": 139575,
+          "orig": 369,
+          "promo": 289,
+          "discount": 80,
+          "type": "online_only",
+          "cat": "個護"
+        },
+        {
+          "name": "LENOR 衣物芳香豆 青檸紫羅蘭 885ml+1810ml",
+          "sku": 159343,
+          "orig": 799,
+          "promo": 639,
+          "discount": 160,
+          "type": "online_only",
+          "cat": "家品"
+        },
+        {
+          "name": "KNORR 康寶 港式酸辣濃湯 46.6gX10",
+          "sku": 115917,
+          "orig": 319,
+          "promo": 249,
+          "discount": 70,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "KNORR 康寶 金黃玉米濃湯 56.3gX10",
+          "sku": 215918,
+          "orig": 319,
+          "promo": 249,
+          "discount": 70,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "QUAKER 桂格 無糖黃金蕎麥多穀飲 28gX50",
+          "sku": 101776,
+          "orig": 399,
+          "promo": 319,
+          "discount": 80,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "大拙匠人 鵝油雙葱煎餅 100gX4片X5包",
+          "sku": 156747,
+          "orig": 399,
+          "promo": 319,
+          "discount": 80,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "KOLOKO+CADINA 可樂果+卡迪那 MINI雙享 18包",
+          "sku": 108586,
+          "orig": 299,
+          "promo": 239,
+          "discount": 60,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "高端食品 藜麥椒鹽蘇打餅 80gX10",
+          "sku": 108586,
+          "orig": 369,
+          "promo": 289,
+          "discount": 80,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "老食粹 有機枸杞 600g",
+          "sku": 126818,
+          "orig": 499,
+          "promo": 399,
+          "discount": 100,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "老食粹 有機紅棗 600g",
+          "sku": 126819,
+          "orig": 299,
+          "promo": 239,
+          "discount": 60,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "STARBUCKS 星巴克 中度烘焙即溶咖啡 2.3gX30",
+          "sku": 225971,
+          "orig": 499,
+          "promo": 399,
+          "discount": 100,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "WITOR'S 綜合含餡松露巧克力 1kg",
+          "sku": 246280,
+          "orig": 539,
+          "promo": 425,
+          "discount": 114,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "手信坊 含餡蛋捲 480gX24條",
+          "sku": 144711,
+          "orig": 339,
+          "promo": 269,
+          "discount": 70,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "FERNLEAF 豐力富 紐西蘭頂級純濃奶粉 2.6kg",
+          "sku": 79922,
+          "orig": 769,
+          "promo": 615,
+          "discount": 154,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "QUAKER 桂格 北海道風味特濃燕麥 42gX48",
+          "sku": 78299,
+          "orig": 499,
+          "promo": 399,
+          "discount": 100,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "丹尼船長 米的洋芋片 黑松露 50gX8",
+          "sku": 246249,
+          "orig": 269,
+          "promo": 215,
+          "discount": 54,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "BARISTA 西雅圖 即品拿鐵 三合一 21gX100",
+          "sku": 56879,
+          "orig": 749,
+          "promo": 599,
+          "discount": 150,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "DACHAN 大成 冷凍椒鹽薄皮炸雞 1.55kg",
+          "sku": 127189,
+          "orig": 399,
+          "promo": 319,
+          "discount": 80,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "WOMPIME 王品 冷凍青花椒麻辣鍋 1.6kg",
+          "sku": 333404,
+          "orig": 569,
+          "promo": 449,
+          "discount": 120,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "CALTRATE 鈦立 關鍵迷你錠 90錠",
+          "sku": 127189,
+          "orig": 1799,
+          "promo": 1439,
+          "discount": 360,
+          "type": "online_only",
+          "cat": "保健"
+        },
+        {
+          "name": "正官庄 高麗蔘精 EVERYTIME 10mlX30",
+          "sku": 186999,
+          "orig": 1199,
+          "promo": 959,
+          "discount": 240,
+          "type": "online_only",
+          "cat": "保健"
+        },
+        {
+          "name": "MOVE FREE 益節 葡萄糖胺6合1精華飲 25mlX30",
+          "sku": 142927,
+          "orig": 1299,
+          "promo": 1039,
+          "discount": 260,
+          "type": "online_only",
+          "cat": "保健"
+        },
+        {
+          "name": "WOMPIME 王品 三大名店冷凍火鍋料 1.1kg",
+          "sku": 131632,
+          "orig": 389,
+          "promo": 299,
+          "discount": 90,
+          "type": "online_only",
+          "cat": "食品"
+        },
+        {
+          "name": "MERIDLIFE 樂益活 菌護保健益生菌 120顆",
+          "sku": 217306,
+          "orig": 999,
+          "promo": 799,
+          "discount": 200,
+          "type": "online_only",
+          "cat": "保健"
+        },
+        {
+          "name": "CENTRUM 善存 葉黃素軟膠囊 140粒",
+          "sku": 217306,
+          "orig": 999,
+          "promo": 799,
+          "discount": 200,
+          "type": "online_only",
+          "cat": "保健"
+        },
+        {
+          "name": "PROTISON 補體素 鉻100 1500g",
+          "sku": 993999,
+          "orig": 1299,
+          "promo": 1099,
+          "discount": 200,
+          "type": "online_only",
+          "cat": "保健"
+        },
+        {
+          "name": "PERSIL 寶潔 全效能洗衣凝露 4L 100蓋次",
+          "sku": 593577,
+          "orig": 699,
+          "promo": 539,
+          "discount": 160,
+          "type": "store_online_diff",
+          "cat": "家清"
+        },
+        {
+          "name": "JACK DANIELS 田納西威士忌 1.75L",
+          "sku": 85136,
+          "orig": 1259,
+          "promo": 999,
+          "discount": 260,
+          "type": "store_online_diff",
+          "cat": "飲料"
+        },
+        {
+          "name": "YUMMY DOTS 享點子 泰式椰奶咖哩雞 520gX2",
+          "sku": 146149,
+          "orig": 369,
+          "promo": 289,
+          "discount": 80,
+          "type": "store_online_diff",
+          "cat": "食品"
+        },
+        {
+          "name": "泰安 台灣冷凍豬梅花火鍋片 秤賣",
+          "sku": 167247,
+          "orig": null,
+          "promo": 86,
+          "discount": null,
+          "type": "store_only_weight",
+          "note": "$86/kg 秤賣品",
+          "cat": "肉品"
+        },
+        {
+          "name": "ACUVUE 安視優 1-DAY MOIST 隱形眼鏡 180片/盒 買2盒",
+          "sku": 99894,
+          "orig": null,
+          "promo": 700,
+          "discount": null,
+          "type": "store_only_special",
+          "note": "買2盒每盒$700 限一次購買2盒",
+          "cat": "個護"
+        }
+      ]
+    },
+    {
+      "tab_id": "fy27p4-mvm2-cyber",
+      "label": "線上專屬",
+      "period": "2026/11/27 ~ 12/06",
+      "url": "https://www.costco.com.tw/content/fy27p4-mvm2-cyber",
+      "price_type": "online_only",
+      "description": "線上獨家限定 一律以線上購物實際標示為準",
+      "n_products": 17,
+      "products": [
+        {
+          "name": "ELECTROLUX 伊萊克斯 12/9公斤洗脫烘衣機 EWW1243R7WC",
+          "sku": 152411,
+          "orig": 31999,
+          "promo": 25599,
+          "discount": 6400,
+          "cat": "家電"
+        },
+        {
+          "name": "BOSCH 45公分獨立式洗碗機 SPS2IKW00X",
+          "sku": 131781,
+          "orig": 25599,
+          "promo": 20769,
+          "discount": 4830,
+          "cat": "家電"
+        },
+        {
+          "name": "BOSCH 10公斤洗衣機+9公斤乾衣機 WGA15200TC+WQB245B0TC",
+          "sku": 153286,
+          "orig": 77999,
+          "promo": 65499,
+          "discount": 12500,
+          "cat": "家電"
+        },
+        {
+          "name": "WHIRLPOOL 惠而浦 310公升變頻上下門冰箱 WTT3100A",
+          "sku": 157117,
+          "orig": 17399,
+          "promo": 13899,
+          "discount": 3500,
+          "cat": "家電"
+        },
+        {
+          "name": "IRIS OHYAMA 富士山天然水 環保無標籤 2000mlX9",
+          "sku": 157697,
+          "orig": 399,
+          "promo": 319,
+          "discount": 80,
+          "cat": "食品"
+        },
+        {
+          "name": "TCL 85吋 C7L MINILED 量子智能顯示器 85C7L",
+          "sku": 161710,
+          "orig": 79899,
+          "promo": 63899,
+          "discount": 16000,
+          "cat": "3C"
+        },
+        {
+          "name": "SIMON LI 牛皮電動旋轉可搖躺椅",
+          "sku": 1862172,
+          "orig": 13999,
+          "promo": 10999,
+          "discount": 3000,
+          "cat": "家具"
+        },
+        {
+          "name": "ERGOKING 網布人體工學椅 171 S PLUS",
+          "sku": 132324,
+          "orig": 8899,
+          "promo": 6899,
+          "discount": 2000,
+          "cat": "家具"
+        },
+        {
+          "name": "ASIA FARM 亞細亞田園 冷凍綜合莓果 1.5kgX6",
+          "sku": 1866580,
+          "orig": 2359,
+          "promo": 1885,
+          "discount": 474,
+          "cat": "食品"
+        },
+        {
+          "name": "DACHAN 大成 冷凍醇粹雞精 100mlX30",
+          "sku": 127511,
+          "orig": 2949,
+          "promo": 2349,
+          "discount": 600,
+          "cat": "食品"
+        },
+        {
+          "name": "HOYACASA 雙人蠶絲冬被 180X210 2.4kg",
+          "sku": 112832,
+          "orig": 4899,
+          "promo": 3899,
+          "discount": 1000,
+          "cat": "家品"
+        },
+        {
+          "name": "O.5克拉圓形鑽石項鍊 14K白K金 VS2/I",
+          "sku": 2053869,
+          "orig": 35999,
+          "promo": 27999,
+          "discount": 8000,
+          "cat": "珠寶"
+        },
+        {
+          "name": "SANKO 三幸 杏仁起士米果 43.5gX5",
+          "sku": 353830,
+          "orig": 329,
+          "promo": 259,
+          "discount": 70,
+          "cat": "食品"
+        },
+        {
+          "name": "BARISTA 西雅圖 雙焙濃拿鐵三合一 21gX80",
+          "sku": 146964,
+          "orig": 615,
+          "promo": 475,
+          "discount": 140,
+          "cat": "食品"
+        },
+        {
+          "name": "IRIS OHYAMA 全罩式水管車 15公尺",
+          "sku": 242916,
+          "orig": 1089,
+          "promo": 865,
+          "discount": 224,
+          "cat": "家品"
+        },
+        {
+          "name": "PHILIPS 飛利浦 臂式筋膜槍 PPM7331",
+          "sku": 162024,
+          "orig": 2439,
+          "promo": 1939,
+          "discount": 500,
+          "cat": "家電"
+        },
+        {
+          "name": "SUPREME SALMON 美威 冷凍鮭魚菲力法式香蒜 6入組",
+          "sku": 148196,
+          "orig": 1479,
+          "promo": 1179,
+          "discount": 300,
+          "cat": "食品"
+        }
+      ]
+    },
+    {
+      "tab_id": "fy27p4-mvm2-weekday",
+      "label": "平日限定",
+      "period": "2026/11/30 ~ 12/18",
+      "url": "https://www.costco.com.tw/content/fy27p4-mvm2-weekday",
+      "price_type": "store_only",
+      "description": "賣場獨家限定 週六及週日均不適用 一律以實體賣場現場為準",
+      "n_products": 9,
+      "products_partial": true,
+      "note": "只抓到前4筆價格（5-9 需再截圖）",
+      "products": [
+        {
+          "name": "GLICO 格力高 綜合乳酸菌夾心餅乾 200片",
+          "sku": 231119,
+          "orig": 449,
+          "promo": 359,
+          "discount": 90,
+          "cat": "食品"
+        },
+        {
+          "name": "星太郎 點心麵雞汁 100gX15",
+          "sku": 132416,
+          "orig": 399,
+          "promo": 319,
+          "discount": 80,
+          "cat": "食品"
+        },
+        {
+          "name": "QUAKER 桂格 黑穀營養飲 300mlX12",
+          "sku": 136603,
+          "orig": 299,
+          "promo": 239,
+          "discount": 60,
+          "cat": "食品"
+        },
+        {
+          "name": "NESCAFE GOLD 雀巢 金牌微研磨咖啡 2gX100",
+          "sku": 136308,
+          "orig": 529,
+          "promo": 415,
+          "discount": 114,
+          "cat": "食品"
+        }
+      ]
+    },
+    {
+      "tab_id": "fy27p4-mvm2-cyberland",
+      "label": "網購星期一",
+      "period": "敬請期待",
+      "url": "https://www.costco.com.tw/content/fy27p4-mvm2-cyberland",
+      "n_products": 0,
+      "note": "尚未開放 CMS 回傳 0 個產品",
+      "products": []
+    },
+    {
+      "tab_id": "fy27p4-mvm2-w2",
+      "label": "優惠期間",
+      "period": "2026/11/30 ~ 12/20",
+      "url": "https://www.costco.com.tw/content/fy27p4-mvm2-w2",
+      "price_type": "online_online_diff",
+      "description": "活動期間賣場/線上 均有 但售價 可能不同 以實際標示為準",
+      "n_products": 40,
+      "products_sample": [
+        {
+          "name": "汪喵星球 寵物骰子牛凍乾零食 348g",
+          "sku": 151524,
+          "orig": 1289,
+          "promo": 969,
+          "discount": 320,
+          "cat": "寵物"
+        },
+        {
+          "name": "五月花 妙用綿柔抽取衛生紙 130抽X108",
+          "sku": 187901,
+          "orig": 1129,
+          "promo": 899,
+          "discount": 230,
+          "cat": "家清"
+        },
+        {
+          "name": "JAMIESON 複合益生菌 120粒",
+          "sku": 123200,
+          "orig": 1579,
+          "promo": 1259,
+          "discount": 320,
+          "cat": "保健"
+        },
+        {
+          "name": "鈦立 葡萄糖胺強力錠 300錠(150X2)",
+          "sku": 125579,
+          "orig": 1429,
+          "promo": 1139,
+          "discount": 290,
+          "cat": "保健"
+        },
+        {
+          "name": "BOSE SOUNDLINK FLEX 第2代",
+          "sku": 159899,
+          "orig": 4999,
+          "promo": 3979,
+          "discount": 1020,
+          "cat": "3C"
+        },
+        {
+          "name": "LOGITECH 羅技 MK470 鍵盤滑鼠組 珍珠白",
+          "sku": 159714,
+          "orig": 1179,
+          "promo": 929,
+          "discount": 250,
+          "cat": "3C"
+        },
+        {
+          "name": "HADA LABO 肌研 極潤保濕化妝水組 400ml+100mlX2",
+          "sku": 135548,
+          "orig": 755,
+          "promo": 579,
+          "discount": 176,
+          "cat": "個護"
+        },
+        {
+          "name": "OLAY 緊緻空氣感面霜 48gX2",
+          "sku": 135548,
+          "orig": 1439,
+          "promo": 1129,
+          "discount": 310,
+          "cat": "個護"
+        },
+        {
+          "name": "IRIS OHYAMA 超靜音碎紙機 P6HCS",
+          "sku": 135871,
+          "orig": 2249,
+          "promo": 1779,
+          "discount": 470,
+          "cat": "家電"
+        },
+        {
+          "name": "PHILIPS 飛利浦 全自動美式咖啡機 HD7781",
+          "sku": 162416,
+          "orig": 3999,
+          "promo": 3139,
+          "discount": 860,
+          "cat": "家電"
+        },
+        {
+          "name": "STRIVECTIN 升級版淡紋面霜 47mlX2",
+          "sku": 1770258,
+          "orig": 2599,
+          "promo": 1999,
+          "discount": 600,
+          "cat": "個護"
+        },
+        {
+          "name": "AVEENO 艾惟諾 燕麥保濕乳 1L",
+          "sku": 1570816,
+          "orig": 369,
+          "promo": 289,
+          "discount": 80,
+          "cat": "個護"
+        },
+        {
+          "name": "BRITA CUBE COOL-BE 瞬熱滅菌開飲機",
+          "sku": 162794,
+          "orig": 10999,
+          "promo": 8699,
+          "discount": 2300,
+          "cat": "家電"
+        },
+        {
+          "name": "3M 極淨換濾心雙入組 DS03",
+          "sku": 96381,
+          "orig": 3099,
+          "promo": 2469,
+          "discount": 630,
+          "cat": "家品"
+        },
+        {
+          "name": "MIO MIVUE 906W 4K 9合1 行車記錄器 32GB",
+          "sku": 162751,
+          "orig": 3599,
+          "promo": 2859,
+          "discount": 740,
+          "cat": "3C"
+        },
+        {
+          "name": "TEFAL 法特 ULTIMATE 不沾炒鍋 32cm",
+          "sku": 145327,
+          "orig": 2289,
+          "promo": 1789,
+          "discount": 500,
+          "cat": "廚房"
+        },
+        {
+          "name": "橘子工坊 蔬果碗盤洗潔液 2.7L",
+          "sku": 238003,
+          "orig": 399,
+          "promo": 319,
+          "discount": 80,
+          "cat": "家清"
+        },
+        {
+          "name": "HOTEL GRAND 涼感舒眠枕 50X71X2",
+          "sku": 1580004,
+          "orig": 749,
+          "promo": 579,
+          "discount": 170,
+          "cat": "家品"
+        },
+        {
+          "name": "CASUAL LIVING 雙人舒適毯 233X248",
+          "sku": 153200,
+          "orig": 649,
+          "promo": 499,
+          "discount": 150,
+          "cat": "家品"
+        },
+        {
+          "name": "萬歲牌 總匯點心包 42gX20",
+          "sku": 229227,
+          "orig": 549,
+          "promo": 439,
+          "discount": 110,
+          "cat": "食品"
+        },
+        {
+          "name": "北海 鱈魚香絲 600g",
+          "sku": 78623,
+          "orig": 299,
+          "promo": 239,
+          "discount": 60,
+          "cat": "食品"
+        },
+        {
+          "name": "BARISTA 極品嚴焙大濾掛咖啡 12gX50",
+          "sku": 101940,
+          "orig": 749,
+          "promo": 599,
+          "discount": 150,
+          "cat": "食品"
+        },
+        {
+          "name": "MY MOTTO 提拉米蘇味威化餅 30gX20",
+          "sku": 163941,
+          "orig": 299,
+          "promo": 239,
+          "discount": 60,
+          "cat": "食品"
+        },
+        {
+          "name": "馬玉山 特濃核桃黑芝麻糊 37gX50",
+          "sku": 130383,
+          "orig": 499,
+          "promo": 399,
+          "discount": 100,
+          "cat": "食品"
+        },
+        {
+          "name": "親愛的 二合一白咖啡 30gX80",
+          "sku": 179574,
+          "orig": 659,
+          "promo": 519,
+          "discount": 140,
+          "cat": "食品"
+        },
+        {
+          "name": "喜生 牛肉米漢堡 170gX12",
+          "sku": 157719,
+          "orig": 559,
+          "promo": 445,
+          "discount": 114,
+          "cat": "食品"
+        },
+        {
+          "name": "春水良品 椒麻豆乳鍋鍋底 1200gX2",
+          "sku": 157710,
+          "orig": 359,
+          "promo": 285,
+          "discount": 74,
+          "cat": "食品"
+        },
+        {
+          "name": "紅龍 冷凍紅燒牛肉麵 820gX4",
+          "sku": 91855,
+          "orig": 669,
+          "promo": 535,
+          "discount": 134,
+          "cat": "食品"
+        },
+        {
+          "name": "威德 納豆紅麴 120粒",
+          "sku": 976575,
+          "orig": 1049,
+          "promo": 839,
+          "discount": 210,
+          "cat": "保健"
+        },
+        {
+          "name": "克補+ 鋅加強錠 200錠",
+          "sku": 976575,
+          "orig": 999,
+          "promo": 799,
+          "discount": 200,
+          "cat": "保健"
+        },
+        {
+          "name": "克補+ 鐵加強錠 200錠",
+          "sku": 976577,
+          "orig": 999,
+          "promo": 799,
+          "discount": 200,
+          "cat": "保健"
+        },
+        {
+          "name": "威德 益生菌睡前專用 3gX60",
+          "sku": 242036,
+          "orig": 1869,
+          "promo": 1494,
+          "discount": 375,
+          "cat": "保健"
+        },
+        {
+          "name": "五月花 妙用衛生紙 36入",
+          "sku": 132205,
+          "orig": 349,
+          "promo": 279,
+          "discount": 70,
+          "cat": "家清"
+        },
+        {
+          "name": "ASTONISH 英國潔 浴廁清潔劑 750mlX2",
+          "sku": 132205,
+          "orig": 339,
+          "promo": 269,
+          "discount": 70,
+          "cat": "家清"
+        },
+        {
+          "name": "橘子工坊 除臭酵素洗衣精 4LX100蓋",
+          "sku": 118583,
+          "orig": 539,
+          "promo": 419,
+          "discount": 120,
+          "cat": "家清"
+        },
+        {
+          "name": "CP/大成 台灣去骨清雞腿 秤賣",
+          "sku": 118583,
+          "orig": 245,
+          "promo": 195,
+          "discount": 50,
+          "type": "store_only_weight",
+          "cat": "肉品"
+        },
+        {
+          "name": "KIRKLAND 起司巧巴達 6入",
+          "sku": 162502,
+          "orig": 269,
+          "promo": 215,
+          "discount": 54,
+          "cat": "食品"
+        },
+        {
+          "name": "東北酸白菜鍋 秤賣",
+          "sku": 165666,
+          "orig": 249,
+          "promo": 198,
+          "discount": 51,
+          "type": "store_only_weight",
+          "cat": "食品"
+        },
+        {
+          "name": "LIPOVITAN 力保美達 能量補給飲料 150mlX24",
+          "sku": 99894,
+          "orig": 599,
+          "promo": 479,
+          "discount": 120,
+          "type": "online_only",
+          "cat": "保健"
+        }
+      ]
+    }
+  ]
+}

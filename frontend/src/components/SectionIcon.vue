@@ -29,6 +29,9 @@ const PATHS = {
   chart: 'M4 5v14h16 M8 14v5 M13 10v9 M18 6v13',
   signal: 'M5 12a7 7 0 0 1 7-7 M5 16a11 11 0 0 1 11-11 M6.5 13h.01 M12 18.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 1 0 0-3',
   cart: 'M3 4h2.2l1.9 9.5a1.5 1.5 0 0 0 1.5 1.2h8.4a1.5 1.5 0 0 0 1.5-1.2L20 7 M9.5 18a1.5 1.5 0 1 0 0 3 1.5 1.5 0 1 0 0-3 M17.5 18a1.5 1.5 0 1 0 0 3 1.5 1.5 0 1 0 0-3',
+  // 促銷標籤：MVM 檔期目錄標題用。單一 price-tag 字形 + 穿孔，與其餘 icon 同為
+  // stroke-only currentColor line-icon（無 emoji、無多 path、無 v-html）。
+  tag: 'M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L3 13V3h10l7.59 7.59a2 2 0 0 1 0 2.83z M7.5 7.5h.01',
 }
 
 const d = computed(() => PATHS[props.name] || PATHS.bell)
