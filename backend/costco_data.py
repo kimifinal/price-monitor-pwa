@@ -1,6 +1,6 @@
 """Offline snapshot of Costco 3C + 家電 PDP prices.
 
-Refreshed 2026-11-19 via BFS crawl of Costco PDP "相關推薦" links
+Refreshed 2026-11-20 via BFS crawl of Costco PDP "相關推薦" links
 (15 家電 + 15 3C items, all real SKUs).
 Used by the API (live=False default) and by the offline unit tests so CI stays
 offline-safe and free of 429 limits.
@@ -166,7 +166,7 @@ DEMO_BASKET = [
   },
   {
     "name": "Honeywell 淨味空氣清淨機 HPA5350WTWV1",
-    "price": 6999.0,
+    "price": 9099.0,
     "currency": "TWD",
     "sku": "157137",
     "url": "https://www.costco.com.tw/Televisions-Appliances/Air-Conditioners-Fans/Coolers-Humidifiers/Honeywell-Air-Purifier-AC1025D/p/157137",
