@@ -32,6 +32,11 @@ const PATHS = {
   // 促銷標籤：MVM 檔期目錄標題用。單一 price-tag 字形 + 穿孔，與其餘 icon 同為
   // stroke-only currentColor line-icon（無 emoji、無多 path、無 v-html）。
   tag: 'M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L3 13V3h10l7.59 7.59a2 2 0 0 1 0 2.83z M7.5 7.5h.01',
+  // chevron line-icons: the "expand / collapse the rest" affordance for the live
+  // section (#23) — a stroke-only chevron, currentColor (no emoji, no fill, single
+  // <path>), so the fold toggle reads as line-icon vocabulary like the rest.
+  'chevron-down': 'M6 9l6 6 6-6',
+  'chevron-up': 'M6 15l6-6 6 6',
 }
 
 const d = computed(() => PATHS[props.name] || PATHS.bell)

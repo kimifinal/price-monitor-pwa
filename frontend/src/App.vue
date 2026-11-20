@@ -16,6 +16,11 @@ import SkeletonCards from './components/SkeletonCard.vue'
 // network — mirroring how loadLiveHistory keeps the 比價 cards offline-safe.
 import MvmCatalog from './components/MvmCatalog.vue'
 import { loadMvmCatalog } from './lib/mvm.js'
+// issue #23: live-section collapse + 3-state filter. Pure helpers that REUSE the
+// verdict SSOT (monitor.js) — never re-derive a verdict. FOLD_LIMIT is left out of
+// this import: foldCards already applies it as its internal default, so importing
+// it here would be an unused-var (kept exported from live-fold.js for the unit test).
+import { filterLive, foldCards } from './lib/live-fold.js'
 
 const items = ref(loadItems())
 
@@ -87,6 +92,29 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+// --- issue #23: live-section collapse + 3-state filter -----------------------
+// Default filter is 'triggered' (issue's "only show the buy-now cards"), which
+// on today's 52-card snapshot is 46 cards; fold them down to FOLD_LIMIT visible.
+// The three chips: 全部 / 僅觸發 / 近低點 (近低點 ⊂ 僅觸發, design §5.1).
+const FILTER_OPTS = [
+  { k: 'all', label: '全部' },
+  { k: 'triggered', label: '僅觸發' },
+  { k: 'near-low', label: '近低點' },
+]
+const activeFilter = ref('triggered')
+const expanded = ref(false)
+
+// Filter first, then fold the result.
+const filtered = computed(() => filterLive(liveCards.value, activeFilter.value))
+// empty-fallback: a filter that matches 0 cards still renders the full set, so the
+// section never empties — this is what keeps the offline e2e "≥1 movement card"
+// guard green even when a chip (e.g. 近低點 on a 0-good_deal snapshot) matches none.
+const shownSource = computed(() =>
+  filtered.value.length ? filtered.value : liveCards.value,
+)
+// Only the visible slice is mounted; the rest live behind the expand toggle.
+const fold = computed(() => foldCards(shownSource.value, { expanded: expanded.value }))
 
 function persist() {
   saveItems(items.value)
@@ -162,14 +190,46 @@ function onWatchlistChange(wl) {
       <p class="subtitle">
         由離線快取 / 快照驅動，無網路時仍渲染最新走勢與結論（離線 PWA · #6）
       </p>
-      <!-- #25: skeleton while loading (no layout shift), real cards when loaded,
-           a "no data" subtitle only when truly empty after the load. -->
+      <!-- #23: collapse + 3-state filter. skeleton while loading (no layout shift,
+           #25), folded cards when loaded, a "no data" subtitle only when truly empty. -->
       <template v-if="liveCards.length">
+        <!-- 篩選 toggle：全部 / 僅觸發 / 近低點 (radiogroup，:focus-visible，4px grid，token 色) -->
+        <div class="live-filter" role="group" aria-label="即時比價 篩選">
+          <button
+            v-for="opt in FILTER_OPTS"
+            :key="opt.k"
+            type="button"
+            class="live-chip"
+            :class="{ 'is-active': activeFilter === opt.k }"
+            :aria-pressed="activeFilter === opt.k"
+            @click="activeFilter = opt.k"
+          >
+            {{ opt.label }}
+          </button>
+        </div>
+        <!-- fold：only render fold.visible; the rest live behind the expand toggle.
+             aria-expanded tracks `expanded` (a11y), chevron via SectionIcon (no emoji,
+             sloplint 30a). -->
         <price-history
-          v-for="(card, i) in liveCards"
+          v-for="(card, i) in fold.visible"
           :key="`live-${i}`"
           :card="card"
         />
+        <button
+          v-if="fold.foldedCount > 0"
+          type="button"
+          class="live-fold"
+          :aria-expanded="expanded"
+          data-section="live-fold-toggle"
+          @click="expanded = !expanded"
+        >
+          <section-icon :name="expanded ? 'chevron-up' : 'chevron-down'" title="展開/收起其餘" />
+          <span>{{ expanded ? '收起其餘' : `展開其餘 ${fold.foldedCount}` }}</span>
+        </button>
+        <!-- empty-fallback note: a chip matched 0 cards, so we show the full set. -->
+        <p v-if="!filtered.length" class="subtitle">
+          此條件 0 筆，顯示全部 {{ liveCards.length }} 筆
+        </p>
       </template>
       <skeleton-cards v-else-if="loading" :count="3" />
       <p v-else class="subtitle">尚無即時資料</p>
@@ -202,5 +262,68 @@ function onWatchlistChange(wl) {
   border-radius: var(--radius);
   padding: 12px;
   margin-bottom: 16px;
+}
+
+/* --- issue #23: live-section 3-state filter chips + "expand the rest" toggle.
+ * Colours as var(--token) only (CI guards raw hex; gate 48); spacing on the 4px
+ * token grid (gate 24b: every value >2px is a multiple of 4); the instant focus
+ * ring via :focus-visible is global (style.css button:focus-visible) but restated
+ * here so the chip/fold contract is explicit (gate 15: no focus transition;
+ * gate 26a: a focus style is present). No emoji on the expand affordance
+ * (gate 30a): it is a line-icon chevron through the SectionIcon SSOT. */
+.live-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+.live-chip {
+  /* a control, not a card (gate 4). body face, sentence case (gate 67). */
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  line-height: 1.2;
+  color: var(--text-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: var(--sp-2) var(--sp-3);
+  min-height: 44px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.live-chip:hover {
+  border-color: var(--border-2);
+}
+.live-chip.is-active {
+  border-color: var(--accent);
+  background: var(--surface-1);
+  color: var(--text);
+}
+.live-fold {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--link);
+  background: transparent;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-pill);
+  padding: var(--sp-2) var(--sp-3);
+  min-height: 44px;
+  cursor: pointer;
+}
+.live-fold:hover {
+  border-color: var(--accent);
+}
+/* gate 26a/26b: explicit interactive states on the chip + fold controls. */
+.live-chip:focus-visible,
+.live-fold:focus-visible {
+  outline: 2px solid var(--accent-hover);
+  outline-offset: 2px;
+}
+.live-chip:active,
+.live-fold:active {
+  filter: brightness(1.12);
 }
 </style>
