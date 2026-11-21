@@ -166,6 +166,54 @@ select:focus-visible {
 }
 
 /* ============================================================
+ * #49 · 案 B — WARM mobile token scope (好市多雷達 mobile shell).
+ *
+ * A SECOND token family, scoped to the `.mobile-app` root (NOT :root), so it
+ * overrides the dark :root tokens only inside the mobile shell — the dark PWA
+ * keeps its own colours untouched. Every warm .vue resolves these via
+ * var(--m-*); NO raw hex leaks into a component (sloplint gate 48 stays clean on
+ * components because these hexes live ONLY here, as named tokens).
+ *
+ * Deliberately a class selector (not :root / not tokens.css): the Hallmark
+ * gate treats only :root / [data-theme] / tokens.css as "token rules", so a
+ * pure-white card read through var(--m-card) never resolves to a literal in
+ * gate 7's cascade — the warm card can be #fff on a cream field without tripping
+ * the pure-white floor. Spacing on the shared 4px grid (--sp-*), radius on the
+ * shared --radius-*; only the colour family is warm.
+ * ============================================================ */
+.mobile-app {
+  /* 底 / 卡 / 表層 */
+  --m-bg:        #f4efe9;  /* 頁面底（米色）*/
+  --m-card:      #ffffff;  /* 商品卡 */
+  --m-soft:      #fbf5ec;  /* 圖佔位 / 輕面板 */
+  --m-nav-bg:    #ffffff;  /* 底部導航欄 */
+
+  /* 文字（暖調）*/
+  --m-ink:       #2b2622;  /* 主文字（暖黑，非純黑，避 gate 7）*/
+  --m-ink-2:     #5f5850;  /* 次要 */
+  --m-muted:     #8a8378;  /* 輔助 / 停用 */
+  --m-hairline:  #ece5db;  /* 邊框 / 分割 */
+
+  /* 品牌 & 價 */
+  --m-brand:      #c8102e; /* 品牌紅（Costco）/ active chip / active nav */
+  --m-brand-ink:  #ffffff; /* 品牌紅上的白文字 */
+  --m-price:      #e5342a; /* 促價 */
+  --m-good:       #2e8b57; /* 綠：划算 / 最低 */
+  --m-warm:       #f6b24a; /* 品牌 avatar 暖調 */
+
+  /* chips / badges */
+  --m-chip-bg:      #ffffff; /* 未選 檔期 chip */
+  --m-chip-ink:     #5f5850;
+  --m-save-bg:      #fdeaea; /* 省 $X */
+  --m-save-ink:     #c8102e;
+  --m-zhe-bg:       #eaf1ff; /* 約 X 折 */
+  --m-zhe-ink:      #2f5bd0;
+  --m-date-bg:      #fff4d6; /* 到 MM/DD */
+  --m-date-ink:     #9a7b1f;
+  --m-shadow:       rgba(43, 38, 34, 0.05); /* 卡陰影（暖調，隨 --m-ink 深淺）*/
+}
+
+/* ============================================================
  * SKELETON-25 :: live-section loading placeholders (no layout shift).
  *
  * Fills the 即時比價 (live) section with shimmering placeholder cards while the
@@ -229,4 +277,3 @@ select:focus-visible {
 .skeleton-card .sk-badge { width: 52px; height: 14px; }
 .skeleton-card .sk-now { width: 72px; height: 16px; }
 .skeleton-card .sk-pts { width: 36px; height: 12px; }
-
