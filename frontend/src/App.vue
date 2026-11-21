@@ -264,6 +264,7 @@ function onWatchlistChange(wl) {
 
   <button
     class="mobile-switch"
+    :class="{ 'is-on': mobile }"
     type="button"
     data-mobile-switch
     :aria-pressed="mobile"
@@ -380,5 +381,13 @@ function onWatchlistChange(wl) {
 .mobile-switch:focus-visible {
   outline: 2px solid var(--accent-hover);
   outline-offset: 2px;
+}
+/* When the warm shell is open the fixed tab bar (.m-tabbar, ~56px + padding ≈
+ * 72px tall) sits at the bottom; the floating toggle at bottom:16 overlapped its
+ * right-side 全部/我的 tabs. Lift it clear of the tab bar (token-pure 48+48=96px,
+ * a 4px-grid calc so gate_sloplint 24b never flags a raw px) while it stays
+ * reachable as a "退回桌面版" control. Non-blocking polish from the #49 review. */
+.mobile-switch.is-on {
+  bottom: calc(var(--sp-8) + var(--sp-8));
 }
 </style>

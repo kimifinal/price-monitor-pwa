@@ -145,7 +145,18 @@ function selectTab(t) {
   </section>
 </template>
 
-<style>
+<style scoped>
+/* Warm token scope var(--m-*) only — no raw hex. Spacing on the shared 4px
+ * grid (--sp-*), radius on the shared --radius-*.
+ *
+ * SCOPED on purpose (review of #49 2026-11-22, must-fix): the chip markup here
+ * reuses the class names .mvm-chips / .mvm-chip, which the DARK MvmCatalog.vue
+ * filter row also uses. With a global <style> both rule sets are equal-specificity
+ * and the LATER (mobile) one won in the minified CSS, restyling the dark PWA's
+ * its chips warm-cream + forcing its rows into a single nowrap scroll — a dark-
+ * view regression + a fragile source-order dependency. `scoped` appends a
+ * data-v-<hash> to every selector so these rules match ONLY this component's
+ * nodes and can never leak onto the dark catalog, by any minifier ordering. */
 /* Warm token scope var(--m-*) only — no raw hex. Spacing on the shared 4px
  * grid (--sp-*), radius on the shared --radius-*. */
 .mvm-m {
