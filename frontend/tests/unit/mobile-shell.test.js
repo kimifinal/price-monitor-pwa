@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, afterAll, beforeAll, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import MobileApp from '../../src/components/mobile/MobileApp.vue'
 import MvmMobileCatalog from '../../src/components/mobile/MvmMobileCatalog.vue'
@@ -15,6 +15,19 @@ const KEYS = ['home', 'deal', 'watch', 'all', 'me']
 const LABELS = ['首頁', '特價', '追蹤', '全部', '我的']
 
 const mountShell = () => mount(MobileApp)
+
+// The catalog is a 2026-11-16 snapshot. The 已過期 檔期 filter (activePeriods)
+// drops only 檔期 whose 結束日 has passed; the 11/20 檔期 slips past a later
+// "today". Pin the clock to the snapshot date so the full 6-檔期 assertion stays
+// deterministic instead of rotating with the wall clock. (Only the Date clock is
+// pinned here; microtask flushes from .trigger() still resolve.)
+beforeAll(() => {
+  vi.useFakeTimers()
+  vi.setSystemTime(2026, 10, 16, 12, 0, 0)
+})
+afterAll(() => {
+  vi.useRealTimers()
+})
 
 describe('MobileApp.vue — 暖色 shell + 5-tab 導航 + 特價=MVM 檔期視圖, placeholders elsewhere', () => {
   it('shows the 品牌 好市多雷達 in the top bar', () => {

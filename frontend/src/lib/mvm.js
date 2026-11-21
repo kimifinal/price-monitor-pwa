@@ -268,6 +268,41 @@ export function sectionHeader(tab, refDate) {
 }
 
 /**
+ * Whether a 檔期 has already ENDED: its parsed 結束日 (from `period`) is strictly
+ * BEFORE `refDate` (defaults to today). A 檔期 with NO parseable end date
+ * ("敬請期待" / blank) is NEVER expired, since an unknown / ongoing window cannot be
+ * judged past. An 結束日 equal to today is still LIVE (not expired), so the day a
+ * 檔期 runs is shown. Pure + null-safe (gate 19); reuses the existing
+ * parsePeriodEnd / startYearOf / toMDY so the date math stays single-sourced.
+ * @param {object} tab
+ * @param {Date} [refDate]
+ * @returns {boolean}
+ */
+export function isPeriodExpired(tab, refDate) {
+  const ref = refDate instanceof Date ? refDate : new Date()
+  const end = parsePeriodEnd(tab && tab.period, ref.getFullYear())
+  if (!end) return false // a date-less / unparseable 檔期 is never "expired"
+  const endDay = new Date(end.year, end.month - 1, end.day)
+  const today = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate())
+  return endDay < today // strictly before today; 結束日 == today is still live
+}
+
+/**
+ * The 檔期 to actually OFFER: drop ONLY the 已過期 ones (Kimi's ask, an expired
+ * 檔期 is removed rather than shown). Everything else stays, INCLUDING
+ * empty-but-future 檔期: only expiration filters, so an empty future 檔期 is
+ * still a real 檔期 to open. Pure + null-safe; reuses isPeriodExpired so "today"
+ * stays injectable.
+ * @param {Array<object>} tabs
+ * @param {Date} [refDate]
+ * @returns {Array<object>} a filtered copy (never mutates the input)
+ */
+export function activePeriods(tabs, refDate) {
+  const list = Array.isArray(tabs) ? tabs : []
+  return list.filter((t) => !isPeriodExpired(t, refDate))
+}
+
+/**
  * The card's last line: `買場 $X · 線上 $Y` for an online-eligible item (the 買場
  * figure is the struck 原價, 線上 is the 促價), or `買場 $X · 買場 $Y` for a
  * store-only 檔期 (no 線上 price to compare). Pure + null-safe: a missing figure

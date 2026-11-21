@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import MvmMobileCatalog from '../../src/components/mobile/MvmMobileCatalog.vue'
 import MvmMobileProductCard from '../../src/components/mobile/MvmMobileProductCard.vue'
-import { loadMvmCatalog, sectionHeader } from '../../src/lib/mvm.js'
+import { loadMvmCatalog, sectionHeader, isPeriodExpired, activePeriods } from '../../src/lib/mvm.js'
 
 // #49 (案 B) — the warm MVM 檔期 view (the "特價" tab) + its product card.
 //
@@ -83,6 +83,114 @@ describe('MvmMobileCatalog.vue — 6 檔 chips + section title + full list, no b
     expect(dateChips.length).toBeGreaterThan(0)
     expect(dateChips[0].attributes('data-sku') || true).toBeTruthy()
     expect(w.text()).toContain('到 11/22')
+  })
+})
+
+describe('MvmMobileCatalog.vue — 已過期 檔期 移除 + chip slider (#49 Kimi corrections)', () => {
+  it('renders ONLY the active 檔期 chips; the 已過期 one (到 11/20) is absent from the DOM', () => {
+    const w = mountAt({ refDate: new Date(2026, 10, 21) }) // pin today to 11/21
+    const chips = w.findAll('.mvm-chip')
+    expect(chips).toHaveLength(5) // 6 檔期 − 1 已過期 (到 11/20)
+    expect(w.find('[data-tab-id="fy27p3-mvm2-weekday"]').exists()).toBe(false) // 到 11/20 -> gone
+    expect(w.find('[data-tab-id="fy27p3-mvm2-w1"]').exists()).toBe(true) // 到 11/22 -> kept
+    expect(w.find('[data-tab-id="fy27p4-mvm2-cyberland"]').exists()).toBe(true) // 敬請期待 -> kept
+  })
+
+  it('each dated 檔期 chip stacks the name over its date (two lines)', () => {
+    const w = mountAt() // REF 11/20 -> all 6 active
+    const w1 = w.find('[data-tab-id="fy27p3-mvm2-w1"]') // 到 11/22 (two lines)
+    expect(w1.find('.mvm-chip-label').exists()).toBe(true)
+    expect(w1.find('.mvm-chip-end').exists()).toBe(true)
+    expect(w1.find('.mvm-chip-label').text()).toBe('優惠期間')
+    expect(w1.find('.mvm-chip-end').text()).toBe('到 11/22')
+    // the no-date 檔期 (網購星期一 / 敬請期待) shows ONLY its name, no empty date line
+    const cyberland = w.find('[data-tab-id="fy27p4-mvm2-cyberland"]')
+    expect(cyberland.find('.mvm-chip-label').exists()).toBe(true)
+    expect(cyberland.find('.mvm-chip-end').exists()).toBe(false)
+  })
+
+  it('the default active skips an EXPIRED first 檔期 and opens the first OPEN one with products', () => {
+    const tabs = [
+      {
+        tab_id: 'ex-first', label: '已結束', period: '2026/01/01 ~ 11/05',
+        n_products: 5, products: [{ sku: 1 }, { sku: 2 }, { sku: 3 }, { sku: 4 }, { sku: 5 }],
+      },
+      {
+        tab_id: 'open-next', label: '進行中', period: '2026/11/10 ~ 12/31',
+        n_products: 3, products: [{ sku: 6 }, { sku: 7 }, { sku: 8 }],
+      },
+    ]
+    const w = mount(MvmMobileCatalog, {
+      props: { tabs, priceTypes: c.priceTypes, sourceDate: '', refDate: new Date(2026, 10, 21) },
+    })
+    expect(w.find('[data-tab-id="ex-first"]').exists()).toBe(false) // 到 11/05 -> 已過期, removed
+    expect(w.find('[data-tab-id="open-next"]').exists()).toBe(true)
+    expect(w.findAll('.mvm-list')[0].attributes('data-active-tab')).toBe('open-next')
+    expect(w.findAll('.m-card')).toHaveLength(3)
+  })
+
+  it('when EVERY 檔期 is 已過期 the view shows a graceful empty state, not raw data', () => {
+    const tabs = [
+      { tab_id: 'a', label: 'A', period: '2026/01/01 ~ 11/05', n_products: 3, products: [{ sku: 1 }, { sku: 2 }, { sku: 3 }] },
+      { tab_id: 'b', label: 'B', period: '2026/01/01 ~ 02/01', n_products: 2, products: [{ sku: 4 }, { sku: 5 }] },
+    ]
+    const w = mount(MvmMobileCatalog, {
+      props: { tabs, priceTypes: c.priceTypes, sourceDate: '2026/11/16', refDate: new Date(2026, 10, 21) },
+    })
+    expect(w.find('.mvm-empty-all').exists()).toBe(true)
+    expect(w.find('.mvm-empty-all').text()).toBe('全部檔期已結束')
+    expect(w.find('[data-tab-id="a"]').exists()).toBe(false)
+    expect(w.find('[data-tab-id="b"]').exists()).toBe(false)
+    expect(w.find('[data-mvm-filter]').exists()).toBe(false) // no section when nothing is open
+    expect(w.find('.mvm-chip').exists()).toBe(false)
+  })
+})
+
+describe('isPeriodExpired / activePeriods (#49) — only expired dropped, null-safe', () => {
+  const REF = new Date(2026, 10, 21) // pin today to 11/21
+
+  it('a 檔期 whose 結束日 is strictly before today is expired', () => {
+    expect(isPeriodExpired({ tab_id: 'a', period: '2026/11/01 ~ 11/20' }, REF)).toBe(true)
+  })
+
+  it('an 結束日 equal to today is NOT expired (still live that day)', () => {
+    expect(isPeriodExpired({ tab_id: 'b', period: '2026/11/01 ~ 11/21' }, REF)).toBe(false)
+  })
+
+  it('future 結束日 (11/22, 12/06, 12/18) are kept', () => {
+    expect(isPeriodExpired({ period: '2026/11/27 ~ 11/22' }, REF)).toBe(false) // 到 11/22
+    expect(isPeriodExpired({ period: '2026/11/27 ~ 12/06' }, REF)).toBe(false) // 到 12/06
+    expect(isPeriodExpired({ period: '2026/11/30 ~ 12/18' }, REF)).toBe(false) // 到 12/18
+  })
+
+  it('a no-date / 敬請期待 / blank 檔期 is NEVER expired', () => {
+    expect(isPeriodExpired({ tab_id: 'c', label: '網購星期一', period: '敬請期待' }, REF)).toBe(false)
+    expect(isPeriodExpired({ tab_id: 'd', period: '' }, REF)).toBe(false)
+    expect(isPeriodExpired({ tab_id: 'e', period: 'TBA' }, REF)).toBe(false)
+  })
+
+  it('is null-safe with no refDate (live clock) and on a null / empty tab', () => {
+    expect(typeof isPeriodExpired({ period: '2026/01/01 ~ 11/20' })).toBe('boolean')
+    expect(isPeriodExpired(null, REF)).toBe(false)
+    expect(isPeriodExpired({}, REF)).toBe(false)
+  })
+
+  it('activePeriods drops the only 已過期 檔期 at 11/21 and keeps the rest incl. the no-date one', () => {
+    const out = activePeriods(c.tabs, REF)
+    expect(out.map((t) => t.tab_id)).toEqual([
+      'fy27p3-mvm2-w1', // 到 11/22
+      'fy27p4-mvm2-cyber', // 到 12/06
+      'fy27p4-mvm2-weekday', // 到 12/18
+      'fy27p4-mvm2-cyberland', // 敬請期待 (no date, kept)
+      'fy27p4-mvm2-w2', // 到 12/20
+    ])
+    expect(out.find((t) => t.tab_id === 'fy27p3-mvm2-weekday')).toBeFalsy() // 到 11/20 -> 已過期
+  })
+
+  it('does NOT drop an empty-but-future 檔期 (Kimi only asked about expired)', () => {
+    const out = activePeriods(c.tabs, REF)
+    const w2 = out.find((t) => t.tab_id === 'fy27p4-mvm2-w2') // 到 12/20, 0 listed products
+    expect(w2).toBeTruthy()
   })
 })
 
