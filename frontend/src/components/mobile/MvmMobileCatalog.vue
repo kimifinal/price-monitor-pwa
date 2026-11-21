@@ -164,6 +164,11 @@ function selectTab(t) {
  * no raw hex, so the CI css-token guard stays clean). No emoji / illustration. */
 .mvm-chips {
   display: flex;
+  /* NOTE: the dark MvmCatalog.vue also defines a global `.mvm-chips{flex-wrap:wrap}`
+   * for its tab bar; since the class name is shared it LEAKS onto the mobile row.
+   * Restate nowrap here (later rule, equal specificity) to force the single-row
+   * horizontal slider the design wants — a 5-tile row overflows a ~375 phone. */
+  flex-wrap: nowrap;
   gap: var(--sp-2);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
