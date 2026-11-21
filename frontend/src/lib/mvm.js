@@ -27,6 +27,10 @@
  *    empty.
  */
 import mvmData from '../data/mvm.json'
+// TWD grouping lives in ONE place (format.js, issue #25). The warm mobile card
+// shows a "$" sign (the mockup), so it reuses formatTWD for the 千分位 grouping
+// and prefixes "$" itself — grouping stays single-source, no second formatter.
+import { formatTWD } from './format.js'
 
 /**
  * The catalog snapshot, as the baked JSON is shipped. Pure + synchronous so the
@@ -173,4 +177,120 @@ export function categoriesOf(products) {
     if (p && p.cat) set.add(p.cat)
   }
   return Array.from(set).sort()
+}
+
+// ---------------------------------------------------------------------------
+// Warm mobile shell (案 B / #49) — two NEW pure helpers for the MVM 檔期 view.
+// Both stay PURE + null-safe (gate 19: missing figures read "N/A", never "—") so
+// the warm card / catalog can render a line-icon heading without re-deriving a
+// number in a template.
+// ---------------------------------------------------------------------------
+
+/**
+ * The "約 X 折" 折扣個位 from orig→promo. Pure + null-safe: a missing/≤0 orig or
+ * promo yields null so the card shows "N/A" instead of a bogus 0 折. TWD has no
+ * minor unit, so the ratio is rounded to a whole 折 (one digit). 121/1000→1,
+ * 329/349→9, 919/1149→8. No clamp: a promo over orig keeps its (unlikely) value.
+ * @param {object} product
+ * @returns {number|null} the 個位 折 (1..10+ normally), or null when uncomputable
+ */
+export function zheOf(product) {
+  if (!product || typeof product !== 'object') return null
+  const orig = product.orig
+  const promo = product.promo
+  if (orig == null || promo == null || !Number.isFinite(orig) || !Number.isFinite(promo) || orig <= 0 || promo <= 0) return null
+  return Math.round((promo / orig) * 10)
+}
+
+// "到 MM/DD" from a period like "2026/10/26 ~ 11/20": the 結束日 is the LAST
+// "~" segment, resolved to a calendar day (a bare "M/D" takes the start's year).
+function startYearOf(period) {
+  const first = String(period || '').split('~')[0].trim()
+  const m = /(\d{4})\s*\/\s*(\d{1,2})\s*\/\s*(\d{1,2})/.exec(first)
+  return m ? +m[1] : null
+}
+function toMDY(year, month, day) {
+  if (!Number.isFinite(year)) return null
+  if (month < 1 || month > 12 || day < 1 || day > 31) return null
+  return { year, month, day }
+}
+function parsePeriodEnd(period, refYear) {
+  if (!period || typeof period !== 'string') return null
+  const endStr = String(period.split('~').pop().trim())
+  const full = /^(\d{4})\s*\/\s*(\d{1,2})\s*\/\s*(\d{1,2})$/.exec(endStr)
+  if (full) return toMDY(+full[1], +full[2], +full[3])
+  const md = /^(\d{1,2})\s*\/\s*(\d{1,2})$/.exec(endStr)
+  if (md) return toMDY(startYearOf(period) || refYear || new Date().getFullYear(), +md[1], +md[2])
+  return null
+}
+const pad2 = (n) => String(n).padStart(2, '0')
+
+/**
+ * The MVM 檔期 section header: `N 筆 · 檔期名 · 到 MM/DD · 剩 K 天`. Count prefers
+ * the tab's `n_products` when it is a real positive integer, else the number of
+ * items actually listed, else "N/A" (gate 19, never "—"). The 到期日 is parsed
+ * from `period`; `daysLeft` = end − today, clamped at 0 (a past 檔期 reads "剩 0
+ * 天"). `refDate` is injectable so a test pins "today" without waiting a day —
+ * the UI passes none and gets the live clock. A tab whose period is not a date
+ * ("敬請期待") yields end "N/A" and NO 剩-clause (null daysLeft).
+ * @param {object} tab
+ * @param {Date} [refDate]
+ * @returns {{count:string,label:string,end:string,daysLeft:(number|null),text:string}}
+ */
+export function sectionHeader(tab, refDate) {
+  const t = tab && typeof tab === 'object' ? tab : {}
+  const ref = refDate instanceof Date ? refDate : new Date()
+
+  const nProducts = t.n_products
+  const listed = Array.isArray(t.products) ? t.products.length : 0
+  let count
+  if (Number.isInteger(nProducts) && nProducts > 0) count = `${nProducts} 筆`
+  else if (listed > 0) count = `${listed} 筆`
+  else count = 'N/A'
+
+  const end = parsePeriodEnd(t.period, ref.getFullYear())
+  const endText = end ? `${pad2(end.month)}/${pad2(end.day)}` : 'N/A'
+
+  let daysLeft = null
+  if (end) {
+    const endDay = new Date(end.year, end.month - 1, end.day)
+    const today = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate())
+    daysLeft = Math.max(0, Math.round((endDay - today) / 86400000))
+  }
+
+  const label = t.label != null ? String(t.label) : 'N/A'
+  const text =
+    daysLeft == null
+      ? `${count} · ${label} · 到 ${endText}`
+      : `${count} · ${label} · 到 ${endText} · 剩 ${daysLeft} 天`
+
+  return { count, label, end: endText, daysLeft, text }
+}
+
+/**
+ * The card's last line: `買場 $X · 線上 $Y` for an online-eligible item (the 買場
+ * figure is the struck 原價, 線上 is the 促價), or `買場 $X · 買場 $Y` for a
+ * store-only 檔期 (no 線上 price to compare). Pure + null-safe: a missing figure
+ * reads "N/A" (no "—", gate 19), a "$" prefix on a real figure matches the
+ * mockup, and grouping reuses formatTWD (the TWD SSOT). `tabPriceType` lets a
+ * store-only 檔期 with typeless items resolve to the 買場·買場 form.
+ * @param {object} product
+ * @param {string} [tabPriceType]
+ * @returns {string}
+ */
+export function priceLine(product, tabPriceType = '') {
+  const p = product && typeof product === 'object' ? product : {}
+  const type = p.type
+  const storeOnly =
+    /^store_only/.test(String(type || '')) ||
+    (type == null && tabPriceType === 'store_only')
+  const money = (n) => (n == null ? 'N/A' : '$' + formatTWD(n))
+  const orig = p.orig
+  const promo = p.promo
+  if (storeOnly) {
+    const a = orig != null ? orig : promo
+    const b = promo != null ? promo : orig
+    return `買場 ${money(a)} · 買場 ${money(b)}`
+  }
+  return `買場 ${money(orig)} · 線上 ${money(promo)}`
 }
