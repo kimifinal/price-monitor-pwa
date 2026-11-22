@@ -19,7 +19,7 @@ import {
 describe('lib/mvm.js — baked snapshot structure', () => {
   it('exposes 6 檔期, 3 price types, and a crawl date (offline, no fetch)', () => {
     const c = loadMvmCatalog()
-    expect(c.tabs.length).toBe(6)
+    expect(c.tabs.length).toBe(7) // Kimi 11-22: 黑色購物週 added → 7 tabs
     expect(Object.keys(c.priceTypes)).toEqual(
       expect.arrayContaining(['online_only', 'store_online_diff', 'store_only']),
     )

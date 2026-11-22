@@ -600,6 +600,17 @@
       ]
     },
     {
+      "tab_id": "fy27p4-mvm2-blackfriday",
+      "label": "黑色購物週",
+      "period": "敬請期待",
+      "url": "https://www.costco.com.tw/content/fy27p4-mvm2-blackfriday",
+      "price_type": "store_only",
+      "description": "黑色購物週/網路周一 活動 以官方正式公告為準",
+      "n_products": 0,
+      "note": "2026-11-16 抓取時 Costco 尚未公布此檔期",
+      "products": []
+    },
+    {
       "tab_id": "fy27p4-mvm2-cyber",
       "label": "線上專屬",
       "period": "2026/11/27 ~ 12/06",

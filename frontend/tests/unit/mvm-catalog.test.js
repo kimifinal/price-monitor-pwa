@@ -24,9 +24,9 @@ describe('MvmCatalog.vue — 6 檔期 tab bar + lazy grid', () => {
       },
     })
 
-  it('renders all 6 檔期 tabs + a 3-row type legend', () => {
+  it('renders all 7 檔期 tabs (Kimi 11-22: 黑色購物週 added) + a 3-row type legend', () => {
     const w = mountAt()
-    expect(w.findAll('.mvm-tab')).toHaveLength(6)
+    expect(w.findAll('.mvm-tab')).toHaveLength(7)
     expect(w.findAll('.mvm-legend-row')).toHaveLength(3)
   })
 
@@ -42,14 +42,13 @@ describe('MvmCatalog.vue — 6 檔期 tab bar + lazy grid', () => {
     const w1Cards = w.findAll('.mvm-card').length
     expect(w1Cards).toBe(c.tabs[1].products.length) // 62, the w1 檔期
 
-    // switch to the cyber 檔期 (index 2, 17 products) — w1 unmounts, cyber mounts
-    await w.findAll('.mvm-tab')[2].trigger('click')
+    // switch to the cyber 檔期 — now at index 3 (黑色購物週 inserted at [2])
+    await w.findAll('.mvm-tab')[3].trigger('click')
     expect(w.find('.mvm-grid').attributes('data-active-tab')).toBe('fy27p4-mvm2-cyber')
-    expect(w.findAll('.mvm-card').length).toBe(c.tabs[2].products.length)
+    expect(w.findAll('.mvm-card').length).toBe(c.tabs[3].products.length)
 
-    // an empty 檔期 (cyberland, index 4) shows an empty-state, not a blank grid
-    await w.findAll('.mvm-tab')[4].trigger('click')
-    expect(w.find('.mvm-grid').attributes('data-active-tab')).toBe('fy27p4-mvm2-cyberland')
+    // an empty 檔期 (cyberland, now at index 5) shows an empty-state, not a blank grid
+    await w.findAll('.mvm-tab')[5].trigger('click')
     expect(w.find('.mvm-empty').exists()).toBe(true)
     expect(w.findAll('.mvm-card')).toHaveLength(0)
   })

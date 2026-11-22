@@ -15,6 +15,11 @@ import SkeletonCards from './components/SkeletonCard.vue'
 // snapshot in src/data/mvm.json, so this section renders ALL 6 檔期 with no
 // network — mirroring how loadLiveHistory keeps the 比價 cards offline-safe.
 import MvmCatalog from './components/MvmCatalog.vue'
+// #49 案 B: the warm e-commerce mobile shell (好市多雷達). Its 特價 tab renders
+// MvmMobileCatalog (the warm MVM 檔期 view); it is a full-viewport overlay that
+// ENTERS on demand via the floating toggle, so the dark PWA markup above is left
+// byte-identical and stays the default view (mobile=false).
+import MobileApp from './components/mobile/MobileApp.vue'
 import { loadMvmCatalog } from './lib/mvm.js'
 // issue #23: live-section collapse + 3-state filter. Pure helpers that REUSE the
 // verdict SSOT (monitor.js) — never re-derive a verdict. FOLD_LIMIT is left out of
@@ -36,6 +41,12 @@ const mvm = loadMvmCatalog()
 const mvmTabs = mvm.tabs
 const mvmPriceTypes = mvm.priceTypes
 const mvmSourceDate = mvm.sourceDate
+
+// #49 案 B: which shell is shown. `mobile` is false by default, so the dark PWA
+// (the .app markup below) always loads first; the warm mobile shell is an overlay
+// that ENTERS when the floating toggle flips this true. Never mutates the dark
+// tree — the two coexist and are both reachable.
+const mobile = ref(false)
 
 // --- 歷史價格比價 demo -------------------------------------------------------
 // An offline sample series (no backend needed in the PWA). In production this
@@ -245,6 +256,22 @@ function onWatchlistChange(wl) {
       />
     </section>
   </div>
+
+  <!-- #49 案 B: warm mobile shell overlay. Enters only when `mobile` is flipped by
+       the floating toggle below; unmounted in the dark default, so the .app tree
+       above stays byte-identical and is what loads first. -->
+  <MobileApp v-if="mobile" data-mobile-shell />
+
+  <button
+    class="mobile-switch"
+    :class="{ 'is-on': mobile }"
+    type="button"
+    data-mobile-switch
+    :aria-pressed="mobile"
+    @click="mobile = !mobile"
+  >
+    {{ mobile ? '退回桌面版' : '進入手機版' }}
+  </button>
 </template>
 
 <style>
@@ -325,5 +352,42 @@ function onWatchlistChange(wl) {
 .live-chip:active,
 .live-fold:active {
   filter: brightness(1.12);
+}
+
+/* #49 案 B: floating shell toggle. Token-only colours (CI css-token guard / gate
+ * 48); sits above the mobile overlay so the user can always return to the dark
+ * PWA. 44px min tap target on the 4px grid. */
+.mobile-switch {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--accent);
+  background: var(--surface-1);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.mobile-switch:active {
+  filter: brightness(1.12);
+}
+.mobile-switch:focus-visible {
+  outline: 2px solid var(--accent-hover);
+  outline-offset: 2px;
+}
+/* When the warm shell is open the fixed tab bar (.m-tabbar, ~56px + padding ≈
+ * 72px tall) sits at the bottom; the floating toggle at bottom:16 overlapped its
+ * right-side 全部/我的 tabs. Lift it clear of the tab bar (token-pure 48+48=96px,
+ * a 4px-grid calc so gate_sloplint 24b never flags a raw px) while it stays
+ * reachable as a "退回桌面版" control. Non-blocking polish from the #49 review. */
+.mobile-switch.is-on {
+  bottom: calc(var(--sp-8) + var(--sp-8));
 }
 </style>
