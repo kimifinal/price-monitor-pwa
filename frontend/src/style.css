@@ -211,6 +211,12 @@ select:focus-visible {
   --m-date-bg:      #fff4d6; /* 到 MM/DD */
   --m-date-ink:     #9a7b1f;
   --m-shadow:       rgba(43, 38, 34, 0.05); /* 卡陰影（暖調，隨 --m-ink 深淺）*/
+
+  /* 全部商品 (#50) — 線上 專屬 badge + 買場/線上 toggle */
+  --m-online-bg:      #fff3e0; /* 線上 專屬 badge 底色（橙）*/
+  --m-online-ink:     #e65100; /* 線上 專屬 badge 字（橙）*/
+  --m-toggle-bg:      #f0ebe4; /* 買場/線上 toggle 背景（暖灰）*/
+  --m-toggle-active:  var(--m-brand); /* active toggle 按鈕 = 品牌紅 */
 }
 
 /* ============================================================

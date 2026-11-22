@@ -2,7 +2,7 @@ import { describe, it, expect, afterAll, beforeAll, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import MobileApp from '../../src/components/mobile/MobileApp.vue'
 import MvmMobileCatalog from '../../src/components/mobile/MvmMobileCatalog.vue'
-import { loadMvmCatalog } from '../../src/lib/mvm.js'
+import CatalogMobile from '../../src/components/mobile/CatalogMobile.vue'
 
 // #49 (案 B) — the warm e-commerce mobile shell: 品牌「好市多雷達」 + 5-tab 底部導航
 // (首頁/特價/追蹤/全部/我的). The 特價 tab renders the warm MVM 檔期 view
@@ -59,11 +59,12 @@ describe('MobileApp.vue — 暖色 shell + 5-tab 導航 + 特價=MVM 檔期視�
     expect(w.find('.mvm-seg').exists()).toBe(false)
   })
 
-  it('clicking 首頁 / 追蹤 / 全部 / 我的 each shows an honest placeholder, not the MVM view', async () => {
+  it('clicking 首頁 / 追蹤 / 我的 each shows an honest placeholder, not the MVM view', async () => {
     const w = mountShell()
     const tabs = w.findAll('.m-tab')
-    // 0=首頁, 2=追蹤, 3=全部, 4=我的 — all placeholders; 1=特價 is the MVM view
-    for (const idx of [0, 2, 3, 4]) {
+    // 0=首頁, 2=追蹤, 4=我的 — placeholders; 1=特價 is the MVM view;
+    // 3=全部 is now the 全庫 catalog view (#50), tested separately below.
+    for (const idx of [0, 2, 4]) {
       await tabs[idx].trigger('click')
       const ph = w.find('.m-placeholder')
       expect(ph.exists()).toBe(true)
@@ -75,6 +76,24 @@ describe('MobileApp.vue — 暖色 shell + 5-tab 導航 + 特價=MVM 檔期視�
       // the clicked tab is now active
       expect(w.findAll('.m-tab')[idx].classes()).toContain('is-active')
     }
+  })
+
+  it('clicking 全部 shows the 全庫 catalog view (#50) with a 買場/線上 toggle, not a placeholder', async () => {
+    const w = mountShell()
+    await w.findAll('.m-tab')[3].trigger('click') // 全部 (index 3)
+    // the 全庫 catalog view mounts and is NOT the placeholder
+    expect(w.findComponent(CatalogMobile).exists()).toBe(true)
+    expect(w.find('.m-placeholder').exists()).toBe(false)
+    // the 買場/線上 sliding toggle is present; 買場 is active by default
+    expect(w.find('[data-buyonline-toggle]').exists()).toBe(true)
+    expect(w.find('[data-seg="store"]').classes()).toContain('is-active')
+    // the count bar + the first page of warm cards render
+    expect(w.find('[data-cat-count]').exists()).toBe(true)
+    expect(w.findAll('.m-cat-card').length).toBeGreaterThan(0)
+    // clicking 線上 flips the toggle to the 全庫 (online) mode
+    await w.find('[data-seg="online"]').trigger('click')
+    expect(w.find('[data-seg="online"]').classes()).toContain('is-active')
+    expect(w.find('[data-seg="store"]').classes()).not.toContain('is-active')
   })
 
   it('clicking 特價 from a placeholder brings the MVM 檔期 view back', async () => {
