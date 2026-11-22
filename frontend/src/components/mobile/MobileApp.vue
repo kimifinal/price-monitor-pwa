@@ -30,7 +30,7 @@ const active = ref('deal')
 const mvm = loadMvmCatalog()
 
 // Offline-baked 全庫 catalog (lib/catalog.js, 10,049 items), rendered by the
-// 全部 tab (#50) — the 買場/線上 sliding toggle + the whole catalog.
+// 全部 tab (#50) — the 賣場/線上 sliding toggle + the whole catalog.
 const catalog = loadCatalog()
 
 const activeTabObj = computed(() => TABS.find((t) => t.key === active.value) || TABS[0])
@@ -81,7 +81,7 @@ function selectTab(key) {
         :price-types="mvm.priceTypes"
         :source-date="mvm.sourceDate"
       />
-      <!-- 全部 tab: the warm 全庫 catalog view (#50) — 買場/線上 toggle + 10,049 items -->
+      <!-- 全部 tab: the warm 全庫 catalog view (#50) — 賣場/線上 toggle + 10,049 items -->
       <CatalogMobile v-else-if="active === 'all'" :catalog="catalog" />
       <!-- 首頁 / 追蹤 / 我的: honest placeholders -->
       <section

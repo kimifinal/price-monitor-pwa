@@ -322,12 +322,12 @@ export function activePeriods(tabs, refDate) {
 }
 
 /**
- * The card's last line: `買場 $X · 線上 $Y` for an online-eligible item (the 買場
- * figure is the struck 原價, 線上 is the 促價), or `買場 $X · 買場 $Y` for a
+ * The card's last line: `賣場 $X · 線上 $Y` for an online-eligible item (the 賣場
+ * figure is the struck 原價, 線上 is the 促價), or `賣場 $X · 賣場 $Y` for a
  * store-only 檔期 (no 線上 price to compare). Pure + null-safe: a missing figure
  * reads "N/A" (no "—", gate 19), a "$" prefix on a real figure matches the
  * mockup, and grouping reuses formatTWD (the TWD SSOT). `tabPriceType` lets a
- * store-only 檔期 with typeless items resolve to the 買場·買場 form.
+ * store-only 檔期 with typeless items resolve to the 賣場·賣場 form.
  * @param {object} product
  * @param {string} [tabPriceType]
  * @returns {string}
@@ -344,7 +344,7 @@ export function priceLine(product, tabPriceType = '') {
   if (storeOnly) {
     const a = orig != null ? orig : promo
     const b = promo != null ? promo : orig
-    return `買場 ${money(a)} · 買場 ${money(b)}`
+    return `賣場 ${money(a)} · 賣場 ${money(b)}`
   }
-  return `買場 ${money(orig)} · 線上 ${money(promo)}`
+  return `賣場 ${money(orig)} · 線上 ${money(promo)}`
 }

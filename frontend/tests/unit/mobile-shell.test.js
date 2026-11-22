@@ -53,7 +53,7 @@ describe('MobileApp.vue — 暖色 shell + 5-tab 導航 + 特價=MVM 檔期視�
     expect(w.find('.m-placeholder').exists()).toBe(false)
   })
 
-  it('the 特價 tab has NO 買場/線上 segmented toggle (that is the HOME view, not 檔期)', () => {
+  it('the 特價 tab has NO 賣場/線上 segmented toggle (that is the HOME view, not 檔期)', () => {
     const w = mountShell()
     expect(w.find('[data-buyonline-toggle]').exists()).toBe(false)
     expect(w.find('.mvm-seg').exists()).toBe(false)
@@ -78,13 +78,13 @@ describe('MobileApp.vue — 暖色 shell + 5-tab 導航 + 特價=MVM 檔期視�
     }
   })
 
-  it('clicking 全部 shows the 全庫 catalog view (#50) with a 買場/線上 toggle, not a placeholder', async () => {
+  it('clicking 全部 shows the 全庫 catalog view (#50) with a 賣場/線上 toggle, not a placeholder', async () => {
     const w = mountShell()
     await w.findAll('.m-tab')[3].trigger('click') // 全部 (index 3)
     // the 全庫 catalog view mounts and is NOT the placeholder
     expect(w.findComponent(CatalogMobile).exists()).toBe(true)
     expect(w.find('.m-placeholder').exists()).toBe(false)
-    // the 買場/線上 sliding toggle is present; 買場 is active by default
+    // the 賣場/線上 sliding toggle is present; 賣場 is active by default
     expect(w.find('[data-buyonline-toggle]').exists()).toBe(true)
     expect(w.find('[data-seg="store"]').classes()).toContain('is-active')
     // the count bar + the first page of warm cards render

@@ -2,9 +2,9 @@
 // CatalogMobile.vue — the 全部商品 全庫 view (#50), the "全部" tab of the mobile
 // shell. A pure renderer over the baked 10,049-item catalog (lib/catalog.js):
 //
-//   • a 買場/線上 sliding TOGGLE (the ONE place the app hides the 4,693 網路獨家
+//   • a 賣場/線上 sliding TOGGLE (the ONE place the app hides the 4,693 網路獨家
 //     items — 'store' mode drops them, 'online' shows the whole 全庫).
-//   • a count bar under the toggle (`countBarText`: store → "5,356 筆買場可購 ·
+//   • a count bar under the toggle (`countBarText`: store → "5,356 筆賣場可購 ·
 //     4,693 項線上 專 屬已隱藏"; online → "10,049 筆全庫 · 含 4,693 項線上 專 屬").
 //   • a round white 篩選 button (funnel line-icon, gate 30a — no emoji), same as
 //     MvmMobileCatalog (a popover is a later build; it flips aria-pressed so the
@@ -38,7 +38,7 @@ const props = defineProps({
 
 const emit = defineEmits(['modechange', 'pagechange', 'filtertoggle'])
 
-// The 買場/線上 toggle state. 'store' (default) hides the 網路獨家 items; 'online'
+// The 賣場/線上 toggle state. 'store' (default) hides the 網路獨家 items; 'online'
 // shows the whole 全庫.
 const mode = ref('store')
 // the current pagination page (0-indexed); "顯示更多" advances it.
@@ -86,10 +86,10 @@ function toggleFilter() {
 
 <template>
   <section class="cat-m" data-cat-mobile>
-    <!-- 買場/線上 sliding toggle: the ONE place the 網路獨家 items hide. The
+    <!-- 賣場/線上 sliding toggle: the ONE place the 網路獨家 items hide. The
          active segment is 品牌紅; the inactive is warm-white. Each segment shows
-         its set's count (買場 → 5,356 store, 線上 → 10,049 total). -->
-    <div class="cat-toggle" data-buyonline-toggle role="group" aria-label="買場/線上切換">
+         its set's count (賣場 → 5,356 store, 線上 → 10,049 total). -->
+    <div class="cat-toggle" data-buyonline-toggle role="group" aria-label="賣場/線上切換">
       <button
         type="button"
         class="cat-seg"
@@ -98,7 +98,7 @@ function toggleFilter() {
         data-seg="store"
         @click="selectMode('store')"
       >
-        買場<span class="cat-count">{{ formatTWD(storeCount) }}</span>
+        賣場<span class="cat-count">{{ formatTWD(storeCount) }}</span>
       </button>
       <button
         type="button"
@@ -162,7 +162,7 @@ function toggleFilter() {
   min-width: 0;
 }
 
-/* 買場/線上 sliding toggle — a two-segment control on a warm-gray track. The
+/* 賣場/線上 sliding toggle — a two-segment control on a warm-gray track. The
  * active segment slides to 品牌紅; the inactive stays warm-white. */
 .cat-toggle {
   display: flex;

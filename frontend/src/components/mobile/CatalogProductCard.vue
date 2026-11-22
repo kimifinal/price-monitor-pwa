@@ -4,7 +4,7 @@
 // A pure renderer over the baked catalog.json: it never re-derives a price. The
 // "約 X 折" badge comes from zheOfCatalog (lib/catalog.js, price→basePrice, the
 // 個位 折, e.g. 121/1000→1, 5199/6899→8); the 省 badge from saveText; the last
-// line from catalogPriceLine (`買場 $X` / `線上 $X` / `買場 $base · 線上 $price`).
+// line from catalogPriceLine (`賣場 $X` / `線上 $X` / `賣場 $base · 線上 $price`).
 // Money groups through formatTWD (the TWD SSOT, issue #25) with a "$" prefix,
 // matching the mockup (not "TWD "). Colours resolve ONLY through the warm token
 // scope var(--m-*) — no raw hex (sloplint gate 48 / CI css-token guard). Missing
@@ -13,7 +13,7 @@
 //
 // MODE (#50): in 'online' mode a discounted item's main price takes a blue tint
 // (var(--m-zhe-ink)) instead of the default red, and a 網路獨家 item shows the
-// orange "僅限線上" badge. In 'store' mode the main price is the red 買場 price.
+// orange "僅限線上" badge. In 'store' mode the main price is the red 賣場 price.
 import { ref, computed } from 'vue'
 import MobileIcon from './MobileIcon.vue'
 import {
@@ -28,7 +28,7 @@ import { formatTWD } from '../../lib/format.js'
 const props = defineProps({
   // a baked catalog item: { sku, name, price, basePrice, discount, online_only, stock }
   product: { type: Object, required: true },
-  // the active 買場/線上 toggle: 'store' (default) or 'online'
+  // the active 賣場/線上 toggle: 'store' (default) or 'online'
   mode: { type: String, default: 'store' },
 })
 
@@ -69,7 +69,7 @@ const save = computed(() => saveText(p.value))
 // the orange "僅限線上" badge — only in online mode, only for a 網路獨家 item.
 const showOnlineBadge = computed(() => props.mode === 'online' && isOnlineOnly(p.value))
 
-// the card's last line: 買場/線上 (or 買場/線上 two-figure) per catalogPriceLine.
+// the card's last line: 賣場/線上 (or 賣場/線上 two-figure) per catalogPriceLine.
 const lineText = computed(() => catalogPriceLine(p.value, props.mode))
 
 // the heart wish toggle (visual only in this pass; no persistence yet).

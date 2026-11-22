@@ -11,13 +11,13 @@
  *   { products: [{ sku, name, price, basePrice, discount, online_only, stock }] }
  *
  *   • `online_only` (bool): true when 'Costco好市多網路獨家商品' was in the item's
- *     decals (the 4,693 網路獨家 items). false → a 買場 (store) item. The source
+ *     decals (the 4,693 網路獨家 items). false → a 賣場 (store) item. The source
  *     JSON carries no separate online price, so an online-only item's single
  *     `price` IS its 線上 price; a store item may carry a discounted `price`
  *     below its `basePrice` (the 246 限時特價 items).
  *   • `price`/`basePrice` may be null (a 秤賣 / 特例品項) → the card reads "N/A"
  *     (never "—" — sloplint gate 19). `discount` is the 省 amount (0 when none).
- *   • 買場/線上 is the ONE toggle in the app; this module is its single source of
+ *   • 賣場/線上 is the ONE toggle in the app; this module is its single source of
  *     truth for filtering + the count-bar / price-line text, so a template never
  *     re-derives a number.
  *
@@ -61,7 +61,7 @@ export function isOnlineOnly(p) {
 }
 
 /**
- * Filter the 全庫 by mode: 'store' = 買場 items only (hide the 網路獨家 ones);
+ * Filter the 全庫 by mode: 'store' = 賣場 items only (hide the 網路獨家 ones);
  * 'online' = the WHOLE 全庫 (every item). Pure + null-safe; never mutates.
  * @param {Array<object>} products
  * @param {'store'|'online'} [mode='store']
@@ -74,7 +74,7 @@ export function filterByMode(products, mode = 'store') {
 }
 
 /**
- * The three counts the 買場/線上 toggle + count bar read: total / store /
+ * The three counts the 賣場/線上 toggle + count bar read: total / store /
  * onlineOnly. Pure + null-safe.
  * @param {Array<object>} products
  * @returns {{total:number,store:number,onlineOnly:number}}
@@ -87,8 +87,8 @@ export function catalogStats(products) {
 }
 
 /**
- * The count-bar text under the 買場/線上 toggle.
- *   store  mode → "5,356 筆買場可購 · 4,693 項線上 專 屬已隱藏"
+ * The count-bar text under the 賣場/線上 toggle.
+ *   store  mode → "5,356 筆賣場可購 · 4,693 項線上 專 屬已隱藏"
  *   online mode → "10,049 筆全庫 · 含 4,693 項線上 專 屬"
  * A zero-count mode reads "N/A" (gate 19, never "—"). Grouping via formatTWD.
  * @param {Array<object>} products
@@ -103,7 +103,7 @@ export function countBarText(products, mode = 'store') {
       : 'N/A'
   }
   return store > 0
-    ? `${formatTWD(store)} 筆買場可購 · ${formatTWD(onlineOnly)} 項線上 專 屬已隱藏`
+    ? `${formatTWD(store)} 筆賣場可購 · ${formatTWD(onlineOnly)} 項線上 專 屬已隱藏`
     : 'N/A'
 }
 
@@ -156,9 +156,9 @@ export function saveText(product) {
 
 /**
  * The card's price line for a mode.
- *   store  mode                → "買場 $X"            (X = the item's price)
+ *   store  mode                → "賣場 $X"            (X = the item's price)
  *   online mode, 網路獨家 item  → "線上 $X"            (its only price)
- *   online mode, store item    → "買場 $base · 線上 $price" when discounted
+ *   online mode, store item    → "賣場 $base · 線上 $price" when discounted
  *                                (a 限時特價 促價 below 原價), else "線上 $X"
  * Pure + null-safe: a missing figure reads "N/A" (no "—", gate 19), a "$" prefix
  * on a real figure matches the mockup, grouping reuses formatTWD (the TWD SSOT).
@@ -173,7 +173,7 @@ export function catalogPriceLine(product, mode = 'store') {
   const base = p.basePrice
   const online = isOnlineOnly(p)
   if (mode === 'store') {
-    return `買場 ${money(price)}`
+    return `賣場 ${money(price)}`
   }
   // online mode
   if (online) {
@@ -182,7 +182,7 @@ export function catalogPriceLine(product, mode = 'store') {
   // store item in online mode: show both when it carries a 促價 below its 原價,
   // else just the 線上 figure (its single price).
   if (base != null && base > 0 && price != null && price < base) {
-    return `買場 ${money(base)} · 線上 ${money(price)}`
+    return `賣場 ${money(base)} · 線上 ${money(price)}`
   }
   return `線上 ${money(price)}`
 }

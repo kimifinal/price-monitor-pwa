@@ -3,7 +3,7 @@
 // the mobile shell. A pure renderer over the baked 6-檔期 snapshot (lib/mvm.js):
 //
 //   • OPEN 檔期 chips on a horizontal SLIDER (an 已過期 檔期 is absent — see
-//     activePeriods; no 買場/線上 toggle here — this is the 檔期 view).
+//     activePeriods; no 賣場/線上 toggle here — this is the 檔期 view).
 //   • a section title in the EXACT spec form `N 筆 · 檔期名 · 到 MM/DD · 剩 K 天`
 //     (from sectionHeader — count/到期日/剩 K 天 all deciderd in lib/mvm.js).
 //   • a round white 篩選 button (funnel line-icon, gate 30a — no emoji).
@@ -88,7 +88,7 @@ function selectTab(t) {
       <div class="mvm-switch">切換檔期</div>
 
       <!-- OPEN 檔期 chips on a horizontal SLIDER; an 已過期 檔期 is absent (see
-           activePeriods). No 買場/線上 toggle by design. -->
+           activePeriods). No 賣場/線上 toggle by design. -->
       <nav class="mvm-chips" aria-label="切換檔期">
         <button
           v-for="tab in periods"

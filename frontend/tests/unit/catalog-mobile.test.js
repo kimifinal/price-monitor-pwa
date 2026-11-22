@@ -14,13 +14,13 @@ import {
   hasMore,
 } from '../../src/lib/catalog.js'
 
-// #50 — the 全部商品 全庫 catalog: the 買場/線上 sliding toggle + the 10,049-item
+// #50 — the 全部商品 全庫 catalog: the 賣場/線上 sliding toggle + the 10,049-item
 // list. The pure helpers (lib/catalog.js) decide every number the view renders,
 // so the components stay pure renderers. This file pins the helpers AND mounts
 // CatalogMobile over a small fixture so a test never iterates the full 全庫.
 
 // ---------------------------------------------------------------------------
-// A small fixture catalog (10 items): 6 買場 (store) + 4 網路獨家 (online_only),
+// A small fixture catalog (10 items): 6 賣場 (store) + 4 網路獨家 (online_only),
 // two of the store items carry a 促價 below their 原價 (a discount).
 // ---------------------------------------------------------------------------
 const mk = (o) => ({
@@ -63,7 +63,7 @@ describe('loadCatalog — the baked 全庫 (offline, null-safe)', () => {
   })
 })
 
-describe('isOnlineOnly + filterByMode — 買場/線上 split', () => {
+describe('isOnlineOnly + filterByMode — 賣場/線上 split', () => {
   it('isOnlineOnly flags only the 網路獨家 items', () => {
     expect(isOnlineOnly(FIXTURE[6])).toBe(true)
     expect(isOnlineOnly(FIXTURE[0])).toBe(false)
@@ -73,7 +73,7 @@ describe('isOnlineOnly + filterByMode — 買場/線上 split', () => {
   it('store mode hides the 網路獨家 items; online mode shows the whole 全庫', () => {
     const store = filterByMode(FIXTURE, 'store')
     const online = filterByMode(FIXTURE, 'online')
-    expect(store).toHaveLength(6) // 6 買場
+    expect(store).toHaveLength(6) // 6 賣場
     expect(store.every((p) => !isOnlineOnly(p))).toBe(true)
     expect(online).toHaveLength(10) // 全庫
     expect(online.filter(isOnlineOnly)).toHaveLength(4)
@@ -91,8 +91,8 @@ describe('catalogStats — total / store / onlineOnly', () => {
 })
 
 describe('countBarText — the count bar under the toggle', () => {
-  it('store mode: "6 筆買場可購 · 4 項線上 專 屬已隱藏"', () => {
-    expect(countBarText(FIXTURE, 'store')).toBe('6 筆買場可購 · 4 項線上 專 屬已隱藏')
+  it('store mode: "6 筆賣場可購 · 4 項線上 專 屬已隱藏"', () => {
+    expect(countBarText(FIXTURE, 'store')).toBe('6 筆賣場可購 · 4 項線上 專 屬已隱藏')
   })
 
   it('online mode: "10 筆全庫 · 含 4 項線上 專 屬"', () => {
@@ -126,18 +126,18 @@ describe('zheOfCatalog — 約 X 折 from price→basePrice, null-safe', () => {
   })
 })
 
-describe('catalogPriceLine — 買場 / 線上 / two-figure variants', () => {
-  it('store mode shows "買場 $price" (the item price)', () => {
-    expect(catalogPriceLine({ price: 100, basePrice: 100, online_only: false }, 'store')).toBe('買場 $100')
-    expect(catalogPriceLine({ price: 80, basePrice: 100, discount: 20, online_only: false }, 'store')).toBe('買場 $80')
+describe('catalogPriceLine — 賣場 / 線上 / two-figure variants', () => {
+  it('store mode shows "賣場 $price" (the item price)', () => {
+    expect(catalogPriceLine({ price: 100, basePrice: 100, online_only: false }, 'store')).toBe('賣場 $100')
+    expect(catalogPriceLine({ price: 80, basePrice: 100, discount: 20, online_only: false }, 'store')).toBe('賣場 $80')
   })
 
   it('online mode, a 網路獨家 item, shows "線上 $price" (its only price)', () => {
     expect(catalogPriceLine({ price: 499, basePrice: 499, online_only: true }, 'online')).toBe('線上 $499')
   })
 
-  it('online mode, a discounted store item, shows "買場 $base · 線上 $price"', () => {
-    expect(catalogPriceLine({ price: 80, basePrice: 100, discount: 20, online_only: false }, 'online')).toBe('買場 $100 · 線上 $80')
+  it('online mode, a discounted store item, shows "賣場 $base · 線上 $price"', () => {
+    expect(catalogPriceLine({ price: 80, basePrice: 100, discount: 20, online_only: false }, 'online')).toBe('賣場 $100 · 線上 $80')
   })
 
   it('online mode, a non-discounted store item, shows just "線上 $price"', () => {
@@ -145,7 +145,7 @@ describe('catalogPriceLine — 買場 / 線上 / two-figure variants', () => {
   })
 
   it('a missing figure reads "N/A" (never "—")', () => {
-    expect(catalogPriceLine({ price: null, basePrice: null, online_only: false }, 'store')).toBe('買場 N/A')
+    expect(catalogPriceLine({ price: null, basePrice: null, online_only: false }, 'store')).toBe('賣場 N/A')
   })
 })
 
@@ -165,16 +165,16 @@ describe('paginate + hasMore — the 顯示更多 windowing', () => {
 // Mounting CatalogMobile over a small fixture (never the full 全庫 in a test).
 // ---------------------------------------------------------------------------
 describe('CatalogMobile.vue — the 全部 全庫 view', () => {
-  it('mounts in 買場 mode: 6 store cards, the count bar, and the 買場 toggle active', () => {
+  it('mounts in 賣場 mode: 6 store cards, the count bar, and the 賣場 toggle active', () => {
     const w = mount(CatalogMobile, { props: { catalog: FIXTURE } })
     // default mode = store → the 4 網路獨家 items are hidden
     expect(w.findAll('.m-cat-card')).toHaveLength(6)
     expect(w.find('[data-seg="store"]').classes()).toContain('is-active')
     expect(w.find('[data-seg="online"]').classes()).not.toContain('is-active')
-    expect(w.find('[data-cat-count]').text()).toBe('6 筆買場可購 · 4 項線上 專 屬已隱藏')
+    expect(w.find('[data-cat-count]').text()).toBe('6 筆賣場可購 · 4 項線上 專 屬已隱藏')
   })
 
-  it('the 買場/線上 toggle flips the mode, the count bar, and the rendered set', async () => {
+  it('the 賣場/線上 toggle flips the mode, the count bar, and the rendered set', async () => {
     const w = mount(CatalogMobile, { props: { catalog: FIXTURE } })
     expect(w.findAll('.m-cat-card')).toHaveLength(6)
     await w.find('[data-seg="online"]').trigger('click')
@@ -187,7 +187,7 @@ describe('CatalogMobile.vue — the 全部 全庫 view', () => {
     expect(w.find('.m-cat-badge-online').exists()).toBe(true)
   })
 
-  it('a 網路獨家 card shows no 僅限線上 badge while in 買場 mode', () => {
+  it('a 網路獨家 card shows no 僅限線上 badge while in 賣場 mode', () => {
     const w = mount(CatalogMobile, { props: { catalog: FIXTURE } })
     expect(w.find('.m-cat-badge-online').exists()).toBe(false)
   })
@@ -230,7 +230,7 @@ describe('CatalogProductCard.vue — a single warm card', () => {
     })
     expect(w.find('.m-cat-name').text()).toBe('測試品項')
     expect(w.find('.m-cat-promo').text()).toBe('$100')
-    expect(w.find('.m-cat-line').text()).toBe('買場 $100')
+    expect(w.find('.m-cat-line').text()).toBe('賣場 $100')
   })
 
   it('shows the struck original price only when it differs from the main price', () => {
@@ -260,6 +260,6 @@ describe('CatalogProductCard.vue — a single warm card', () => {
   it('is null-safe: a null product renders without crashing and reads "N/A"', () => {
     const w = mount(CatalogProductCard, { props: { product: null, mode: 'store' } })
     expect(w.find('.m-cat-promo').text()).toBe('N/A')
-    expect(w.find('.m-cat-line').text()).toBe('買場 N/A')
+    expect(w.find('.m-cat-line').text()).toBe('賣場 N/A')
   })
 })
