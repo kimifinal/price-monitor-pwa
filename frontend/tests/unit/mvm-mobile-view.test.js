@@ -7,9 +7,9 @@ import { loadMvmCatalog, sectionHeader, isPeriodExpired, activePeriods } from '.
 // #49 (案 B) — the warm MVM 檔期 view (the "特價" tab) + its product card.
 //
 // Asserts the behaviours the 檔期 mockup + spec demand: 6 檔 chips on a
-// horizontal axis, NO 買場/線上 toggle, the section title in the exact spec form
+// horizontal axis, NO 賣場/線上 toggle, the section title in the exact spec form
 // `N 筆 · 檔期名 · 到 MM/DD · 剩 K 天`, a full item list of the active 檔期, the
-// "約 X 折" badge, and the 買場 $X · 線上 $Y / 買場 $X · 買場 $Y last line.
+// "約 X 折" badge, and the 賣場 $X · 線上 $Y / 賣場 $X · 賣場 $Y last line.
 
 const c = loadMvmCatalog()
 const REF = new Date(2026, 10, 20) // pin "today" to 11/20 for determinism
@@ -47,10 +47,10 @@ describe('MvmMobileCatalog.vue — 6 檔 chips + section title + full list, no b
     expect(title).toBe(h.text) // the whole string, in the spec order
   })
 
-  it('has a round white 篩選 button and NO 買場/線上 toggle (this is the 檔期 view)', () => {
+  it('has a round white 篩選 button and NO 賣場/線上 toggle (this is the 檔期 view)', () => {
     const w = mountAt()
     expect(w.find('[data-mvm-filter]').exists()).toBe(true)
-    // the segmented 買場/線上 control from the HOME mockup must NOT be here
+    // the segmented 賣場/線上 control from the HOME mockup must NOT be here
     expect(w.find('[data-buyonline-toggle]').exists()).toBe(false)
     expect(w.find('.mvm-seg').exists()).toBe(false)
   })
@@ -203,13 +203,13 @@ describe('isPeriodExpired / activePeriods (#49) — only expired dropped, null-s
   })
 })
 
-describe('MvmMobileProductCard.vue — 約X折 badge + 買場/線上 last line (warm)', () => {
+describe('MvmMobileProductCard.vue — 約X折 badge + 賣場/線上 last line (warm)', () => {
   const mountCard = (product, tabPriceType = '') =>
     mount(MvmMobileProductCard, {
       props: { product, tabPriceType, priceTypes: c.priceTypes, endDate: '11/22' },
     })
 
-  it('renders 約 X 折 from zheOf and the 買場 $X · 線上 $Y last line', () => {
+  it('renders 約 X 折 from zheOf and the 賣場 $X · 線上 $Y last line', () => {
     const w = mountCard({
       sku: 154795,
       name: '五月花 厚棒抽取式衛生紙 100抽X60入',
@@ -220,14 +220,14 @@ describe('MvmMobileProductCard.vue — 約X折 badge + 買場/線上 last line (
       discount: 230,
     })
     expect(w.text()).toContain('約 8 折') // zheOf(1149->919) = 8
-    expect(w.text()).toContain('買場 $1,149 · 線上 $919')
+    expect(w.text()).toContain('賣場 $1,149 · 線上 $919')
     expect(w.find('.m-card-promo').text()).toBe('$919')
     expect(w.find('.m-card-orig').text()).toBe('$1,149')
   })
 
-  it('a store-only item reads 買場 $X · 買場 $Y', () => {
+  it('a store-only item reads 賣場 $X · 賣場 $Y', () => {
     const w = mountCard({ sku: 4, name: 'X', cat: '家電', orig: 449, promo: 359, type: 'store_only' }, 'store_only')
-    expect(w.text()).toContain('買場 $449 · 買場 $359')
+    expect(w.text()).toContain('賣場 $449 · 賣場 $359')
     expect(w.text()).not.toContain('線上')
   })
 
@@ -251,7 +251,7 @@ describe('MvmMobileProductCard.vue — 約X折 badge + 買場/線上 last line (
   it('a missing figure reads N/A and never an em/en dash', () => {
     const w = mountCard({ sku: 3, name: '品項', orig: 1000, promo: null, type: 'online_only', discount: null })
     expect(w.text()).toContain('N/A')
-    expect(w.text()).toContain('買場 $1,000 · 線上 N/A')
+    expect(w.text()).toContain('賣場 $1,000 · 線上 N/A')
     expect(w.text()).not.toContain('—')
     expect(w.text()).not.toContain('–')
   })

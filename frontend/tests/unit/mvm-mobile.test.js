@@ -4,7 +4,7 @@ import { loadMvmCatalog } from '../../src/lib/mvm.js'
 
 // #49 (案 B) — the two NEW pure helpers the warm MVM 檔期 view renders through,
 // plus the card's last-line helper. Everything the warm card/catalog shows
-// (約X折, 到期日, 剩K天, the 買場/線上 line) is deciderd HERE so the components
+// (約X折, 到期日, 剩K天, the 賣場/線上 line) is deciderd HERE so the components
 // stay pure renderers: no number is re-derived in a template.
 //
 // sectionHeader takes an injectable refDate so a test can pin "today" without
@@ -102,31 +102,31 @@ describe('sectionHeader — N筆 · 檔期名 · MM/DD ~ MM/DD · 剩 K天 (or �
   })
 })
 
-describe('priceLine — 買場/線上 card last line, null-safe (no "—")', () => {
-  it('an online-eligible item reads 買場 $原價 · 線上 $促價', () => {
-    expect(priceLine({ orig: 1149, promo: 919, type: 'online_only' })).toBe('買場 $1,149 · 線上 $919')
-    expect(priceLine({ orig: 1000, promo: 121, type: 'online_only' })).toBe('買場 $1,000 · 線上 $121')
+describe('priceLine — 賣場/線上 card last line, null-safe (no "—")', () => {
+  it('an online-eligible item reads 賣場 $原價 · 線上 $促價', () => {
+    expect(priceLine({ orig: 1149, promo: 919, type: 'online_only' })).toBe('賣場 $1,149 · 線上 $919')
+    expect(priceLine({ orig: 1000, promo: 121, type: 'online_only' })).toBe('賣場 $1,000 · 線上 $121')
     // a typeless item on an online 檔期 is treated as online-eligible
-    expect(priceLine({ orig: 31999, promo: 25599, type: null }, 'online_only')).toBe('買場 $31,999 · 線上 $25,599')
+    expect(priceLine({ orig: 31999, promo: 25599, type: null }, 'online_only')).toBe('賣場 $31,999 · 線上 $25,599')
   })
 
-  it('a store-only item reads 買場 買場 (no 線上 price to compare)', () => {
-    expect(priceLine({ orig: 449, promo: 359, type: 'store_only' })).toBe('買場 $449 · 買場 $359')
+  it('a store-only item reads 賣場 賣場 (no 線上 price to compare)', () => {
+    expect(priceLine({ orig: 449, promo: 359, type: 'store_only' })).toBe('賣場 $449 · 賣場 $359')
     // a typeless item on a store_only 檔期 resolves the same way
-    expect(priceLine({ orig: 449, promo: 359, type: null }, 'store_only')).toBe('買場 $449 · 買場 $359')
-    // a sub-variant (store_only_weight) still falls to the 買場 form
-    expect(priceLine({ orig: 299, promo: 239, type: 'store_only_weight' })).toBe('買場 $299 · 買場 $239')
+    expect(priceLine({ orig: 449, promo: 359, type: null }, 'store_only')).toBe('賣場 $449 · 賣場 $359')
+    // a sub-variant (store_only_weight) still falls to the 賣場 form
+    expect(priceLine({ orig: 299, promo: 239, type: 'store_only_weight' })).toBe('賣場 $299 · 賣場 $239')
   })
 
-  it('stores the 買場 figure as the 原價 and 線上 as the 促價 with TWD grouping', () => {
-    expect(priceLine({ orig: 25599, promo: 20769, type: null }, 'online_only')).toBe('買場 $25,599 · 線上 $20,769')
+  it('stores the 賣場 figure as the 原價 and 線上 as the 促價 with TWD grouping', () => {
+    expect(priceLine({ orig: 25599, promo: 20769, type: null }, 'online_only')).toBe('賣場 $25,599 · 線上 $20,769')
   })
 
   it('reads "N/A" (never "—") for a missing figure and is null-safe', () => {
-    expect(priceLine({ orig: null, promo: 919, type: 'online_only' })).toBe('買場 N/A · 線上 $919')
-    expect(priceLine({ orig: 1000, promo: null, type: 'online_only' })).toBe('買場 $1,000 · 線上 N/A')
-    expect(priceLine(null)).toBe('買場 N/A · 線上 N/A')
-    expect(priceLine({})).toBe('買場 N/A · 線上 N/A')
+    expect(priceLine({ orig: null, promo: 919, type: 'online_only' })).toBe('賣場 N/A · 線上 $919')
+    expect(priceLine({ orig: 1000, promo: null, type: 'online_only' })).toBe('賣場 $1,000 · 線上 N/A')
+    expect(priceLine(null)).toBe('賣場 N/A · 線上 N/A')
+    expect(priceLine({})).toBe('賣場 N/A · 線上 N/A')
     // none of the forms leaks an em/en dash
     expect(priceLine(null)).not.toContain('—')
     expect(priceLine({})).not.toContain('—')

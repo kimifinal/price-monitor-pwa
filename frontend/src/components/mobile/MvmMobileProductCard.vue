@@ -3,8 +3,8 @@
 //
 // A pure renderer over the baked JSON: it never re-derives a price. The
 // "約 X 折" badge comes from zheOf (lib/mvm.js, the 個位 折, e.g. 121/1000→1,
-// 329/349→9); the card last line comes from priceLine (`買場 $X · 線上 $Y` or
-// `買場 $X · 買場 $Y`). Money groups through formatTWD (the TWD SSOT, issue #25)
+// 329/349→9); the card last line comes from priceLine (`賣場 $X · 線上 $Y` or
+// `賣場 $X · 賣場 $Y`). Money groups through formatTWD (the TWD SSOT, issue #25)
 // with a "$" prefix, matching the mockup (not "TWD "). Colours resolve ONLY
 // through the warm token scope var(--m-*) — no raw hex (sloplint gate 48 / CI
 // css-token guard). Missing figures read "N/A", never "—" (sloplint gate 19).
@@ -22,7 +22,7 @@ const props = defineProps({
   // for parity with the dark card + a future type chip)
   priceTypes: { type: Object, default: () => ({}) },
   // the active 檔期's price_type, so a typeless store-only item resolves the
-  // store-form last line (買場 · 買場) via priceLine.
+  // store-form last line (賣場 · 賣場) via priceLine.
   tabPriceType: { type: String, default: '' },
   // the active 檔期's 到期日 ("MM/DD", or 'N/A'), shown as a "到 MM/DD" chip
   endDate: { type: String, default: '' },
@@ -43,7 +43,7 @@ const skuText = computed(() => (p.value.sku != null ? String(p.value.sku) : 'N/A
 const zhe = computed(() => zheOf(p.value))
 const zheText = computed(() => (zhe.value == null ? '' : `約 ${zhe.value} 折`))
 
-// card last line — the 買場/線上 (or 買場/買場) figure.
+// card last line — the 賣場/線上 (or 賣場/賣場) figure.
 const lineText = computed(() => priceLine(p.value, props.tabPriceType))
 
 // The 到期日 chip only renders when the tab actually carries a date.

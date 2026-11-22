@@ -11,9 +11,12 @@
 import { ref, computed } from 'vue'
 import MobileIcon from './MobileIcon.vue'
 import MvmMobileCatalog from './MvmMobileCatalog.vue'
+import CatalogMobile from './CatalogMobile.vue'
 import { loadMvmCatalog } from '../../lib/mvm.js'
+import { loadCatalog } from '../../lib/catalog.js'
 
-// 5-tab 底部導航. 特價 = the MVM 檔期 view; the rest are placeholders.
+// 5-tab 底部導航. 特價 = the MVM 檔期 view; 全部 = the 全庫 catalog view; the
+// rest are placeholders.
 const TABS = [
   { key: 'home', label: '首頁', icon: 'home' },
   { key: 'deal', label: '特價', icon: 'tag' },
@@ -25,6 +28,10 @@ const active = ref('deal')
 
 // Offline-baked MVM 檔期 catalog (lib/mvm.js), rendered by the 特價 tab.
 const mvm = loadMvmCatalog()
+
+// Offline-baked 全庫 catalog (lib/catalog.js, 10,049 items), rendered by the
+// 全部 tab (#50) — the 賣場/線上 sliding toggle + the whole catalog.
+const catalog = loadCatalog()
 
 const activeTabObj = computed(() => TABS.find((t) => t.key === active.value) || TABS[0])
 const activeLabel = computed(() => activeTabObj.value.label)
@@ -74,7 +81,9 @@ function selectTab(key) {
         :price-types="mvm.priceTypes"
         :source-date="mvm.sourceDate"
       />
-      <!-- 首頁 / 追蹤 / 全部 / 我的: honest placeholders -->
+      <!-- 全部 tab: the warm 全庫 catalog view (#50) — 賣場/線上 toggle + 10,049 items -->
+      <CatalogMobile v-else-if="active === 'all'" :catalog="catalog" />
+      <!-- 首頁 / 追蹤 / 我的: honest placeholders -->
       <section
         v-else
         class="m-placeholder"
