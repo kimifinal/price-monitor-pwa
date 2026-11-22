@@ -226,16 +226,34 @@ function parsePeriodEnd(period, refYear) {
 const pad2 = (n) => String(n).padStart(2, '0')
 
 /**
- * The MVM 檔期 section header: `N 筆 · 檔期名 · 到 MM/DD · 剩 K 天`. Count prefers
+ * The MVM 檔期's short "MM/DD ~ MM/DD" range for the chip slider's lower line,
+ * or "敬請期待" when the period has no parseable date. Kimi 2026-11-22: the
+ * chip shows the full two-date range instead of "到 MM/DD", and a date-less 檔期
+ * ("黑色購物週" / "網購星期一") reads "敬請期待", not blank. Pure + null-safe;
+ * strips an optional leading "YYYY/" so "2026/10/26 ~ 11/22" → "10/26 ~ 11/22".
+ * @param {object} [tab]
+ * @returns {string} "MM/DD ~ MM/DD" or "敬請期待"
+ */
+export function periodShort(tab) {
+  if (!tab || typeof tab !== 'object') return '敬請期待'
+  const p = String(tab.period || '').trim()
+  if (!p || p === 'N/A' || p === '敬請期待') return '敬請期待'
+  return p.replace(/^\d{4}\s*\//, '')
+}
+
+/**
+ * The MVM 檔期 section header: `N 筆 · 檔期名 · MM/DD ~ MM/DD · 剩 K 天` (or
+ * `N 筆 · 檔期名 · 敬請期待` when no date). Count prefers
  * the tab's `n_products` when it is a real positive integer, else the number of
- * items actually listed, else "N/A" (gate 19, never "—"). The 到期日 is parsed
- * from `period`; `daysLeft` = end − today, clamped at 0 (a past 檔期 reads "剩 0
- * 天"). `refDate` is injectable so a test pins "today" without waiting a day —
- * the UI passes none and gets the live clock. A tab whose period is not a date
- * ("敬請期待") yields end "N/A" and NO 剩-clause (null daysLeft).
+ * items actually listed, else "N/A" (gate 19, never "—"). The 到期日 range is
+ * parsed from `period` via `periodShort`; `daysLeft` = end − today, clamped at 0
+ * (a past 檔期 reads "剩 0 天"). `refDate` is injectable so a test pins "today"
+ * without waiting a real day — the UI passes none and gets the live clock. A
+ * tab whose period is not a date ("敬請期待") yields end "N/A", no 剩-clause
+ * (null daysLeft), and text ending in "敬請期待".
  * @param {object} tab
  * @param {Date} [refDate]
- * @returns {{count:string,label:string,end:string,daysLeft:(number|null),text:string}}
+ * @returns {{count:string,label:string,end:string,range:string,daysLeft:(number|null),text:string}}
  */
 export function sectionHeader(tab, refDate) {
   const t = tab && typeof tab === 'object' ? tab : {}
@@ -250,6 +268,7 @@ export function sectionHeader(tab, refDate) {
 
   const end = parsePeriodEnd(t.period, ref.getFullYear())
   const endText = end ? `${pad2(end.month)}/${pad2(end.day)}` : 'N/A'
+  const range = periodShort(t)
 
   let daysLeft = null
   if (end) {
@@ -261,10 +280,10 @@ export function sectionHeader(tab, refDate) {
   const label = t.label != null ? String(t.label) : 'N/A'
   const text =
     daysLeft == null
-      ? `${count} · ${label} · 到 ${endText}`
-      : `${count} · ${label} · 到 ${endText} · 剩 ${daysLeft} 天`
+      ? `${count} · ${label} · ${range}`
+      : `${count} · ${label} · ${range} · 剩 ${daysLeft} 天`
 
-  return { count, label, end: endText, daysLeft, text }
+  return { count, label, end: endText, range, daysLeft, text }
 }
 
 /**

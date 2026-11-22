@@ -46,10 +46,16 @@ const zheText = computed(() => (zhe.value == null ? '' : `約 ${zhe.value} 折`)
 // card last line — the 買場/線上 (or 買場/買場) figure.
 const lineText = computed(() => priceLine(p.value, props.tabPriceType))
 
-// the 到期日 chip only renders when the tab actually carries a date.
-const endDateShown = computed(() =>
-  props.endDate && props.endDate !== 'N/A' ? `到 ${props.endDate}` : '',
-)
+// The 到期日 chip only renders when the tab actually carries a date.
+// Kimi 2026-11-22: the range form "MM/DD ~ MM/DD" (no "到 " prefix, it IS
+// the range) vs. the old "MM/DD" form (kept as "到 MM/DD" backward-compat).
+// A "敬請期待"/N-A/empty period hides the chip — a no-date 檔期 shows nothing
+// extra on the card, only in the slider chip below.
+const endDateShown = computed(() => {
+  const s = String(props.endDate || '')
+  if (!s || s === 'N/A' || s === '敬請期待') return ''
+  return s.includes('~') ? s : `到 ${s}`
+})
 
 // a decorative type chip (store_online_diff → "【賣場售價】"); skipped for the
 // long-only labels so the chip row stays legible on a narrow card.

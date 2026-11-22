@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { zheOf, sectionHeader, priceLine } from '../../src/lib/mvm.js'
+import { zheOf, sectionHeader, priceLine, periodShort } from '../../src/lib/mvm.js'
 import { loadMvmCatalog } from '../../src/lib/mvm.js'
 
 // #49 (案 B) — the two NEW pure helpers the warm MVM 檔期 view renders through,
@@ -41,22 +41,23 @@ describe('zheOf — 約X折 個位, null-safe', () => {
   })
 })
 
-describe('sectionHeader — N筆 · 檔期名 · 到 MM/DD · 剩 K天', () => {
+describe('sectionHeader — N筆 · 檔期名 · MM/DD ~ MM/DD · 剩 K天 (or 敬請期待)', () => {
   const w1 = loadMvmCatalog().tabs[1] // 優惠期間, period 2026/10/26 ~ 11/22, 62 products
 
-  it('prefers the integer n_products, parses 到 MM/DD, and counts days to the injected today', () => {
+  it('prefers the integer n_products, shows MM/DD ~ MM/DD range, and counts days to the injected today', () => {
     const h = sectionHeader(w1, new Date(2026, 10, 20))
     expect(h.count).toBe('66 筆') // n_products is the authoritative 66
     expect(h.label).toBe('優惠期間')
-    expect(h.end).toBe('11/22')
+    expect(h.end).toBe('11/22')     // end day (backward-compat field) still computed
+    expect(h.range).toBe('10/26 ~ 11/22') // Kimi 11-22: full range in chip
     expect(h.daysLeft).toBe(2) // 11/22 − 11/20
-    expect(h.text).toBe('66 筆 · 優惠期間 · 到 11/22 · 剩 2 天')
+    expect(h.text).toBe('66 筆 · 優惠期間 · 10/26 ~ 11/22 · 剩 2 天')
   })
 
   it('clamps daysLeft at 0 for a 檔期 already past today', () => {
     const h = sectionHeader(w1, new Date(2026, 11, 5)) // 11/27 ref -> 11/22 is past
     expect(h.daysLeft).toBe(0)
-    expect(h.text).toBe('66 筆 · 優惠期間 · 到 11/22 · 剩 0 天')
+    expect(h.text).toBe('66 筆 · 優惠期間 · 10/26 ~ 11/22 · 剩 0 天')
   })
 
   it('zero-pads MM/DD and resolves a bare M/D end against the start year', () => {
@@ -83,11 +84,12 @@ describe('sectionHeader — N筆 · 檔期名 · 到 MM/DD · 剩 K天', () => {
     expect(h.count).toBe('2 筆')
   })
 
-  it('a non-date period ("敬請期待") yields end "N/A" and omits the 剩-clause', () => {
+  it('a non-date period ("敬請期待") yields end "N/A", omits 剩-clause, shows 敬請期待 in text', () => {
     const h = sectionHeader({ label: '網購星期一', period: '敬請期待', n_products: 0, products: [] })
     expect(h.end).toBe('N/A')
+    expect(h.range).toBe('敬請期待') // Kimi 11-22: 敬請期待 in chip display
     expect(h.daysLeft).toBeNull()
-    expect(h.text).toBe('N/A · 網購星期一 · 到 N/A')
+    expect(h.text).toBe('N/A · 網購星期一 · 敬請期待')
     expect(h.text).not.toContain('剩')
   })
 
@@ -128,5 +130,26 @@ describe('priceLine — 買場/線上 card last line, null-safe (no "—")', () 
     // none of the forms leaks an em/en dash
     expect(priceLine(null)).not.toContain('—')
     expect(priceLine({})).not.toContain('—')
+  })
+})
+
+describe('periodShort — 檔期 chip range text, Kimi 11-22', () => {
+  it('strips an optional leading "YYYY/" from the period string', () => {
+    expect(periodShort({ period: '2026/10/26 ~ 11/22' })).toBe('10/26 ~ 11/22')
+    expect(periodShort({ period: '2026/11/27 ~ 12/06' })).toBe('11/27 ~ 12/06')
+    expect(periodShort({ period: '2026/11/30 ~ 12/18' })).toBe('11/30 ~ 12/18')
+    expect(periodShort({ period: '2026/11/30 ~ 12/20' })).toBe('11/30 ~ 12/20')
+  })
+
+  it('passes through a bare "MM/DD ~ MM/DD" range that already lacks the year', () => {
+    expect(periodShort({ period: '10/26 ~ 11/22' })).toBe('10/26 ~ 11/22')
+  })
+
+  it('returns "敬請期待" for a no-date / "N/A" / "敬請期待" / empty period', () => {
+    expect(periodShort({ period: '' })).toBe('敬請期待')
+    expect(periodShort({ period: 'N/A' })).toBe('敬請期待')
+    expect(periodShort({ period: '敬請期待' })).toBe('敬請期待')
+    expect(periodShort({})).toBe('敬請期待')
+    expect(periodShort(null)).toBe('敬請期待')
   })
 })

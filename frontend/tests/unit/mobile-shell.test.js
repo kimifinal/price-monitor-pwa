@@ -46,9 +46,9 @@ describe('MobileApp.vue — 暖色 shell + 5-tab 導航 + 特價=MVM 檔期視�
     const w = mountShell()
     // the 特價 tab (index 1) carries is-active
     expect(w.findAll('.m-tab')[1].classes()).toContain('is-active')
-    // the MVM 檔期 view is mounted: its 6 檔 chips + catalog are present
+    // the MVM 檔期 view is mounted: its 7 檔期 chips + catalog are present
     expect(w.findComponent(MvmMobileCatalog).exists()).toBe(true)
-    expect(w.findAll('.mvm-chip')).toHaveLength(6)
+    expect(w.findAll('.mvm-chip')).toHaveLength(7) // Kimi 11-22: 黑色購物週 added
     // and this default screen is NOT the placeholder
     expect(w.find('.m-placeholder').exists()).toBe(false)
   })
@@ -83,7 +83,7 @@ describe('MobileApp.vue — 暖色 shell + 5-tab 導航 + 特價=MVM 檔期視�
     expect(w.find('.m-placeholder').exists()).toBe(true)
     await w.findAll('.m-tab')[1].trigger('click') // back to 特價
     expect(w.findComponent(MvmMobileCatalog).exists()).toBe(true)
-    expect(w.findAll('.mvm-chip')).toHaveLength(6)
+    expect(w.findAll('.mvm-chip')).toHaveLength(7) // Kimi 11-22: 黑色購物週 added
     expect(w.find('.m-placeholder').exists()).toBe(false)
   })
 

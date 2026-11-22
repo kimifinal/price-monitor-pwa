@@ -16,7 +16,7 @@
 import { ref, computed } from 'vue'
 import MobileIcon from './MobileIcon.vue'
 import MvmMobileProductCard from './MvmMobileProductCard.vue'
-import { defaultActiveTab, sectionHeader, activePeriods } from '../../lib/mvm.js'
+import { periodShort, defaultActiveTab, sectionHeader, activePeriods } from '../../lib/mvm.js'
 
 const props = defineProps({
   tabs: { type: Array, default: () => [] },
@@ -62,12 +62,10 @@ const products = computed(() =>
 )
 const hasProducts = computed(() => products.value.length > 0)
 
-// The chip's lower line "到 MM/DD"; a date-less 檔期 ("敬請期待"/N/A) shows none —
-// only the name, never an empty date line.
-const chipEnd = (tab) => {
-  const h = sectionHeader(tab, refForHeader())
-  return h.end && h.end !== 'N/A' ? `到 ${h.end}` : ''
-}
+// The chip's lower line is the full "MM/DD ~ MM/DD" range (Kimi 2026-11-22);
+// a date-less 檔期 ("黑色購物週" / "網購星期一") reads "敬請期待", not blank.
+// Both go through periodShort (lib/mvm.js) so the display is single-sourced.
+const chipRange = (tab) => periodShort(tab)
 const isActive = (t) => t && t.tab_id === activeTabId.value
 
 // the 篩選 toggle is a stateless placeholder in this pass (a popover is a later
@@ -100,11 +98,11 @@ function selectTab(t) {
           class="mvm-chip"
           :class="{ 'is-active': isActive(tab), 'is-empty': !(tab && tab.products && tab.products.length) }"
           :aria-pressed="isActive(tab)"
-          :aria-label="`檔期 ${tab && tab.label ? tab.label : 'N/A'}${tab && tab.period ? '，' + tab.period : ''}`"
+          :aria-label="`檔期 ${tab && tab.label ? tab.label : 'N/A'}，${chipRange(tab)}`"
           @click="selectTab(tab)"
         >
           <span class="mvm-chip-label">{{ tab && tab.label ? tab.label : 'N/A' }}</span>
-          <span v-if="chipEnd(tab)" class="mvm-chip-end">{{ chipEnd(tab) }}</span>
+          <span class="mvm-chip-end">{{ chipRange(tab) }}</span>
         </button>
       </nav>
 
@@ -132,7 +130,7 @@ function selectTab(t) {
           :product="product"
           :price-types="priceTypes"
           :tab-price-type="activeTabObj.price_type || ''"
-          :end-date="header.end"
+          :end-date="header.range"
         />
         <p v-if="!hasProducts" class="mvm-empty">本檔期尚無可顯示品項</p>
       </main>

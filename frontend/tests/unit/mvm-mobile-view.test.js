@@ -25,24 +25,24 @@ const mountAt = (props = {}) =>
   })
 
 describe('MvmMobileCatalog.vue — 6 檔 chips + section title + full list, no buy/online toggle', () => {
-  it('renders all 6 檔期 chips on the horizontal axis', () => {
+  it('renders all 7 檔期 chips on the horizontal axis (Kimi 11-22: 黑色購物週 added)', () => {
     const w = mountAt()
-    expect(w.findAll('.mvm-chip')).toHaveLength(6)
+    expect(w.findAll('.mvm-chip')).toHaveLength(7)
   })
 
   it('opens the first 檔期 with products and renders its FULL item list', () => {
     const w = mountAt()
-    const w1 = c.tabs[1] // 62 products, the 優惠期間 檔期
+    const w1 = c.tabs[1] // 66 products (tab[1] = 優惠期間 w1 after 黑色購物週 was inserted at [2])
     expect(w.findAll('.mvm-list')[0].attributes('data-active-tab')).toBe('fy27p3-mvm2-w1')
     expect(w.findAll('.m-card')).toHaveLength(w1.products.length)
   })
 
-  it('renders the section title in the exact spec form N筆 · 檔期名 · 到 MM/DD · 剩 K 天', () => {
+  it('renders the section title in the spec form N筆 · 檔期名 · MM/DD ~ MM/DD · 剩 K 天', () => {
     const w = mountAt()
     const h = sectionHeader(c.tabs[1], REF)
     const title = w.findAll('[data-mvm-section-title]')[0].text()
     expect(title).toContain(h.count)
-    expect(title).toContain('到 11/22')
+    expect(title).toContain('10/26 ~ 11/22') // Kimi 11-22: full range, no "到 " prefix
     expect(title).toContain('剩 2 天')
     expect(title).toBe(h.text) // the whole string, in the spec order
   })
@@ -65,9 +65,12 @@ describe('MvmMobileCatalog.vue — 6 檔 chips + section title + full list, no b
 
   it('clicking a chip swaps the active 檔期 grid to its full list', async () => {
     const w = mountAt()
-    await w.findAll('.mvm-chip')[2].trigger('click') // 線上專屬 檔期, 17 products
+    // Click 線上專屬 chip via its tab-id (index shifted after 黑色購物週 was inserted at [2])
+    const cyberChip = w.find('[data-tab-id="fy27p4-mvm2-cyber"]')
+    expect(cyberChip.exists()).toBe(true)
+    await cyberChip.trigger('click')
     expect(w.findAll('.mvm-list')[0].attributes('data-active-tab')).toBe('fy27p4-mvm2-cyber')
-    expect(w.findAll('.m-card')).toHaveLength(c.tabs[2].products.length)
+    expect(w.findAll('.m-card')).toHaveLength(c.tabs[3].products.length) // index 3 after insert
   })
 
   it('an empty 檔期 shows the empty-state, not a blank list', async () => {
@@ -76,13 +79,13 @@ describe('MvmMobileCatalog.vue — 6 檔 chips + section title + full list, no b
     expect(w.findAll('.m-card')).toHaveLength(0)
   })
 
-  it('passes the 檔期 到期日 through to each card as a "到 MM/DD" chip', () => {
+  it('passes the 檔期 range "MM/DD ~ MM/DD" through to each card as a date chip (no "到 " prefix)', () => {
     const w = mountAt()
-    // the active 檔期 (w1) ends 11/22; every card shows "到 11/22"
+    // the active 檔期 (w1) 10/26 ~ 11/22; every card shows "10/26 ~ 11/22" (Kimi 11-22 format)
     const dateChips = w.findAll('.m-badge-date')
     expect(dateChips.length).toBeGreaterThan(0)
-    expect(dateChips[0].attributes('data-sku') || true).toBeTruthy()
-    expect(w.text()).toContain('到 11/22')
+    expect(dateChips[0].text()).toBe('10/26 ~ 11/22')
+    expect(w.text()).toContain('10/26 ~ 11/22')
   })
 })
 
@@ -90,23 +93,28 @@ describe('MvmMobileCatalog.vue — 已過期 檔期 移除 + chip slider (#49 Ki
   it('renders ONLY the active 檔期 chips; the 已過期 one (到 11/20) is absent from the DOM', () => {
     const w = mountAt({ refDate: new Date(2026, 10, 21) }) // pin today to 11/21
     const chips = w.findAll('.mvm-chip')
-    expect(chips).toHaveLength(5) // 6 檔期 − 1 已過期 (到 11/20)
+    expect(chips).toHaveLength(6) // 7 檔期 − 1 已過期 (到 11/20) = 6
     expect(w.find('[data-tab-id="fy27p3-mvm2-weekday"]').exists()).toBe(false) // 到 11/20 -> gone
     expect(w.find('[data-tab-id="fy27p3-mvm2-w1"]').exists()).toBe(true) // 到 11/22 -> kept
-    expect(w.find('[data-tab-id="fy27p4-mvm2-cyberland"]').exists()).toBe(true) // 敬請期待 -> kept
+    expect(w.find('[data-tab-id="fy27p4-mvm2-cyberland"]').exists()).toBe(true) // 網購星期一 敬請期待 -> kept
+    expect(w.find('[data-tab-id="fy27p4-mvm2-blackfriday"]').exists()).toBe(true) // 黑色購物週 敬請期待 -> kept
   })
 
-  it('each dated 檔期 chip stacks the name over its date (two lines)', () => {
-    const w = mountAt() // REF 11/20 -> all 6 active
-    const w1 = w.find('[data-tab-id="fy27p3-mvm2-w1"]') // 到 11/22 (two lines)
+  it('each dated 檔期 chip stacks the name over its range (two lines); no-date reads 敬請期待', () => {
+    const w = mountAt() // REF 11/20 -> all 7 active
+    const w1 = w.find('[data-tab-id="fy27p3-mvm2-w1"]') // 10/26 ~ 11/22 (two lines)
     expect(w1.find('.mvm-chip-label').exists()).toBe(true)
     expect(w1.find('.mvm-chip-end').exists()).toBe(true)
     expect(w1.find('.mvm-chip-label').text()).toBe('優惠期間')
-    expect(w1.find('.mvm-chip-end').text()).toBe('到 11/22')
-    // the no-date 檔期 (網購星期一 / 敬請期待) shows ONLY its name, no empty date line
+    expect(w1.find('.mvm-chip-end').text()).toBe('10/26 ~ 11/22') // Kimi 11-22: range format
+    // the no-date 檔期 (黑色購物週 / 網購星期一) shows "敬請期待", not blank (Kimi 11-22)
+    const blackFriday = w.find('[data-tab-id="fy27p4-mvm2-blackfriday"]')
+    expect(blackFriday.find('.mvm-chip-label').text()).toBe('黑色購物週')
+    expect(blackFriday.find('.mvm-chip-end').exists()).toBe(true)
+    expect(blackFriday.find('.mvm-chip-end').text()).toBe('敬請期待')
     const cyberland = w.find('[data-tab-id="fy27p4-mvm2-cyberland"]')
-    expect(cyberland.find('.mvm-chip-label').exists()).toBe(true)
-    expect(cyberland.find('.mvm-chip-end').exists()).toBe(false)
+    expect(cyberland.find('.mvm-chip-label').text()).toBe('網購星期一')
+    expect(cyberland.find('.mvm-chip-end').text()).toBe('敬請期待')
   })
 
   it('the default active skips an EXPIRED first 檔期 and opens the first OPEN one with products', () => {
@@ -175,10 +183,11 @@ describe('isPeriodExpired / activePeriods (#49) — only expired dropped, null-s
     expect(isPeriodExpired({}, REF)).toBe(false)
   })
 
-  it('activePeriods drops the only 已過期 檔期 at 11/21 and keeps the rest incl. the no-date one', () => {
+  it('activePeriods drops the only 已過期 檔期 at 11/21 and keeps the rest incl. the no-date ones', () => {
     const out = activePeriods(c.tabs, REF)
     expect(out.map((t) => t.tab_id)).toEqual([
       'fy27p3-mvm2-w1', // 到 11/22
+      'fy27p4-mvm2-blackfriday', // 黑色購物週 敬請期待 — no date, kept
       'fy27p4-mvm2-cyber', // 到 12/06
       'fy27p4-mvm2-weekday', // 到 12/18
       'fy27p4-mvm2-cyberland', // 敬請期待 (no date, kept)
