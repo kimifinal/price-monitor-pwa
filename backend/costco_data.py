@@ -1,6 +1,6 @@
 """Offline snapshot of Costco 3C + 家電 PDP prices.
 
-Refreshed 2026-11-22 via BFS crawl of Costco PDP "相關推薦" links
+Refreshed 2026-11-23 via BFS crawl of Costco PDP "相關推薦" links
 (15 家電 + 15 3C items, all real SKUs).
 Used by the API (live=False default) and by the offline unit tests so CI stays
 offline-safe and free of 429 limits.
@@ -175,7 +175,7 @@ DEMO_BASKET = [
   },
   {
     "name": "TCL 75吋 4K Mini LED Google TV 量子智能液晶顯示器 不含視訊盒 75C6K | Cos...",
-    "price": 27799.0,
+    "price": 34799.0,
     "currency": "TWD",
     "sku": "153555",
     "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/70-79-TVs/TCL-75-inch-4K-Mini-LED-Google-TV-Smart-Monitor-without-Tuner-Box-75C6K/p/153555",
@@ -202,7 +202,7 @@ DEMO_BASKET = [
   },
   {
     "name": "戴森 雙錐無纏結吸塵器 V10 SV55-A",
-    "price": 13499.0,
+    "price": 12199.0,
     "currency": "TWD",
     "sku": "162395",
     "url": "https://www.costco.com.tw/Televisions-Appliances/Small-Appliances/Vacuums-Floor-Care/Dyson-Cordless-Vacuum-V10-SV55-A/p/162395",
