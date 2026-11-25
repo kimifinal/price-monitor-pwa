@@ -1,6 +1,6 @@
 """Offline snapshot of Costco 3C + 家電 PDP prices.
 
-Refreshed 2026-11-24 via BFS crawl of Costco PDP "相關推薦" links
+Refreshed 2026-11-25 via BFS crawl of Costco PDP "相關推薦" links
 (15 家電 + 15 3C items, all real SKUs).
 Used by the API (live=False default) and by the offline unit tests so CI stays
 offline-safe and free of 429 limits.
@@ -111,22 +111,22 @@ DEMO_BASKET = [
     "category_path": "https://www.costco.com.tw/Digital-Mobile/Mobile-Tablets/Mobile-Tablets-Accessories/TORRAS-MiniMag-5000mAh-Ultimate-Slim-Wireless-Power-Bank-MS19/p/150426"
   },
   {
-    "name": "Apple AirPods 5",
-    "price": 4249.0,
+    "name": "PowerA 任天堂官方授權 有線耳機 卡比 NSHS0299-01",
+    "price": 979.0,
     "currency": "TWD",
-    "sku": "169089",
-    "url": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Apple-AirPods-5/p/169089",
+    "sku": "158849",
+    "url": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Video-Games-Consoles/PowerA-Officially-Licensed-Nintendo-Wired-Headphones-Kirby-NSHS0299-01/p/158849",
     "tag": "3C",
-    "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Apple-AirPods-5/p/169089"
+    "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Video-Games-Consoles/PowerA-Officially-Licensed-Nintendo-Wired-Headphones-Kirby-NSHS0299-01/p/158849"
   },
   {
-    "name": "JLab Epic Sport ANC 3 運動降噪真無線藍牙耳機",
-    "price": 2899.0,
+    "name": "Jabra Evolve 10 頭戴式 USB 有線耳機麥克風",
+    "price": 799.0,
     "currency": "TWD",
-    "sku": "153868",
-    "url": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Epic-Sport-ANC-3-True-Wireless-Earbuds/p/153868",
+    "sku": "156907",
+    "url": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Jabra-Evolve-10-Wired-Headset-with-Noise-Cancelling-Microphone/p/156907",
     "tag": "3C",
-    "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Epic-Sport-ANC-3-True-Wireless-Earbuds/p/153868"
+    "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Jabra-Evolve-10-Wired-Headset-with-Noise-Cancelling-Microphone/p/156907"
   },
   {
     "name": "Apple AirPods 5 配備無線充電盒",
@@ -138,13 +138,13 @@ DEMO_BASKET = [
     "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Apple-AirPods-5-with-Wireless-Charging-Case/p/169090"
   },
   {
-    "name": "PHILIPS 百年紀念半開放頭戴式藍牙耳機-TAH2000",
-    "price": 1299.0,
+    "name": "Backbone Eagle Business 台製挺腰工學椅 企業款 簡約灰",
+    "price": 2799.0,
     "currency": "TWD",
-    "sku": "159895",
-    "url": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Philips-Centennial-Semi-Open-Bluetooth-Headphones-TAH2000/p/159895",
+    "sku": "163993",
+    "url": "https://www.costco.com.tw/Furniture-Kitchen/Furniture/Computer-Desk-Chair-Sets/Backbone-Eagle-Business-Ergonomic-Chair-Gray/p/163993",
     "tag": "3C",
-    "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Philips-Centennial-Semi-Open-Bluetooth-Headphones-TAH2000/p/159895"
+    "category_path": "https://www.costco.com.tw/Furniture-Kitchen/Furniture/Computer-Desk-Chair-Sets/Backbone-Eagle-Business-Ergonomic-Chair-Gray/p/163993"
   },
   {
     "name": "BOSE Solo Soundbar 電視音響 II",
