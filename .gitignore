@@ -21,6 +21,10 @@ frontend/sw.js
 frontend/sw.js.map
 frontend/workbox-*.js
 
+# Playwright artifacts (created on test failure / run)
+frontend/test-results/
+frontend/playwright-report/
+
 # OS
 .DS_Store
 
