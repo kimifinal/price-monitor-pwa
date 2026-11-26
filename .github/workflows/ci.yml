@@ -64,13 +64,13 @@ jobs:
       - name: Coverage gate (RED on regression below threshold)
         working-directory: frontend
         run: npm run test:coverage
-      # ---- Blocking e2e: the existing guard-rails (compare + watchlist) ----
+      # ---- Blocking e2e: the existing guard-rails (compare + watchlist + product-detail #53) ----
       - name: E2E guard-rails (Playwright)
         working-directory: frontend
         run: |
           npm run build
           npx playwright install --with-deps
-          npx playwright test tests/e2e/compare.spec.ts tests/e2e/watchlist.spec.ts
+          npx playwright test tests/e2e/compare.spec.ts tests/e2e/watchlist.spec.ts tests/e2e/product-detail.spec.ts
       # ---- Non-blocking offline guard (#6 離線 PWA) ----
       # Exercises the whole chain: the service worker precaches the committed
       # snapshot, and with the network cut the 即時比價 (live) cards must render

@@ -28,8 +28,14 @@ const props = defineProps({
   endDate: { type: String, default: '' },
 })
 
+const emit = defineEmits(['navigate'])
+
 // The whole card binds to this so a null product can't crash a render.
 const p = computed(() => (props.product && typeof props.product === 'object' ? props.product : {}))
+
+function navigate() {
+  emit('navigate', props.product)
+}
 
 // A missing figure is "N/A" (gate 19), not "—" and not a bogus $0.
 const money = (n) => (n == null ? 'N/A' : '$' + formatTWD(n))
@@ -74,7 +80,7 @@ function toggleWish() {
 </script>
 
 <template>
-  <article class="m-card" :data-sku="skuText">
+  <article class="m-card" :data-sku="skuText" role="button" tabindex="0" @click="navigate" @keydown.enter="navigate">
     <!-- image slot: an honest line-icon placeholder + SKU caption (gate 76) -->
     <div class="m-card-img" aria-hidden="true">
       <MobileIcon name="box" />
@@ -89,7 +95,7 @@ function toggleWish() {
           :class="{ 'is-wished': wished }"
           :aria-pressed="wished"
           :aria-label="wished ? `已加入專屬清單：${nameText}` : `加入專屬清單：${nameText}`"
-          @click="toggleWish"
+          @click.stop="toggleWish"
         >
           <MobileIcon name="heart" />
         </button>

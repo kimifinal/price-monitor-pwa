@@ -26,6 +26,8 @@ const props = defineProps({
   refDate: { type: Date, default: null },
 })
 
+const emit = defineEmits(['navigate'])
+
 // "today" for the 剩 K 天 / 已過期 math: a test injects a refDate; the UI passes
 // none and gets the live clock. Shared by the section header and the 已過期 filter.
 const refForHeader = () => (props.refDate instanceof Date ? props.refDate : undefined)
@@ -131,6 +133,7 @@ function selectTab(t) {
           :price-types="priceTypes"
           :tab-price-type="activeTabObj.price_type || ''"
           :end-date="header.range"
+          @navigate="(p) => emit('navigate', p)"
         />
         <p v-if="!hasProducts" class="mvm-empty">本檔期尚無可顯示品項</p>
       </main>
