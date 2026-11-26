@@ -32,13 +32,22 @@ const props = defineProps({
   mode: { type: String, default: 'store' },
 })
 
+const emit = defineEmits(['navigate'])
+
 // The whole card binds to this so a null product can't crash a render.
 const p = computed(() => (props.product && typeof props.product === 'object' ? props.product : {}))
 
-// A missing figure is "N/A" (gate 19), not "—" and not a bogus $0.
+// A missing figure is "N/A" (gate 19), not "—"" and not a bogus $0.
 const money = (n) => (n == null ? 'N/A' : '$' + formatTWD(n))
 const nameText = computed(() => (p.value.name || '未命名品項'))
 const skuText = computed(() => (p.value.sku != null ? String(p.value.sku) : 'N/A'))
+
+// The card-body click opens the 商品詳情 view (#53) — it emits the item so the
+// parent (MobileApp) can navigate. The heart toggle stays on its own @click.stop
+// so a wish click does NOT bubble into a navigate.
+function navigate() {
+  emit('navigate', props.product)
+}
 
 // The main price (large). Red by default; a blue tint in online mode when the
 // item is discounted (price < basePrice) — the "this 線上 促價 is cheaper" cue.
@@ -80,7 +89,7 @@ function toggleWish() {
 </script>
 
 <template>
-  <article class="m-cat-card" :data-sku="skuText">
+  <article class="m-cat-card" :data-sku="skuText" role="button" tabindex="0" @click="navigate" @keydown.enter="navigate">
     <!-- image slot: an honest line-icon placeholder + SKU caption (gate 76) -->
     <div class="m-cat-img" aria-hidden="true">
       <MobileIcon name="box" />
@@ -95,7 +104,7 @@ function toggleWish() {
           :class="{ 'is-wished': wished }"
           :aria-pressed="wished"
           :aria-label="wished ? `已加入專屬清單：${nameText}` : `加入專屬清單：${nameText}`"
-          @click="toggleWish"
+          @click.stop="toggleWish"
         >
           <MobileIcon name="heart" />
         </button>

@@ -36,7 +36,7 @@ const props = defineProps({
   pageSize: { type: Number, default: 50 },
 })
 
-const emit = defineEmits(['modechange', 'pagechange', 'filtertoggle'])
+const emit = defineEmits(['modechange', 'pagechange', 'filtertoggle', 'navigate'])
 
 // The 賣場/線上 toggle state. 'store' (default) hides the 網路獨家 items; 'online'
 // shows the whole 全庫.
@@ -135,6 +135,7 @@ function toggleFilter() {
         :key="`${product && product.sku != null ? product.sku : 'p'}-${i}`"
         :product="product"
         :mode="mode"
+        @navigate="(p) => emit('navigate', p)"
       />
       <p v-if="!hasProducts" class="cat-empty">本模式尚無可顯示品項</p>
       <button

@@ -30,6 +30,18 @@ const PATHS = {
   search: 'M11 4a7 7 0 1 0 0 14 7 7 0 1 0 0-14 M20.5 20.5 16.3 16.3',
   bell: 'M6 8a6 6 0 0 1 12 0c0 5.5 2.5 7.5 3.5 8.5H2.5C3.5 15.5 6 13.5 6 8Z M9.5 20a2.5 2.5 0 0 0 5 0',
   box: 'M12 3 4 7v10l8 4 8-4V7z M4 7l8 4 8-4 M12 11v10',
+  // #53 商品詳情頁 glyphs — all single-<path> line-icons (the mockup's sun/gem
+  // title, the 賣場 store + 線上 globe section icons, the share / 到官網外連 / 返回).
+  // A circle is folded into its `d` as a full-arc subpath (M…a r r 0 1 0 .01 0),
+  // so the single-<path> contract + "no emoji" gate (30a) both stay intact.
+  back: 'M15 18l-6-6 6-6',
+  sun: 'M12 3v3M12 18v3M3 12h3M18 12h3M12 7a5 5 0 1 0 0.01 0',
+  share: 'M12 15V3M8 7l4-4 4 4M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7',
+  store:
+    'M3 9l1.5-5h15L21 9M3 9h18M3 9v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9M8 21v-6h8v6',
+  globe:
+    'M12 2a10 10 0 1 0 0.01 0M2 12h20M12 2c-5 5-5 15 0 20M12 2c5 5 5 15 0 20',
+  external: 'M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3',
 }
 
 const d = computed(() => PATHS[props.name] || PATHS.tag)

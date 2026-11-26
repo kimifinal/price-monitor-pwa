@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>商品詳情 — 好市多雷達</title>
+  <style>
+    /* ============================================================
+     * Warm token scope (from .mobile-app in style.css)
+     * ============================================================ */
+    :root {
+      --m-bg:        #f4efe9;
+      --m-card:      #ffffff;
+      --m-soft:      #fbf5ec;
+      --m-nav-bg:    #ffffff;
+      --m-ink:       #2b2622;
+      --m-ink-2:     #5f5850;
+      --m-muted:     #8a8378;
+      --m-hairline:  #ece5db;
+      --m-brand:     #c8102e;
+      --m-brand-ink: #ffffff;
+      --m-price:     #e5342a;
+      --m-good:      #2e8b57;
+      --m-warm:      #f6b24a;
+      --m-chip-bg:   #ffffff;
+      --m-chip-ink:  #5f5850;
+      --m-save-bg:   #fdeaea;
+      --m-save-ink:  #c8102e;
+      --m-zhe-bg:    #eaf1ff;
+      --m-zhe-ink:   #2f5bd0;
+      --m-date-bg:   #fff4d6;
+      --m-date-ink:  #9a7b1f;
+      --m-online-bg: #fff3e0;
+      --m-online-ink:#e65100;
+      --m-shadow:    rgba(43, 38, 34, 0.05);
+      --sp-1: 4px;
+      --sp-2: 8px;
+      --sp-3: 12px;
+      --sp-4: 16px;
+      --sp-6: 24px;
+      --sp-8: 32px;
+      --radius:     10px;
+      --radius-lg:  16px;
+      --radius-xl:  24px;
+      --radius-pill: 999px;
+      --font-sans:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      --font-mono:  "SF Mono", "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--m-bg);
+      color: var(--m-ink);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100dvh;
+    }
+
+    /* ============================================================
+     * Layout: full-screen product detail
+     * ============================================================ */
+    .detail-page {
+      max-width: 420px;
+      margin: 0 auto;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--m-bg);
+    }
+
+    /* --- Top bar --- */
+    .detail-appbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-2);
+      padding: var(--sp-3) var(--sp-4);
+      padding-top: max(var(--sp-3), env(safe-area-inset-top, 0px));
+      background: var(--m-card);
+      border-bottom: 1px solid var(--m-hairline);
+    }
+
+    .detail-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: none;
+      background: none;
+      color: var(--m-brand);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: var(--sp-1);
+      border-radius: var(--radius);
+    }
+    .detail-back:hover { background: var(--m-soft); }
+    .detail-back:focus-visible { outline: 2px solid var(--m-brand); outline-offset: 2px; }
+
+    .detail-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--m-ink);
+      flex: 1;
+      min-width: 0;
+    }
+    .detail-title-ico {
+      width: 20px;
+      height: 20px;
+      color: var(--m-warm);
+    }
+
+    .detail-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-1);
+    }
+
+    .detail-action-btn {
+      width: 44px;
+      height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--m-hairline);
+      border-radius: var(--radius-pill);
+      background: var(--m-card);
+      color: var(--m-ink-2);
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .detail-action-btn:hover { background: var(--m-soft); }
+    .detail-action-btn:focus-visible { outline: 2px solid var(--m-brand); outline-offset: 2px; }
+    .detail-action-btn.is-active {
+      color: var(--m-price);
+      border-color: var(--m-price);
+    }
+    .detail-action-btn.is-active svg { fill: var(--m-price); }
+
+    /* --- Scrollable content --- */
+    .detail-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--sp-4);
+      padding-bottom: calc(var(--sp-8) + 80px); /* space for bottom CTA */
+    }
+
+    /* --- Product image --- */
+    .detail-img-card {
+      background: var(--m-card);
+      border: 1px solid var(--m-hairline);
+      border-radius: var(--radius-xl);
+      padding: var(--sp-6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 240px;
+      margin-bottom: var(--sp-4);
+      box-shadow: 0 2px 8px var(--m-shadow);
+    }
+    .detail-img-placeholder {
+      width: 160px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--m-muted);
+    }
+    .detail-img-placeholder svg {
+      width: 80px;
+      height: 80px;
+      opacity: 0.3;
+    }
+
+    /* --- Product name + SKU --- */
+    .detail-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--m-ink);
+      line-height: 1.4;
+      margin: 0 0 var(--sp-1);
+      text-wrap: balance;
+    }
+    .detail-sku {
+      font-size: 0.8rem;
+      color: var(--m-muted);
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      margin: 0 0 var(--sp-4);
+    }
+
+    /* --- Price sections --- */
+    .detail-price-section {
+      background: var(--m-card);
+      border: 1px solid var(--m-hairline);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-4);
+      margin-bottom: var(--sp-3);
+      box-shadow: 0 1px 3px var(--m-shadow);
+    }
+
+    .detail-price-header {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      margin-bottom: var(--sp-3);
+    }
+    .detail-price-icon {
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius);
+    }
+    .detail-price-icon--store {
+      background: var(--m-save-bg);
+      color: var(--m-save-ink);
+    }
+    .detail-price-icon--online {
+      background: var(--m-online-bg);
+      color: var(--m-online-ink);
+    }
+    .detail-price-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--m-ink-2);
+    }
+
+    .detail-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--sp-3);
+      margin-bottom: var(--sp-2);
+    }
+    .detail-price-main {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--m-price);
+      line-height: 1;
+    }
+    .detail-price-orig {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-size: 0.95rem;
+      color: var(--m-muted);
+      text-decoration: line-through;
+    }
+
+    .detail-price-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-2);
+      margin-bottom: var(--sp-2);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      line-height: 1.5;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      white-space: nowrap;
+    }
+    .badge--save {
+      background: var(--m-save-bg);
+      color: var(--m-save-ink);
+    }
+    .badge--date {
+      background: var(--m-date-bg);
+      color: var(--m-date-ink);
+    }
+    .badge--online-only {
+      background: var(--m-online-bg);
+      color: var(--m-online-ink);
+    }
+
+    .detail-price-note {
+      font-size: 0.75rem;
+      color: var(--m-muted);
+      margin: 0;
+      line-height: 1.4;
+    }
+    .detail-price-verify {
+      font-size: 0.75rem;
+      color: var(--m-muted);
+      cursor: pointer;
+      text-decoration: underline;
+      text-decoration-color: var(--m-hairline);
+    }
+    .detail-price-verify:hover { color: var(--m-ink-2); }
+
+    /* --- Divider --- */
+    .detail-divider {
+      border: none;
+      border-top: 1px dashed var(--m-hairline);
+      margin: var(--sp-4) 0;
+    }
+
+    /* --- Bottom CTA --- */
+    .detail-cta {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      display: flex;
+      gap: var(--sp-2);
+      padding: var(--sp-3) var(--sp-4);
+      padding-bottom: max(var(--sp-3), env(safe-area-inset-bottom, 0px));
+      background: var(--m-card);
+      border-top: 1px solid var(--m-hairline);
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .detail-cta-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 48px;
+      padding: 0 var(--sp-4);
+      border-radius: var(--radius-lg);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.1s;
+    }
+    .detail-cta-btn:active { transform: scale(0.97); }
+    .detail-cta-btn:focus-visible { outline: 2px solid var(--m-brand); outline-offset: 2px; }
+    .detail-cta-btn--primary {
+      background: var(--m-brand);
+      color: var(--m-brand-ink);
+      flex: 1.5;
+    }
+    .detail-cta-btn--primary:hover { filter: brightness(1.08); }
+    .detail-cta-btn--secondary {
+      background: var(--m-card);
+      color: var(--m-ink-2);
+      border: 1px solid var(--m-hairline);
+    }
+    .detail-cta-btn--secondary:hover { background: var(--m-soft); }
+
+    /* ============================================================
+     * Tweaks panel
+     * ============================================================ */
+    .tweaks {
+      position: fixed;
+      top: 8px;
+      right: 8px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: var(--m-card);
+      border: 1px solid var(--m-hairline);
+      border-radius: var(--radius);
+      padding: 8px;
+      font-size: 0.7rem;
+      font-family: var(--font-sans);
+      box-shadow: 0 2px 8px var(--m-shadow);
+    }
+    .tweaks-label {
+      font-weight: 700;
+      color: var(--m-ink);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .tweaks-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .tweaks-row label {
+      font-size: 0.65rem;
+      color: var(--m-ink-2);
+      white-space: nowrap;
+    }
+    .tweaks-toggle {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      background: var(--m-hairline);
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .tweaks-toggle.is-on { background: var(--m-brand); }
+    .tweaks-toggle::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+    .tweaks-toggle.is-on::after { transform: translateX(16px); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0.001ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Tweaks panel removed for presentation -->
+
+  <div class="detail-page">
+    <!-- Top bar -->
+    <header class="detail-appbar">
+      <button class="detail-back" type="button" aria-label="返回">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+        完成
+      </button>
+      <div class="detail-title">
+        <svg class="detail-title-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3v3M12 18v3M3 12h3M18 12h3" />
+          <circle cx="12" cy="12" r="5" />
+        </svg>
+        商品詳情
+      </div>
+      <div class="detail-actions">
+        <button class="detail-action-btn" type="button" aria-label="分享">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 15V3M8 7l4-4 4 4" />
+            <path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7" />
+          </svg>
+        </button>
+        <button class="detail-action-btn" type="button" aria-label="加入追蹤">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20s-7-4.55-7-9.8A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 7 3.2C19 15.45 12 20 12 20Z" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Scrollable content -->
+    <main class="detail-body">
+      <!-- Product image -->
+      <div class="detail-img-card">
+        <div class="detail-img-placeholder" aria-label="商品圖片待補">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <path d="M21 15l-5-5L5 21" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Product name + SKU -->
+      <h1 class="detail-name">伊萊克斯 無線吸塵器 WQ71-2BSWF</h1>
+      <p class="detail-sku">商品編號 153289</p>
+
+      <!-- 賣場 price section -->
+      <div class="detail-price-section" id="section-store">
+        <div class="detail-price-header">
+          <div class="detail-price-icon detail-price-icon--store">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l1.5-5h15L21 9M3 9h18M3 9v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9M8 21v-6h8v6" />
+            </svg>
+          </div>
+          <span class="detail-price-label">賣場</span>
+        </div>
+        <div class="detail-price-row">
+          <span class="detail-price-main">$5,199</span>
+          <span class="detail-price-orig">$6,899</span>
+        </div>
+        <div class="detail-price-badges">
+          <span class="badge badge--save">省 $1,700</span>
+          <span class="badge badge--date">到 11/22</span>
+          <span class="badge badge--zhe" style="background:var(--m-zhe-bg);color:var(--m-zhe-ink)">約 7 折</span>
+        </div>
+        <p class="detail-price-note">會員護照價，以賣場為準</p>
+      </div>
+
+      <!-- 線上 price section -->
+      <div class="detail-price-section" id="section-online">
+        <div class="detail-price-header">
+          <div class="detail-price-icon detail-price-icon--online">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20" />
+            </svg>
+          </div>
+          <span class="detail-price-label">線上</span>
+          <span class="badge badge--online-only" style="margin-left:auto">僅限線上</span>
+        </div>
+        <div class="detail-price-row">
+          <span class="detail-price-main" style="color:var(--m-zhe-ink)">$5,299</span>
+          <span class="detail-price-orig">$6,899</span>
+          <span class="detail-price-verify">價格不對？</span>
+        </div>
+        <div class="detail-price-badges">
+          <span class="badge badge--save">省 $1,700</span>
+          <span class="badge badge--date">到 11/22</span>
+          <span class="badge badge--zhe" style="background:var(--m-zhe-bg);color:var(--m-zhe-ink)">約 7 折</span>
+        </div>
+        <p class="detail-price-note">線上目前缺貨，賣場可能還有</p>
+      </div>
+
+      <hr class="detail-divider" />
+
+      <!-- Specs section -->
+      <div class="detail-price-section">
+        <div class="detail-price-header" style="margin-bottom:var(--sp-2)">
+          <span class="detail-price-label" style="font-size:0.95rem">規格摘要</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3) var(--sp-4);font-size:0.85rem">
+          <div>
+            <div style="color:var(--m-muted);font-size:0.75rem;margin-bottom:2px">吸力</div>
+            <div style="font-weight:600;color:var(--m-ink)">150W 強勁吸力</div>
+          </div>
+          <div>
+            <div style="color:var(--m-muted);font-size:0.75rem;margin-bottom:2px">重量</div>
+            <div style="font-weight:600;color:var(--m-ink)">1.8 kg</div>
+          </div>
+          <div>
+            <div style="color:var(--m-muted);font-size:0.75rem;margin-bottom:2px">使用時間</div>
+            <div style="font-weight:600;color:var(--m-ink)">60 分鐘</div>
+          </div>
+          <div>
+            <div style="color:var(--m-muted);font-size:0.75rem;margin-bottom:2px">濾網</div>
+            <div style="font-weight:600;color:var(--m-ink)">HEPA 可水洗</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom CTA bar -->
+    <div class="detail-cta">
+      <button class="detail-cta-btn detail-cta-btn--primary" type="button">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        </svg>
+        下次特價通知我
+      </button>
+      <button class="detail-cta-btn detail-cta-btn--secondary" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+          <path d="M15 3h6v6M10 14L21 3" />
+        </svg>
+        到官網看
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Tweaks panel removed — static presentation mode
+  </script>
+</body>
+</html>

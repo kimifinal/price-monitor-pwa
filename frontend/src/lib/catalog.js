@@ -136,6 +136,7 @@ export function zheOfCatalog(product) {
  * @returns {number|null}
  */
 export function mainPrice(product, mode = 'store') {
+  void mode
   const p = product && typeof product === 'object' ? product : {}
   return p.price != null ? p.price : null
 }

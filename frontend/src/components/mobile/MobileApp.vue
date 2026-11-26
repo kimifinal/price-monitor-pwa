@@ -12,6 +12,7 @@ import { ref, computed } from 'vue'
 import MobileIcon from './MobileIcon.vue'
 import MvmMobileCatalog from './MvmMobileCatalog.vue'
 import CatalogMobile from './CatalogMobile.vue'
+import ProductDetail from './ProductDetail.vue'
 import { loadMvmCatalog } from '../../lib/mvm.js'
 import { loadCatalog } from '../../lib/catalog.js'
 
@@ -25,6 +26,10 @@ const TABS = [
   { key: 'me', label: '我的', icon: 'user' },
 ]
 const active = ref('deal')
+// The product currently displayed in the detail view (#53).
+const selectedProduct = ref(null)
+// Where to return when clicking "完成" back in the detail view (default 'deal').
+const previousTab = ref('deal')
 
 // Offline-baked MVM 檔期 catalog (lib/mvm.js), rendered by the 特價 tab.
 const mvm = loadMvmCatalog()
@@ -39,6 +44,21 @@ const currentIcon = computed(() => activeTabObj.value.icon)
 
 function selectTab(key) {
   active.value = key
+}
+
+// Open the detail view for an item (#53). Remembers the origin tab so back() returns there.
+function openDetail(product) {
+  if (!product) return
+  if (active.value !== 'detail') {
+    previousTab.value = active.value
+  }
+  selectedProduct.value = product
+  active.value = 'detail'
+}
+
+// Return from detail view to the previous browse tab.
+function closeDetail() {
+  active.value = previousTab.value || 'deal'
 }
 </script>
 
@@ -74,15 +94,22 @@ function selectTab(key) {
     </header>
 
     <main class="m-content">
+      <!-- 商品詳情頁 (#53): active === 'detail' full overlay view -->
+      <ProductDetail
+        v-if="active === 'detail' && selectedProduct"
+        :product="selectedProduct"
+        @back="closeDetail"
+      />
       <!-- 特價 tab: the warm MVM 檔期 view -->
       <MvmMobileCatalog
-        v-if="active === 'deal'"
+        v-else-if="active === 'deal'"
         :tabs="mvm.tabs"
         :price-types="mvm.priceTypes"
         :source-date="mvm.sourceDate"
+        @navigate="openDetail"
       />
       <!-- 全部 tab: the warm 全庫 catalog view (#50) — 賣場/線上 toggle + 10,049 items -->
-      <CatalogMobile v-else-if="active === 'all'" :catalog="catalog" />
+      <CatalogMobile v-else-if="active === 'all'" :catalog="catalog" @navigate="openDetail" />
       <!-- 首頁 / 追蹤 / 我的: honest placeholders -->
       <section
         v-else
