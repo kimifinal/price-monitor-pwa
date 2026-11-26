@@ -14,6 +14,10 @@
  * tracked source render identically (the multi-source SSOT).
  */
 import { SNAPSHOT_DIR, joinBase } from './offline-cache.js'
+// #55 特價紀錄: the 賣場 row renders the sku's REAL costco-history series offline.
+// Build-time import of the baked snapshot (the SAME pattern as catalog.js / mvm.js),
+// so the detail view needs zero network — `recordBySku` (below) is its bySku lookup.
+import costcoHistoryData from '../data/costco-history.json'
 
 /** Committed baked-in snapshot, resolved relative to the app base. */
 export const SNAPSHOT_PATHS = {
@@ -110,4 +114,32 @@ async function tryEndpoint({ live, snapshot }, baseURL, source, fetch) {
     /* nothing reachable — caller renders its hard-coded fallback samples */
   }
   return []
+}
+
+/**
+ * #55 特價紀錄: the sku's costco-history record for the 賣場 row — a REAL price
+ * series (so ProductDetail can draw a sparkline + verdict + 特價幾次 / 一年最低 /
+ * 現價 / 省 / 檔期). Built ONCE from the baked snapshot (build-time import, like
+ * catalog.js / mvm.js), keyed by sku, so it is fully OFFLINE with zero network.
+ * Pure + null-safe (gate 19): a null / non-sku key, or a sku with no history row,
+ * returns null — the 賣場 row then reads "尚無歷史" (never a crash / undefined).
+ * @param {string|number} [sku]
+ * @returns {object|null} the raw record (series / current / low / points /
+ *   drop_pct_from_high / at_all_time_low), or null
+ */
+let _historyBySku = null
+function historyBySku() {
+  if (_historyBySku) return _historyBySku
+  const bySku = new Map()
+  const items = Array.isArray(costcoHistoryData?.items) ? costcoHistoryData.items : []
+  for (const it of items) {
+    if (it && it.sku != null) bySku.set(String(it.sku), it)
+  }
+  _historyBySku = bySku
+  return bySku
+}
+
+export function recordBySku(sku) {
+  if (sku == null) return null
+  return historyBySku().get(String(sku)) ?? null
 }

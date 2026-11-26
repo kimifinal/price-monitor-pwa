@@ -14,8 +14,11 @@
 //   5. 線上 price section (--m-online 橘底 icon): 現價 (+ 僅限線上 badge, a
 //      價格不對？ verify) + 原價 strike + badges + a 缺貨/現貨 note.
 //   6. a dashed divider.
-//   7. 規格摘要 2-col grid (吸力/重量/使用時間/濾網) — PLACEHOLDER values (the
-//      baked catalog carries no 規格 columns; lib/detail.specList fills "待補").
+//   7. 特價紀錄 (#55, replaces 規格摘要): the 賣場 row is the sku's real
+//      costco-history series (sparkline + verdict + 特價幾次 / 一年最低 / 現價 / 省 /
+//      檔期, all decided in lib/detail.promoRecord); the 線上 row is the 當前線上價
+//      + a "待補" placeholder (no series yet, #56 — never a faked curve). The 賣場
+//      row reads "尚無歷史" when offline / no record.
 //   8. a fixed bottom CTA bar: 下次特價通知我 (primary, 品牌紅, bell) +
 //      到官網看 (secondary outline, 外連 icon, a real <a> to 好市多 TW).
 //
@@ -36,12 +39,18 @@ const props = defineProps({
   // the active 檔期 range ("MM/DD ~ MM/DD" or a bare "MM/DD"); '' / 'N/A' hides
   // the 到 chip (a no-date 檔期 shows nothing extra).
   endDate: { type: String, default: '' },
+  // #55 特價紀錄: the sku's costco-history record. null when offline or the sku
+  // has no history row — the 賣場 row then reads "尚無歷史" (never a crash).
+  historyRecord: { type: Object, default: null },
 })
 
 const emit = defineEmits(['back', 'notify', 'share', 'verify', 'toggle-track', 'open-web'])
 
-// The pure detail model (null-safe, shape-agnostic). One recompute per prop change.
-const m = computed(() => buildDetailModel(props.product, { endDate: props.endDate }))
+// The pure detail model (null-safe, shape-agnostic). One recompute per prop
+// change — so the 特價紀錄 (#55) sparkline + verdict react to a new record.
+const m = computed(
+  () => buildDetailModel(props.product, { endDate: props.endDate, historyRecord: props.historyRecord }),
+)
 
 // Display text (money reuses the TWD SSOT via lib/detail.money).
 const nameText = computed(() => m.value.name)
@@ -80,9 +89,10 @@ const saveChip = computed(() => saveTextOf(props.product))
 const zheChip = computed(() => (m.value.zhe == null ? '' : `約 ${m.value.zhe} 折`))
 const dateChip = computed(() => m.value.endDate)
 
-// 規格摘要 grid — placeholder "待補" values until a backend 規格 column exists.
-const specs = computed(() => m.value.specs)
-const specsPlaceholder = computed(() => specs.value.some((s) => s.placeholder))
+// #55 特價紀錄 — the 賣場 row's price history + the 線上 row's placeholder. Every
+// figure (特價幾次 / 一年最低 / 現價 / 省 / verdict / the sparkline path) is decided
+// in lib/detail.promoRecord; the template only renders it (pure renderer).
+const promo = computed(() => m.value.promo)
 const webUrl = computed(() => m.value.webUrl)
 
 // Local, visual-only toggles (the same pattern as the cards' wish toggle — no
@@ -222,22 +232,80 @@ function openWeb() {
       <!-- 6. dashed divider -->
       <hr class="detail-divider" />
 
-      <!-- 7. 規格摘要 (placeholder until a backend 規格 column exists) -->
-      <section class="detail-price-section" data-section-specs>
-        <div class="detail-price-header detail-specs-header">
-          <span class="detail-price-label detail-specs-title">規格摘要</span>
-        </div>
-        <div class="detail-specs">
-          <div v-for="s in specs" :key="s.key" class="detail-spec">
-            <div class="detail-spec-label">{{ s.label }}</div>
-            <div class="detail-spec-value" :data-placeholder="s.placeholder ? 'true' : 'false'">
-              {{ s.value }}
-            </div>
+      <!-- 7. 特價紀錄 (#55): 賣場 price history + 線上 placeholder. Replaces 規格摘要. -->
+      <section class="detail-promo" data-section-promo>
+        <h2 class="detail-promo-title" data-promo-title>特價紀錄</h2>
+
+        <!-- 賣場 row: the sku's real costco-history series (sparkline + verdict +
+             特價幾次 / 一年最低 / 現價 / 省 / 檔期). "尚無歷史" when offline / no record. -->
+        <div class="detail-promo-row" data-promo-store>
+          <div class="detail-promo-head">
+            <span class="detail-promo-chip detail-promo-chip--store">賣場</span>
+            <span
+              v-if="promo.store.hasHistory"
+              class="detail-promo-verdict"
+              :data-verdict="promo.store.verdict.key"
+            >{{ promo.store.verdict.label }}</span>
           </div>
+          <template v-if="promo.store.hasHistory">
+            <svg
+              class="detail-promo-spark"
+              data-promo-spark
+              viewBox="0 0 100 28"
+              preserveAspectRatio="none"
+              role="img"
+              aria-label="賣場價格走勢"
+            >
+              <path
+                class="detail-promo-spark-line"
+                :data-verdict="promo.store.verdict.key"
+                :d="promo.store.spark"
+                fill="none"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                vector-effect="non-scaling-stroke"
+              />
+            </svg>
+            <div class="detail-promo-metrics">
+              <div class="detail-promo-metric">
+                <span class="detail-promo-metric-label">特價</span>
+                <span class="detail-promo-metric-value" data-promo-drops>{{ promo.store.drops }} 次</span>
+              </div>
+              <div class="detail-promo-metric">
+                <span class="detail-promo-metric-label">一年最低</span>
+                <span class="detail-promo-metric-value" data-promo-low>{{ promo.store.lowText }}</span>
+              </div>
+              <div class="detail-promo-metric">
+                <span class="detail-promo-metric-label">現價</span>
+                <span class="detail-promo-metric-value" data-promo-now>{{ promo.store.nowText }}</span>
+              </div>
+              <div v-if="promo.store.saveText" class="detail-promo-metric">
+                <span class="detail-promo-metric-label">省</span>
+                <span class="detail-promo-metric-value" data-promo-save>{{ promo.store.saveText }}</span>
+              </div>
+              <div v-if="promo.store.end" class="detail-promo-metric">
+                <span class="detail-promo-metric-label">檔期</span>
+                <span class="detail-promo-metric-value" data-promo-end>{{ promo.store.end }}</span>
+              </div>
+            </div>
+          </template>
+          <p v-else class="detail-promo-empty" data-promo-empty>尚無歷史</p>
         </div>
-        <p v-if="specsPlaceholder" class="detail-price-note detail-specs-note">
-          規格欄待補，後端補欄後同步。
-        </p>
+
+        <!-- 線上 row: 當前線上價 + an honest placeholder — NO series yet (#56), so
+             never a faked curve. -->
+        <div class="detail-promo-row" data-promo-online>
+          <div class="detail-promo-head">
+            <span class="detail-promo-chip detail-promo-chip--online">線上</span>
+            <span
+              v-if="promo.online.now != null"
+              class="detail-promo-now"
+              data-promo-online-now
+            >{{ promo.online.money }}</span>
+          </div>
+          <p class="detail-promo-note" data-promo-online-note>{{ promo.online.note }}</p>
+        </div>
       </section>
     </main>
 
@@ -432,9 +500,6 @@ function openWeb() {
   gap: var(--sp-2);
   margin-bottom: var(--sp-3);
 }
-.detail-specs-header {
-  margin-bottom: var(--sp-2);
-}
 .detail-price-icon {
   width: 24px;
   height: 24px;
@@ -456,9 +521,6 @@ function openWeb() {
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--m-ink-2);
-}
-.detail-specs-title {
-  font-size: 0.95rem;
 }
 .detail-price-row {
   display: flex;
@@ -553,24 +615,135 @@ function openWeb() {
   margin: var(--sp-4) 0;
 }
 
-/* 7. 規格摘要 2-col grid */
-.detail-specs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--sp-3) var(--sp-4);
-  font-size: 0.85rem;
+/* 7. 特價紀錄 (#55): 賣場 series + 線上 placeholder (replaces 規格摘要) */
+.detail-promo {
+  padding: 0 var(--sp-1);
 }
-.detail-spec-label {
+.detail-promo-title {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--m-ink);
+  text-align: center; /* 標題置中 */
+  margin: 0 0 var(--sp-3);
+}
+.detail-promo-row {
+  background: var(--m-card);
+  border-radius: var(--radius);
+  padding: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+.detail-promo-row:last-child {
+  margin-bottom: 0;
+}
+.detail-promo-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+.detail-promo-chip {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
+.detail-promo-chip--store {
+  background: var(--m-save-bg);
+  color: var(--m-save-ink);
+}
+.detail-promo-chip--online {
+  background: var(--m-online-bg);
+  color: var(--m-online-ink);
+}
+.detail-promo-verdict {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.detail-promo-verdict[data-verdict="all_time_low"] {
+  color: var(--m-good);
+}
+.detail-promo-verdict[data-verdict="good_deal"] {
+  color: var(--m-warm);
+}
+.detail-promo-verdict[data-verdict="near_high"] {
+  color: var(--m-warn);
+}
+.detail-promo-verdict[data-verdict="stable"] {
+  color: var(--m-ink-3);
+}
+.detail-promo-verdict[data-verdict="unknown"] {
+  color: var(--m-ink-3);
+}
+.detail-promo-spark {
+  display: block;
+  width: 100%;
+  height: 36px;
+  margin-bottom: var(--sp-2);
+}
+.detail-promo-spark-line[data-verdict="all_time_low"] {
+  stroke: var(--m-good);
+}
+.detail-promo-spark-line[data-verdict="good_deal"] {
+  stroke: var(--m-warm);
+}
+.detail-promo-spark-line[data-verdict="near_high"] {
+  stroke: var(--m-warn);
+}
+.detail-promo-spark-line[data-verdict="stable"] {
+  stroke: var(--m-ink-3);
+}
+.detail-promo-spark-line[data-verdict="unknown"] {
+  stroke: var(--m-ink-3);
+}
+.detail-promo-metrics {
+  display: flex;
+  flex-wrap: wrap; /* 390px: 5 metrics wrap, never clip */
+  gap: var(--sp-2) var(--sp-3);
+}
+.detail-promo-metric {
+  flex: 0 0 auto;
+  min-width: 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.detail-promo-metric-label {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
   color: var(--m-muted);
-  font-size: 0.75rem;
-  margin-bottom: 2px;
 }
-.detail-spec-value {
+.detail-promo-metric-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--m-ink);
 }
-.detail-specs-note {
-  margin-top: var(--sp-2);
+.detail-promo-empty {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--m-muted);
+  margin: 0;
+}
+.detail-promo-now {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--m-ink);
+  margin-left: auto;
+}
+.detail-promo-note {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--m-muted);
+  margin: 0;
+  line-height: 1.4;
 }
 
 /* 8. fixed bottom CTA bar */
