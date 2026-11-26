@@ -1,6 +1,6 @@
 """Offline snapshot of Costco 3C + 家電 PDP prices.
 
-Refreshed 2026-11-25 via BFS crawl of Costco PDP "相關推薦" links
+Refreshed 2026-11-26 via BFS crawl of Costco PDP "相關推薦" links
 (15 家電 + 15 3C items, all real SKUs).
 Used by the API (live=False default) and by the offline unit tests so CI stays
 offline-safe and free of 429 limits.
@@ -57,6 +57,24 @@ DEMO_BASKET = [
     "category_path": "https://www.costco.com.tw/Digital-Mobile/Office-Equipment-Accessories/Paper-Shredders-Office-Equipment/Hawk-360-Rotating-Height-Adjustable-Monitor-Stand-with-Drawer/p/162427"
   },
   {
+    "name": "Tresanti 電動升降桌",
+    "price": 5999.0,
+    "currency": "TWD",
+    "sku": "1646074",
+    "url": "https://www.costco.com.tw/Furniture-Kitchen/Furniture/Computer-Desk-Chair-Sets/Tresanti-Adjustable-Desk/p/1646074",
+    "tag": "3C",
+    "category_path": "https://www.costco.com.tw/Furniture-Kitchen/Furniture/Computer-Desk-Chair-Sets/Tresanti-Adjustable-Desk/p/1646074"
+  },
+  {
+    "name": "MMOMENT 512GB 磁性外接可攜式固態硬碟 SSD",
+    "price": 3059.0,
+    "currency": "TWD",
+    "sku": "159542",
+    "url": "https://www.costco.com.tw/Digital-Mobile/Laptops-Computers/Data-Storage/MMOMENT-512GB-Magnetic-External-Portable-SSD/p/159542",
+    "tag": "3C",
+    "category_path": "https://www.costco.com.tw/Digital-Mobile/Laptops-Computers/Data-Storage/MMOMENT-512GB-Magnetic-External-Portable-SSD/p/159542"
+  },
+  {
     "name": "Soodatek PD 65W 氮化鎵高速充電 USB-C 套裝",
     "price": 825.0,
     "currency": "TWD",
@@ -64,24 +82,6 @@ DEMO_BASKET = [
     "url": "https://www.costco.com.tw/Digital-Mobile/Mobile-Tablets/Mobile-Tablets-Accessories/Soodatek-GaN-PD-65W-Charger-with-USB-C-Cable-Combo-Pack/p/143371",
     "tag": "3C",
     "category_path": "https://www.costco.com.tw/Digital-Mobile/Mobile-Tablets/Mobile-Tablets-Accessories/Soodatek-GaN-PD-65W-Charger-with-USB-C-Cable-Combo-Pack/p/143371"
-  },
-  {
-    "name": "PQI 100W 數位顯示充電器",
-    "price": 1379.0,
-    "currency": "TWD",
-    "sku": "161051",
-    "url": "https://www.costco.com.tw/Digital-Mobile/Mobile-Tablets/Mobile-Tablets-Accessories/PQI-100W-Digital-Display-Wall-Charger/p/161051",
-    "tag": "3C",
-    "category_path": "https://www.costco.com.tw/Digital-Mobile/Mobile-Tablets/Mobile-Tablets-Accessories/PQI-100W-Digital-Display-Wall-Charger/p/161051"
-  },
-  {
-    "name": "PQI 35W 雙孔氮化鎵 PD/QC3.0 快速充電器 附二合一 USB-C to USB-C/Lightnin...",
-    "price": 959.0,
-    "currency": "TWD",
-    "sku": "139339",
-    "url": "https://www.costco.com.tw/Digital-Mobile/Mobile-Tablets/Mobile-Tablets-Accessories/PQI-35W-Dual-Port-GaN-PDQC30-Fast-Charger-with-2-in-1-USB-C-to-USB-C-and-Lightning-Cable-120-cm/p/139339",
-    "tag": "3C",
-    "category_path": "https://www.costco.com.tw/Digital-Mobile/Mobile-Tablets/Mobile-Tablets-Accessories/PQI-35W-Dual-Port-GaN-PDQC30-Fast-Charger-with-2-in-1-USB-C-to-USB-C-and-Lightning-Cable-120-cm/p/139339"
   },
   {
     "name": "Soodatek GaN PD140W 氮化鎵急速充電 USB-C 套裝",
@@ -93,6 +93,15 @@ DEMO_BASKET = [
     "category_path": "https://www.costco.com.tw/Digital-Mobile/Mobile-Tablets/Mobile-Tablets-Accessories/Soodatek-GaN-PD140W-Fast-Charger-with-USB-C-Cable-Combo-pack/p/157488"
   },
   {
+    "name": "PQI 100W 數位顯示充電器",
+    "price": 1379.0,
+    "currency": "TWD",
+    "sku": "161051",
+    "url": "https://www.costco.com.tw/Digital-Mobile/Mobile-Tablets/Mobile-Tablets-Accessories/PQI-100W-Digital-Display-Wall-Charger/p/161051",
+    "tag": "3C",
+    "category_path": "https://www.costco.com.tw/Digital-Mobile/Mobile-Tablets/Mobile-Tablets-Accessories/PQI-100W-Digital-Display-Wall-Charger/p/161051"
+  },
+  {
     "name": "Acer Gaming USB-A to USB-C 1公尺 白 + USB-C to USB-C 1.2公尺 白...",
     "price": 599.0,
     "currency": "TWD",
@@ -102,49 +111,40 @@ DEMO_BASKET = [
     "category_path": "https://www.costco.com.tw/Digital-Mobile/Mobile-Tablets/Mobile-Tablets-Accessories/Acer-Gaming-USB-A-to-USB-C-1-m-White-USB-C-to-USB-C-12-m-White-USB-C-to-USB-C-2-m-White-Silicone-Braided-Cable-3-Pack-Set/p/153862"
   },
   {
-    "name": "圖拉斯 MiniMag 5000mAh 超薄MagSafe磁吸行動電源 MS19",
-    "price": 845.0,
+    "name": "PQI 35W 雙孔氮化鎵 PD/QC3.0 快速充電器 附二合一 USB-C to USB-C/Lightnin...",
+    "price": 959.0,
     "currency": "TWD",
-    "sku": "150426",
-    "url": "https://www.costco.com.tw/Digital-Mobile/Mobile-Tablets/Mobile-Tablets-Accessories/TORRAS-MiniMag-5000mAh-Ultimate-Slim-Wireless-Power-Bank-MS19/p/150426",
+    "sku": "139339",
+    "url": "https://www.costco.com.tw/Digital-Mobile/Mobile-Tablets/Mobile-Tablets-Accessories/PQI-35W-Dual-Port-GaN-PDQC30-Fast-Charger-with-2-in-1-USB-C-to-USB-C-and-Lightning-Cable-120-cm/p/139339",
     "tag": "3C",
-    "category_path": "https://www.costco.com.tw/Digital-Mobile/Mobile-Tablets/Mobile-Tablets-Accessories/TORRAS-MiniMag-5000mAh-Ultimate-Slim-Wireless-Power-Bank-MS19/p/150426"
+    "category_path": "https://www.costco.com.tw/Digital-Mobile/Mobile-Tablets/Mobile-Tablets-Accessories/PQI-35W-Dual-Port-GaN-PDQC30-Fast-Charger-with-2-in-1-USB-C-to-USB-C-and-Lightning-Cable-120-cm/p/139339"
   },
   {
-    "name": "PowerA 任天堂官方授權 有線耳機 卡比 NSHS0299-01",
-    "price": 979.0,
+    "name": "Apple 60W USB-C 充電連接線 (1 公尺)",
+    "price": 539.0,
     "currency": "TWD",
-    "sku": "158849",
-    "url": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Video-Games-Consoles/PowerA-Officially-Licensed-Nintendo-Wired-Headphones-Kirby-NSHS0299-01/p/158849",
+    "sku": "147653",
+    "url": "https://www.costco.com.tw/Digital-Mobile/Laptops-Computers/Keyboards-Mice-Computer-Accessories/Apple-60W-USB-C-Charge-Cable-1-m/p/147653",
     "tag": "3C",
-    "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Video-Games-Consoles/PowerA-Officially-Licensed-Nintendo-Wired-Headphones-Kirby-NSHS0299-01/p/158849"
+    "category_path": "https://www.costco.com.tw/Digital-Mobile/Laptops-Computers/Keyboards-Mice-Computer-Accessories/Apple-60W-USB-C-Charge-Cable-1-m/p/147653"
   },
   {
-    "name": "Jabra Evolve 10 頭戴式 USB 有線耳機麥克風",
-    "price": 799.0,
+    "name": "Klipsch GIG XL 藍牙派對音響 含Fiesta有線麥克風",
+    "price": 4389.0,
     "currency": "TWD",
-    "sku": "156907",
-    "url": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Jabra-Evolve-10-Wired-Headset-with-Noise-Cancelling-Microphone/p/156907",
+    "sku": "162860",
+    "url": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Bluetooth-Speakers-Landline-Phones/Klipsch-GIG-XL-Bluetooth-Party-Speaker-with-Fiesta-Wired-Microphone/p/162860",
     "tag": "3C",
-    "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Jabra-Evolve-10-Wired-Headset-with-Noise-Cancelling-Microphone/p/156907"
+    "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Bluetooth-Speakers-Landline-Phones/Klipsch-GIG-XL-Bluetooth-Party-Speaker-with-Fiesta-Wired-Microphone/p/162860"
   },
   {
-    "name": "Apple AirPods 5 配備無線充電盒",
-    "price": 4899.0,
+    "name": "墨覺 專業游泳骨傳導耳機",
+    "price": 2999.0,
     "currency": "TWD",
-    "sku": "169090",
-    "url": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Apple-AirPods-5-with-Wireless-Charging-Case/p/169090",
+    "sku": "163848",
+    "url": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Mojawa-Bone-Conduction-Swimming-Headphones/p/163848",
     "tag": "3C",
-    "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Apple-AirPods-5-with-Wireless-Charging-Case/p/169090"
-  },
-  {
-    "name": "Backbone Eagle Business 台製挺腰工學椅 企業款 簡約灰",
-    "price": 2799.0,
-    "currency": "TWD",
-    "sku": "163993",
-    "url": "https://www.costco.com.tw/Furniture-Kitchen/Furniture/Computer-Desk-Chair-Sets/Backbone-Eagle-Business-Ergonomic-Chair-Gray/p/163993",
-    "tag": "3C",
-    "category_path": "https://www.costco.com.tw/Furniture-Kitchen/Furniture/Computer-Desk-Chair-Sets/Backbone-Eagle-Business-Ergonomic-Chair-Gray/p/163993"
+    "category_path": "https://www.costco.com.tw/Digital-Mobile/Wearables-Audio/Headphones-Audio-Devices/Mojawa-Bone-Conduction-Swimming-Headphones/p/163848"
   },
   {
     "name": "BOSE Solo Soundbar 電視音響 II",
@@ -192,40 +192,22 @@ DEMO_BASKET = [
     "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/JBL-BAR-21-DEEP-BASS-MK2-Channel-Soundbar-With-Wireless-Subwoofer/p/154155"
   },
   {
-    "name": "惠而浦 190公升直立式冷凍櫃 WUFZ1860W",
-    "price": 12999.0,
+    "name": "Jamo Cinema 3 聲霸+重低音組合",
+    "price": 10999.0,
     "currency": "TWD",
-    "sku": "136403",
-    "url": "https://www.costco.com.tw/Televisions-Appliances/Large-Appliances/Fridges-Freezers/Whirlpool-190-L-Upright-Freezer-WUFZ1860W/p/136403",
+    "sku": "163482",
+    "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/Jamo-Cinema-3-Soundbar-with-Wireless-Subwoofer/p/163482",
     "tag": "家電",
-    "category_path": "https://www.costco.com.tw/Televisions-Appliances/Large-Appliances/Fridges-Freezers/Whirlpool-190-L-Upright-Freezer-WUFZ1860W/p/136403"
+    "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/Jamo-Cinema-3-Soundbar-with-Wireless-Subwoofer/p/163482"
   },
   {
-    "name": "戴森 雙錐無纏結吸塵器 V10 SV55-A",
-    "price": 12199.0,
+    "name": "Recolte 食物調理機 RCP-3 (有線版)",
+    "price": 1539.0,
     "currency": "TWD",
-    "sku": "162395",
-    "url": "https://www.costco.com.tw/Televisions-Appliances/Small-Appliances/Vacuums-Floor-Care/Dyson-Cordless-Vacuum-V10-SV55-A/p/162395",
+    "sku": "162967",
+    "url": "https://www.costco.com.tw/Televisions-Appliances/Kitchen-Appliances/Coffee-Machines-Blenders-Juicers/Recolte-Food-Chopper-RCP-3/p/162967",
     "tag": "家電",
-    "category_path": "https://www.costco.com.tw/Televisions-Appliances/Small-Appliances/Vacuums-Floor-Care/Dyson-Cordless-Vacuum-V10-SV55-A/p/162395"
-  },
-  {
-    "name": "Denon 3.1.2 聲道 Dolby Atmos Soundbar 重低音組合 DHT-S517 | Cost...",
-    "price": 14999.0,
-    "currency": "TWD",
-    "sku": "144030",
-    "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/Denon-312-CH-Soundbar-with-Dolby-Atmos-and-Wireless-Subwoofer-DHT-S517/p/144030",
-    "tag": "家電",
-    "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/Denon-312-CH-Soundbar-with-Dolby-Atmos-and-Wireless-Subwoofer-DHT-S517/p/144030"
-  },
-  {
-    "name": "Sony 3.1聲道 BRAVIA Theatre Bar 5 單件式喇叭搭配無線重低音揚聲器 HT-B500 |...",
-    "price": 11949.0,
-    "currency": "TWD",
-    "sku": "162420",
-    "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/Sony-31-Channel-BRAVIA-Theatre-Bar-5-Soundbar-with-Wireless-Subwoofer-HT-B500/p/162420",
-    "tag": "家電",
-    "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/Sony-31-Channel-BRAVIA-Theatre-Bar-5-Soundbar-with-Wireless-Subwoofer-HT-B500/p/162420"
+    "category_path": "https://www.costco.com.tw/Televisions-Appliances/Kitchen-Appliances/Coffee-Machines-Blenders-Juicers/Recolte-Food-Chopper-RCP-3/p/162967"
   },
   {
     "name": "Samsung 3.1聲道 兩件式家庭劇院含重低音 HW-S700D/ZW",
@@ -246,6 +228,24 @@ DEMO_BASKET = [
     "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/Klipsch-Flexus-Soundbar-Core-100/p/148022"
   },
   {
+    "name": "飛利浦 2.1 聲道 無線重低音杜比全景聲聲霸 TAB6309",
+    "price": 7599.0,
+    "currency": "TWD",
+    "sku": "147918",
+    "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/Philips-21-CH-Soundbar-TAB6309/p/147918",
+    "tag": "家電",
+    "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/Philips-21-CH-Soundbar-TAB6309/p/147918"
+  },
+  {
+    "name": "Denon 3.1.2 聲道 Dolby Atmos Soundbar 重低音組合 DHT-S517 | Cost...",
+    "price": 14999.0,
+    "currency": "TWD",
+    "sku": "144030",
+    "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/Denon-312-CH-Soundbar-with-Dolby-Atmos-and-Wireless-Subwoofer-DHT-S517/p/144030",
+    "tag": "家電",
+    "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Soundbars-Home-Theater/Denon-312-CH-Soundbar-with-Dolby-Atmos-and-Wireless-Subwoofer-DHT-S517/p/144030"
+  },
+  {
     "name": "DeWALT 得偉 乾濕兩用吸塵器",
     "price": 3399.0,
     "currency": "TWD",
@@ -264,22 +264,22 @@ DEMO_BASKET = [
     "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/70-79-TVs/Skyworth-75-Inch-4K-QLED-HSR120-AI-Karaoke-Smart-Monitor-75Q750GK/p/153992"
   },
   {
-    "name": "Looploop H100 多角度調整電視架",
-    "price": 1099.0,
+    "name": "TCL 65吋 4K Mini LED Google TV 量子智能液晶顯示器 不含視訊盒 65C6K | Cos...",
+    "price": 24989.0,
     "currency": "TWD",
-    "sku": "156943",
-    "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/Looploop-H100-Full-Motion-TV-Mount/p/156943",
+    "sku": "153537",
+    "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/60-69-TVs/TCL-65-inch-4K-Mini-LED-Google-TV-Smart-Monitor-without-Tuner-Box-65C6K/p/153537",
     "tag": "家電",
-    "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/Looploop-H100-Full-Motion-TV-Mount/p/156943"
+    "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/60-69-TVs/TCL-65-inch-4K-Mini-LED-Google-TV-Smart-Monitor-without-Tuner-Box-65C6K/p/153537"
   },
   {
-    "name": "惠而浦 20公升微電腦觸控式微波爐 WMWE200S",
-    "price": 2499.0,
+    "name": "飛利浦 55吋 4K Google TV 顯示器 55PUH7630/96",
+    "price": 13699.0,
     "currency": "TWD",
-    "sku": "111557",
-    "url": "https://www.costco.com.tw/Televisions-Appliances/Kitchen-Appliances/Cookers-Oven-Microwaves-Food-Waste-Machine/Whirlpool-20-L-Microwave-WMWE200S/p/111557",
+    "sku": "153519",
+    "url": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/Philips-55-inch-4K-Google-TV-Monitor-55PUH763096/p/153519",
     "tag": "家電",
-    "category_path": "https://www.costco.com.tw/Televisions-Appliances/Kitchen-Appliances/Cookers-Oven-Microwaves-Food-Waste-Machine/Whirlpool-20-L-Microwave-WMWE200S/p/111557"
+    "category_path": "https://www.costco.com.tw/Televisions-Appliances/TV-Home-Entertainment/Televisions-TV-Accessories/50-59-TVs/Philips-55-inch-4K-Google-TV-Monitor-55PUH763096/p/153519"
   }
 ]
 

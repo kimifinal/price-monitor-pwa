@@ -430,6 +430,16 @@
   "synthetic": 0
  },
  {
+  "sku": "139339",
+  "name": "PQI 35W 雙孔氮化鎵 PD/QC3.0 快速充電器 附二合一 USB-C to USB-C/Lightnin...",
+  "tag": "3C",
+  "price": 959.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
   "sku": "143371",
   "name": "Soodatek PD 65W 氮化鎵高速充電 USB-C 套裝",
   "tag": "3C",
@@ -720,6 +730,16 @@
   "synthetic": 0
  },
  {
+  "sku": "143371",
+  "name": "Soodatek PD 65W 氮化鎵高速充電 USB-C 套裝",
+  "tag": "3C",
+  "price": 825.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
   "sku": "144030",
   "name": "Denon 3.1.2 聲道 Dolby Atmos Soundbar 重低音組合 DHT-S517 | Cost...",
   "tag": "家電",
@@ -856,6 +876,16 @@
   "price": 14999.0,
   "currency": "TWD",
   "observed_at": "2026-11-25T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "144030",
+  "name": "Denon 3.1.2 聲道 Dolby Atmos Soundbar 重低音組合 DHT-S517 | Cost...",
+  "tag": "家電",
+  "price": 14999.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
   "source": "costco",
   "synthetic": 0
  },
@@ -1040,6 +1070,16 @@
   "synthetic": 0
  },
  {
+  "sku": "147653",
+  "name": "Apple 60W USB-C 充電連接線 (1 公尺)",
+  "tag": "3C",
+  "price": 539.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
   "sku": "147918",
   "name": "飛利浦 2.1 聲道 無線重低音杜比全景聲聲霸 TAB6309",
   "tag": "家電",
@@ -1188,6 +1228,16 @@
   "observed_at": "2026-11-11T16:46:26.200725",
   "source": "backfill",
   "synthetic": 1
+ },
+ {
+  "sku": "147918",
+  "name": "飛利浦 2.1 聲道 無線重低音杜比全景聲聲霸 TAB6309",
+  "tag": "家電",
+  "price": 7599.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
  },
  {
   "sku": "148022",
@@ -1406,6 +1456,16 @@
   "price": 9999.0,
   "currency": "TWD",
   "observed_at": "2026-11-25T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "148022",
+  "name": "Klipsch Flexus 無線聲霸 Core 100",
+  "tag": "家電",
+  "price": 9999.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
   "source": "costco",
   "synthetic": 0
  },
@@ -1770,6 +1830,16 @@
   "synthetic": 0
  },
  {
+  "sku": "149115",
+  "name": "Samsung 3.1聲道 兩件式家庭劇院含重低音 HW-S700D/ZW",
+  "tag": "家電",
+  "price": 9999.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
   "sku": "149699",
   "name": "ANKER A2674 336 GaN 67W 急速充電器 2入組",
   "tag": "3C",
@@ -2056,6 +2126,16 @@
   "price": 1369.0,
   "currency": "TWD",
   "observed_at": "2026-11-25T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "149699",
+  "name": "ANKER A2674 336 GaN 67W 急速充電器 2入組",
+  "tag": "3C",
+  "price": 1369.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
   "source": "costco",
   "synthetic": 0
  },
@@ -2530,6 +2610,16 @@
   "synthetic": 0
  },
  {
+  "sku": "153519",
+  "name": "飛利浦 55吋 4K Google TV 顯示器 55PUH7630/96",
+  "tag": "家電",
+  "price": 13699.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
   "sku": "153526",
   "name": "飛利浦 55吋 4K QLED Google TV 顯示器 55PQT8530/96",
   "tag": "家電",
@@ -2816,6 +2906,26 @@
   "price": 15799.0,
   "currency": "TWD",
   "observed_at": "2026-11-25T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "153526",
+  "name": "飛利浦 55吋 4K QLED Google TV 顯示器 55PQT8530/96",
+  "tag": "家電",
+  "price": 15799.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "153537",
+  "name": "TCL 65吋 4K Mini LED Google TV 量子智能液晶顯示器 不含視訊盒 65C6K | Cos...",
+  "tag": "家電",
+  "price": 24989.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
   "source": "costco",
   "synthetic": 0
  },
@@ -3120,6 +3230,16 @@
   "synthetic": 0
  },
  {
+  "sku": "153555",
+  "name": "TCL 75吋 4K Mini LED Google TV 量子智能液晶顯示器 不含視訊盒 75C6K | Cos...",
+  "tag": "家電",
+  "price": 34799.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
   "sku": "153862",
   "name": "Acer Gaming USB-A to USB-C 1公尺 白 + USB-C to USB-C 1.2公尺 白...",
   "tag": "3C",
@@ -3406,6 +3526,16 @@
   "price": 599.0,
   "currency": "TWD",
   "observed_at": "2026-11-25T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "153862",
+  "name": "Acer Gaming USB-A to USB-C 1公尺 白 + USB-C to USB-C 1.2公尺 白...",
+  "tag": "3C",
+  "price": 599.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
   "source": "costco",
   "synthetic": 0
  },
@@ -3830,6 +3960,16 @@
   "synthetic": 0
  },
  {
+  "sku": "153876",
+  "name": "JBL Live 670NC 耳罩式降噪藍牙耳機",
+  "tag": "3C",
+  "price": 2399.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
   "sku": "153992",
   "name": "創維 75吋 4K QLED HSR120 AI卡拉OK 聯網液晶顯示器 75Q750GK",
   "tag": "家電",
@@ -3956,6 +4096,16 @@
   "price": 25999.0,
   "currency": "TWD",
   "observed_at": "2026-11-25T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "153992",
+  "name": "創維 75吋 4K QLED HSR120 AI卡拉OK 聯網液晶顯示器 75Q750GK",
+  "tag": "家電",
+  "price": 25999.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
   "source": "costco",
   "synthetic": 0
  },
@@ -4246,6 +4396,16 @@
   "price": 9699.0,
   "currency": "TWD",
   "observed_at": "2026-11-25T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "154155",
+  "name": "JBL BAR 2.1 DEEP BASS (MK2) 2.1聲道條型音箱",
+  "tag": "家電",
+  "price": 9699.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
   "source": "costco",
   "synthetic": 0
  },
@@ -5020,6 +5180,16 @@
   "synthetic": 0
  },
  {
+  "sku": "156974",
+  "name": "iClever BTH18 炫光無線兒童耳機",
+  "tag": "3C",
+  "price": 1079.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
   "sku": "157137",
   "name": "Honeywell 淨味空氣清淨機 HPA5350WTWV1",
   "tag": "家電",
@@ -5310,6 +5480,16 @@
   "synthetic": 0
  },
  {
+  "sku": "157137",
+  "name": "Honeywell 淨味空氣清淨機 HPA5350WTWV1",
+  "tag": "家電",
+  "price": 9099.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
   "sku": "157488",
   "name": "Soodatek GaN PD140W 氮化鎵急速充電 USB-C 套裝",
   "tag": "3C",
@@ -5526,6 +5706,16 @@
   "price": 1479.0,
   "currency": "TWD",
   "observed_at": "2026-11-25T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "157488",
+  "name": "Soodatek GaN PD140W 氮化鎵急速充電 USB-C 套裝",
+  "tag": "3C",
+  "price": 1479.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
   "source": "costco",
   "synthetic": 0
  },
@@ -5816,6 +6006,16 @@
   "price": 979.0,
   "currency": "TWD",
   "observed_at": "2026-11-25T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "159542",
+  "name": "MMOMENT 512GB 磁性外接可攜式固態硬碟 SSD",
+  "tag": "3C",
+  "price": 3059.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
   "source": "costco",
   "synthetic": 0
  },
@@ -6210,6 +6410,16 @@
   "synthetic": 0
  },
  {
+  "sku": "161051",
+  "name": "PQI 100W 數位顯示充電器",
+  "tag": "3C",
+  "price": 1379.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
   "sku": "161367",
   "name": "Soundcore AeroClip 開放式藍牙耳夾耳機",
   "tag": "3C",
@@ -6496,6 +6706,16 @@
   "price": 2599.0,
   "currency": "TWD",
   "observed_at": "2026-11-25T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "161367",
+  "name": "Soundcore AeroClip 開放式藍牙耳夾耳機",
+  "tag": "3C",
+  "price": 2599.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
   "source": "costco",
   "synthetic": 0
  },
@@ -7610,6 +7830,56 @@
   "synthetic": 0
  },
  {
+  "sku": "162427",
+  "name": "Hawk 360° 旋轉升降螢幕架 附抽屜",
+  "tag": "3C",
+  "price": 839.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "162860",
+  "name": "Klipsch GIG XL 藍牙派對音響 含Fiesta有線麥克風",
+  "tag": "3C",
+  "price": 4389.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "162967",
+  "name": "Recolte 食物調理機 RCP-3 (有線版)",
+  "tag": "家電",
+  "price": 1539.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "163482",
+  "name": "Jamo Cinema 3 聲霸+重低音組合",
+  "tag": "家電",
+  "price": 10999.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "163848",
+  "name": "墨覺 專業游泳骨傳導耳機",
+  "tag": "3C",
+  "price": 2999.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
   "sku": "163907",
   "name": "Nintendo Switch 2 寶可夢傳說 Z-A + Pokémon Pokopia 組合 | Costco...",
   "tag": "3C",
@@ -7796,6 +8066,16 @@
   "price": 5999.0,
   "currency": "TWD",
   "observed_at": "2026-11-17T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "1646074",
+  "name": "Tresanti 電動升降桌",
+  "tag": "3C",
+  "price": 5999.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
   "source": "costco",
   "synthetic": 0
  },
@@ -8450,6 +8730,16 @@
   "synthetic": 0
  },
  {
+  "sku": "3062725",
+  "name": "BOSE Solo Soundbar 電視音響 II",
+  "tag": "家電",
+  "price": 8149.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
   "sku": "6677010",
   "name": "DeWALT 得偉 乾濕兩用吸塵器",
   "tag": "家電",
@@ -8726,6 +9016,16 @@
   "price": 3399.0,
   "currency": "TWD",
   "observed_at": "2026-11-25T00:00:00",
+  "source": "costco",
+  "synthetic": 0
+ },
+ {
+  "sku": "6677010",
+  "name": "DeWALT 得偉 乾濕兩用吸塵器",
+  "tag": "家電",
+  "price": 3399.0,
+  "currency": "TWD",
+  "observed_at": "2026-11-26T00:00:00",
   "source": "costco",
   "synthetic": 0
  }
