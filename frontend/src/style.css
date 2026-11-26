@@ -191,6 +191,7 @@ select:focus-visible {
   /* 文字（暖調）*/
   --m-ink:       #2b2622;  /* 主文字（暖黑，非純黑，避 gate 7）*/
   --m-ink-2:     #5f5850;  /* 次要 */
+  --m-ink-3:     #7a7368;  /* 三級（特價紀錄：平穩 / 無歷史 verdict 中性色）*/
   --m-muted:     #8a8378;  /* 輔助 / 停用 */
   --m-hairline:  #ece5db;  /* 邊框 / 分割 */
 
@@ -200,6 +201,7 @@ select:focus-visible {
   --m-price:      #e5342a; /* 促價 */
   --m-good:       #2e8b57; /* 綠：划算 / 最低 */
   --m-warm:       #f6b24a; /* 品牌 avatar 暖調 */
+  --m-warn:       #d9820f; /* 特價紀錄：接近高點 verdict 警示色 */
 
   /* chips / badges */
   --m-chip-bg:      #ffffff; /* 未選 檔期 chip */

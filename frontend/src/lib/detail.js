@@ -18,11 +18,12 @@
  * shows the same 賣場 / 線上 structure with the right figures.
  *
  * Data the issue names: 價格 / 原價 / 省額 / 折扣 / 檔期 / 通路 / 缺貨 come from
- * these two baked snapshots (no network — offline-safe); the 規格摘要 (吸力 /
- * 重量 / 使用時間 / 濾網) is a PLACEHOLDER because the baked catalog carries no
- * spec fields (verified: every item has exactly sku/name/price/basePrice/
- * discount/online_only/stock — see specList below). The 到官網 URL is a best-
- * effort 好市多 TW search link built from the item (no per-item URL in the data).
+ * these two baked snapshots (no network — offline-safe). The 特價紀錄 (#55) 賣場
+ * row is driven by the sku's costco-history record (a real price series →
+ * sparkline + verdict + 特價幾次 / 一年最低 / 現價 / 省 / 到), while the 線上 row
+ * shows the 當前線上價 + a placeholder (no series yet, #56 — never a faked curve).
+ * The 到官網 URL is a best-effort 好市多 TW search link built from the item
+ * (no per-item URL in the data).
  *
  * TWD grouping reuses formatTWD (the TWD SSOT, issue #25); the "約 X 折" 個位
  * reuses zheOfCatalog and the "省 $X" text reuses saveText from catalog.js, so
@@ -30,6 +31,9 @@
  */
 import { formatTWD } from './format.js'
 import { zheOfCatalog, saveText } from './catalog.js'
+// #55 特價紀錄 reuses the verdict SSOT + offline sparkline from monitor.js so the
+// 賣場 row never re-derives a verdict or a sparkline of its own.
+import { priceVerdict, sparkPath } from './monitor.js'
 
 /** Coerce a value to a finite number, or null (gate 19: null -> "N/A"). */
 function num(v) {
@@ -132,38 +136,148 @@ export function endDateChip(endDate) {
   return s.includes('~') ? s : `到 ${s}`
 }
 
-// The 規格摘要 four fields the mockup shows. The baked catalog carries NONE of
-// them (verified: every item has exactly sku/name/price/basePrice/discount/
-// online_only/stock), so each is an honest PLACEHOLDER awaiting a backend 規格
-// column. The value reads "待補" (never an em-dash — gate 19) and the section
-// carries an explicit "後端補欄" note so it is clearly a placeholder, not real
-// data. A future pass fills `value` from a real 規格 column keyed by sku.
-export const SPEC_FIELDS = [
-  { key: 'suction', label: '吸力' },
-  { key: 'weight', label: '重量' },
-  { key: 'runtime', label: '使用時間' },
-  { key: 'filter', label: '濾網' },
-]
+// --- 特價紀錄 (#55) ----------------------------------------------------------
+// Replaces the old 規格摘要 placeholder grid. The 賣場 row is driven by the sku's
+// costco-history record (a REAL price series), so it renders a sparkline + a
+// verdict + 特價幾次 / 一年最低 / 現價 / 省 / 到. The 線上 row has no series yet
+// (#56), so it shows the 當前線上價 + an honest "待補" placeholder — and NEVER a
+// faked curve. priceVerdict (verdict SSOT) + sparkPath (offline sparkline) +
+// money (TWD grouping SSOT) are all reused, so nothing is re-derived here.
+
+// 特價幾次 = the number of downward steps in the price series: each time today's
+// observed price is STRICTLY less than the previous observation, the price
+// "dropped" once. Pure + null-safe (a malformed series counts 0, never throws).
+function countDrops(series) {
+  if (!Array.isArray(series)) return 0
+  let drops = 0
+  for (let i = 1; i < series.length; i++) {
+    const a = num(series[i - 1] && series[i - 1].price)
+    const b = num(series[i] && series[i].price)
+    if (a != null && b != null && b < a) drops++
+  }
+  return drops
+}
+
+// Map a priceVerdict key to a --m-* color token + a clean (emoji-free) label.
+// priceVerdict's OWN label carries emoji ("歷史最低 👍" / "較近低點 ▼X%") — gate:
+// 把 emoji 移除 — so we REUSE priceVerdict for the verdict CLASSIFICATION but
+// re-derive a clean label here. good_deal's label is a function of the dropPct.
+const VERDICT_UI = {
+  all_time_low: { color: 'var(--m-good)', label: '歷史最低' },
+  good_deal: { color: 'var(--m-warm)', label: (pct) => `較近低點 ${Math.round(pct)}%` },
+  near_high: { color: 'var(--m-warn)', label: '接近高點' },
+  stable: { color: 'var(--m-ink-3)', label: '平穩' },
+  unknown: { color: 'var(--m-ink-3)', label: '無歷史' },
+}
+
+function verdictUi(key, dropPct) {
+  const ui = VERDICT_UI[key] || VERDICT_UI.unknown
+  const label = typeof ui.label === 'function' ? ui.label(dropPct || 0) : ui.label
+  return { key, label, color: ui.color, dropPct: dropPct || 0 }
+}
 
 /**
- * The 規格摘要 grid. Each field resolves `specs[key]` (a real 規格 column when a
- * backend adds one) and otherwise falls back to the "待補" placeholder. Pure +
- * null-safe; never emits an em/en dash.
- * @param {object} p the item (may carry a future `specs` object)
- * @returns {Array<{key:string,label:string,value:string,placeholder:boolean}>}
+ * The 特價紀錄 model (#55): a 賣場 row (real price history from the sku's
+ * costco-history record) + an 線上 row (當前線上價 + placeholder, NO faked curve).
+ * Pure + null-safe — a null / missing / malformed record yields a well-formed
+ * "尚無歷史" model, never a throw, undefined, or bogus figure (gate 19).
+ *
+ * @param {object} p         a catalog OR MVM item (shape-agnostic, like priceOf)
+ * @param {object} [record]  the sku's costco-history record (null when offline or
+ *                           the sku has no history row)
+ * @param {string} [endDate] the active 檔期 period chip text (the MVM tab period;
+ *                           '' for catalog items, which carry no 檔期 of their own)
+ * @returns {{
+ *   hasHistory: boolean,
+ *   store: {
+ *     hasHistory: boolean, series: Array, spark: string,
+ *     verdict: {key:string,label:string,color:string,dropPct:number},
+ *     drops: number,
+ *     now: number|null, nowText: string,
+ *     low: number|null, lowText: string,
+ *     save: number|null, saveText: string, end: string
+ *   },
+ *   online: {
+ *     now: number|null, money: string, hasSeries: boolean, note: string
+ *   }
+ * }}
  */
-export function specList(p) {
-  const specs = (p && typeof p === 'object' && p.specs && typeof p.specs === 'object') ? p.specs : {}
-  return SPEC_FIELDS.map((f) => {
-    const raw = specs[f.key]
-    const has = raw != null && raw !== '' && raw !== 'N/A'
+export function promoRecord(p, record = null, endDate = '') {
+  const item = p && typeof p === 'object' ? p : {}
+  const { now: onlineNow, orig } = priceOf(item)
+
+  // The 檔期 "到" chip (MVM 檔期 end). Catalog items carry no 檔期, so '' hides it.
+  const end = endDateChip(endDate)
+
+  // 線上 row: ONLY the 當前線上價 + an honest placeholder — no series, no curve.
+  const online = {
+    now: onlineNow,
+    money: money(onlineNow),
+    hasSeries: false,
+    note: '線上歷史序列待補（#56）',
+  }
+
+  // No record (offline / sku not tracked) → a 尚無歷史 賣場 row (never a throw).
+  if (!record || typeof record !== 'object') {
     return {
-      key: f.key,
-      label: f.label,
-      value: has ? String(raw) : '待補',
-      placeholder: !has,
+      hasHistory: false,
+      store: {
+        hasHistory: false,
+        series: [],
+        spark: '',
+        verdict: verdictUi('unknown', 0),
+        drops: 0,
+        now: null,
+        nowText: 'N/A',
+        low: null,
+        lowText: 'N/A',
+        save: null,
+        saveText: '',
+        end,
+      },
+      online,
     }
-  })
+  }
+
+  const series = Array.isArray(record.series) ? record.series : []
+  const hasHistory = series.length > 0
+
+  // 現價 / 一年最低 / 省 (原價 − 現價) / 特價幾次 — all from the record + item.
+  const now = num(record.current)
+  const low = num(record.low)
+  const save = orig != null && now != null && orig > now ? orig - now : null
+  const drops = hasHistory ? countDrops(series) : 0
+
+  // The verdict REUSES priceVerdict (SSOT classification). priceVerdict expects a
+  // camelCase metrics shape, so map the record's snake_case fields onto it.
+  const metrics = {
+    points: record.points != null ? record.points : series.length,
+    dropPctFromHigh: record.drop_pct_from_high,
+    atAllTimeLow: record.at_all_time_low,
+  }
+  const v = hasHistory
+    ? priceVerdict(metrics)
+    : { verdict: 'unknown', label: '無歷史', dropPct: 0 }
+
+  return {
+    hasHistory,
+    store: {
+      hasHistory,
+      series,
+      // sparkPath draws the offline polyline (or '' when there is nothing to draw).
+      spark: hasHistory ? sparkPath(series) : '',
+      verdict: verdictUi(v.verdict, v.dropPct),
+      drops,
+      now,
+      nowText: money(now),
+      low,
+      lowText: money(low),
+      save,
+      saveText: save != null ? money(save) : '',
+      end,
+    },
+    online,
+  }
 }
 
 /**
@@ -184,14 +298,15 @@ export function costcoUrl(p) {
  * The unified detail model ProductDetail.vue renders. Pure + null-safe.
  *
  * @param {object} p        a catalog OR MVM item
- * @param {object} [ctx]    { endDate?: string } — the active 檔期 range chip
+ * @param {object} [ctx]    { endDate?: string, historyRecord?: object } — the active
+ *                           檔期 range chip + the sku's costco-history record (#55)
  * @returns {{
  *   sku: string, name: string,
  *   store: { now:number|null, orig:number|null, note:string },
  *   online: { now:number|null, orig:number|null, available:boolean,
  *             onlineOnly:boolean, note:string },
  *   save: number|null, zhe:number|null, endDate:string,
- *   specs: Array, webUrl: string
+ *   promo: object, webUrl: string
  * }}
  */
 export function buildDetailModel(p, ctx = {}) {
@@ -226,7 +341,10 @@ export function buildDetailModel(p, ctx = {}) {
     save,
     zhe,
     endDate: endDateChip(ctx.endDate),
-    specs: specList(item),
+    // #55: 特價紀錄 replaces 規格摘要. ctx.historyRecord is the sku's costco-history
+    // record (null when offline / not found → "尚無歷史"); ctx.endDate is the MVM
+    // 檔期 period chip (catalog items pass none).
+    promo: promoRecord(item, ctx.historyRecord, ctx.endDate),
     webUrl: costcoUrl(item),
   }
 }

@@ -12,7 +12,7 @@ import {
   zheOfItem,
   saveTextOf,
   endDateChip,
-  specList,
+  promoRecord,
   costcoUrl,
   buildDetailModel,
   money,
@@ -90,12 +90,102 @@ describe('lib/detail.js — pure model helpers', () => {
     expect(endDateChip('')).toBe('')
   })
 
-  it('specList provides 4 placeholder fields reading 待補', () => {
-    const list = specList(DUMMY_CATALOG_ITEM)
-    expect(list).toHaveLength(4)
-    expect(list.map((f) => f.label)).toEqual(['吸力', '重量', '使用時間', '濾網'])
-    expect(list.every((f) => f.value === '待補')).toBe(true)
-    expect(list.every((f) => f.placeholder)).toBe(true)
+  // #55 特價紀錄 (promoRecord): the 賣場 row is driven by a REAL costco-history
+  // series; the 線上 row has no series yet (#56) and shows an honest placeholder,
+  // never a faked curve.
+  describe('promoRecord (#55)', () => {
+    // a realistic costco-history record with a real downward price series:
+    // 720 → 680 → 680 → 549 → 480 → 549 = three strictly-downward steps.
+    const HISTORY_RECORD = {
+      sku: '100001',
+      name: 'Kirkland 綜合維他命 C 1000mg',
+      current: 549,
+      low: 480,
+      high: 720,
+      drop_pct_from_high: 24,
+      at_all_time_low: false,
+      points: 6,
+      series: [
+        { observed_at: '2026-09-01', price: 720, source: 'costco' },
+        { observed_at: '2026-09-15', price: 680, source: 'costco' },
+        { observed_at: '2026-10-01', price: 680, source: 'costco' },
+        { observed_at: '2026-10-15', price: 549, source: 'costco' },
+        { observed_at: '2026-10-20', price: 480, source: 'costco' },
+        { observed_at: '2026-11-01', price: 549, source: 'costco' },
+      ],
+    }
+
+    it('is null-safe: a null record yields a well-formed 尚無歷史 model (no throw)', () => {
+      const r = promoRecord({ sku: '1', name: 'X', price: 100, basePrice: 100 }, null)
+      expect(r.hasHistory).toBe(false)
+      expect(r.store.hasHistory).toBe(false)
+      expect(r.store.series).toEqual([])
+      expect(r.store.spark).toBe('')
+      // gate 19: no undefined / '-' / .00 — nulls read as 'N/A', 省 is hidden
+      expect(r.store.now).toBeNull()
+      expect(r.store.nowText).toBe('N/A')
+      expect(r.store.low).toBeNull()
+      expect(r.store.lowText).toBe('N/A')
+      expect(r.store.save).toBeNull()
+      expect(r.store.saveText).toBe('')
+      expect(r.store.drops).toBe(0)
+      expect(r.store.verdict.key).toBe('unknown')
+      // the 線上 row still shows the current online price + an honest placeholder
+      expect(r.online.hasSeries).toBe(false)
+      expect(r.online.now).toBe(100)
+      expect(r.online.note).toMatch(/待補/)
+    })
+
+    it('a missing record (undefined) is treated the same as null (gate 19)', () => {
+      expect(promoRecord({ sku: '1', price: 100 }, undefined).hasHistory).toBe(false)
+    })
+
+    it('never throws on a null item + null record', () => {
+      expect(() => promoRecord(null, null)).not.toThrow()
+      const r = promoRecord(null, null)
+      expect(r.hasHistory).toBe(false)
+      expect(r.store.verdict.key).toBe('unknown')
+    })
+
+    it('a malformed record (no series / low / current) yields 尚無歷史, not a throw', () => {
+      const r = promoRecord({ sku: '1', price: 100 }, { sku: '1' })
+      expect(r.hasHistory).toBe(false)
+      expect(r.store.now).toBeNull()
+      expect(r.store.spark).toBe('')
+    })
+
+    it('a real history record renders drops / 一年最低 / 現價 / 省 / verdict', () => {
+      const item = { sku: '100001', name: 'Kirkland', price: 549, basePrice: 699 }
+      const r = promoRecord(item, HISTORY_RECORD, '10/20 ~ 10/26')
+      expect(r.hasHistory).toBe(true)
+      expect(r.store.hasHistory).toBe(true)
+      // 特價幾次 = three strictly-downward steps
+      expect(r.store.drops).toBe(3)
+      // 現價 / 一年最低 read from the record (the 賣場 row uses the record)
+      expect(r.store.now).toBe(549)
+      expect(r.store.nowText).toBe('$549')
+      expect(r.store.low).toBe(480)
+      expect(r.store.lowText).toBe('$480')
+      // 省 = 原價 − 現價 (699 − 549 = 150)
+      expect(r.store.save).toBe(150)
+      expect(r.store.saveText).toMatch(/150/)
+      // 檔期 passthrough (a '~' range is not '到'-prefixed)
+      expect(r.store.end).toBe('10/20 ~ 10/26')
+      // a real sparkline path (a polyline, never a faked/empty curve)
+      expect(r.store.spark).toMatch(/^M/)
+      expect(r.store.spark.split('L').length).toBeGreaterThan(3)
+      // verdict is a valid key with a clean (emoji-free) label
+      expect(['all_time_low', 'good_deal', 'near_high', 'stable', 'unknown']).toContain(
+        r.store.verdict.key,
+      )
+      expect(r.store.verdict.label.trim().length).toBeGreaterThan(0)
+      expect(/[一-龥]/u.test(r.store.verdict.label)).toBe(true)
+      // the 線上 row: current online price + placeholder, never a faked series
+      expect(r.online.now).toBe(549)
+      expect(r.online.money).toBe('$549')
+      expect(r.online.hasSeries).toBe(false)
+      expect(r.online.note).toMatch(/待補/)
+    })
   })
 
   it('costcoUrl forms a valid search link', () => {
@@ -114,7 +204,9 @@ describe('lib/detail.js — pure model helpers', () => {
     expect(m.save).toBe(1700)
     expect(m.zhe).toBe(8)
     expect(m.endDate).toBe('10/26 ~ 11/22')
-    expect(m.specs).toHaveLength(4)
+    // #55 特價紀錄: a promo model (online placeholder when no history record).
+    expect(m.promo).toBeTruthy()
+    expect(m.promo.online.note).toMatch(/待補/)
   })
 
   it('money formats TWD with $ prefix and handles nulls gracefully', () => {
@@ -146,16 +238,66 @@ describe('ProductDetail.vue — component rendering & interactions', () => {
     expect(w.find('[data-section-store]').text()).toContain('會員護照價，以賣場為準')
   })
 
-  it('renders 規格摘要 2-column grid with 4 placeholder items', () => {
+  it('#55 特價紀錄: 賣場 row shows 尚無歷史 when no history record (規格摘要 is gone)', () => {
     const w = mount(ProductDetail, { props: { product: DUMMY_CATALOG_ITEM } })
-    const specsSec = w.find('[data-section-specs]')
-    expect(specsSec.exists()).toBe(true)
-    expect(specsSec.text()).toContain('規格摘要')
-    expect(specsSec.text()).toContain('吸力')
-    expect(specsSec.text()).toContain('重量')
-    expect(specsSec.text()).toContain('使用時間')
-    expect(specsSec.text()).toContain('濾網')
-    expect(specsSec.text()).toContain('規格欄待補')
+    // 規格摘要 (#53) is replaced by 特價紀錄 (#55)
+    expect(w.find('[data-section-specs]').exists()).toBe(false)
+    expect(w.find('.detail-specs').exists()).toBe(false)
+    const promoSec = w.find('[data-section-promo]')
+    expect(promoSec.exists()).toBe(true)
+    expect(promoSec.text()).toContain('特價紀錄')
+    // 賣場 row with no record → 尚無歷史 (never a faked curve / '-' / .00)
+    expect(w.find('[data-promo-empty]').text()).toContain('尚無歷史')
+    expect(w.find('[data-promo-spark]').exists()).toBe(false)
+    // 線上 row shows the current online price + an honest placeholder
+    expect(w.find('[data-promo-online-now]').exists()).toBe(true)
+    expect(w.find('[data-promo-online-note]').text()).toMatch(/待補/)
+  })
+
+  it('#55 特價紀錄: 賣場 row renders the real series (sparkline + 特價幾次 / 一年最低 / 現價 / 省)', () => {
+    const record = {
+      sku: '100001',
+      current: 549,
+      low: 480,
+      high: 720,
+      drop_pct_from_high: 24,
+      at_all_time_low: false,
+      points: 6,
+      series: [
+        { observed_at: '2026-09-01', price: 720, source: 'costco' },
+        { observed_at: '2026-09-15', price: 680, source: 'costco' },
+        { observed_at: '2026-10-01', price: 680, source: 'costco' },
+        { observed_at: '2026-10-15', price: 549, source: 'costco' },
+        { observed_at: '2026-10-20', price: 480, source: 'costco' },
+        { observed_at: '2026-11-01', price: 549, source: 'costco' },
+      ],
+    }
+    const item = {
+      sku: '100001',
+      name: 'Kirkland 綜合維他命 C 1000mg',
+      price: 549,
+      basePrice: 699,
+    }
+    const w = mount(ProductDetail, {
+      props: { product: item, endDate: '10/20 ~ 10/26', historyRecord: record },
+    })
+    const promoSec = w.find('[data-section-promo]')
+    expect(promoSec.exists()).toBe(true)
+    // a real sparkline path (a polyline, never a faked/empty curve)
+    const spark = w.find('[data-promo-spark]')
+    expect(spark.exists()).toBe(true)
+    expect(spark.find('path').attributes('d')).toMatch(/^M/)
+    // 特價幾次 = 3 downward steps; 一年最低 / 現價 from the record
+    expect(w.find('[data-promo-drops]').text()).toContain('3')
+    expect(w.find('[data-promo-low]').text()).toContain('480')
+    expect(w.find('[data-promo-now]').text()).toContain('549')
+    // 省 badge (原價 699 − 現價 549 = 150)
+    expect(w.find('[data-promo-save]').text()).toContain('150')
+    // verdict renders with a clean (emoji-free) label
+    expect(w.find('.detail-promo-verdict').text().trim().length).toBeGreaterThan(0)
+    // 線上 row: current online price + placeholder, never a faked series
+    expect(w.find('[data-promo-online-now]').text()).toContain('549')
+    expect(w.find('[data-promo-online-note]').text()).toMatch(/待補/)
   })
 
   it('renders bottom CTA bar with primary and secondary buttons', () => {
