@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-11-26T13:24:24.697729+00:00",
-  "last_real_observed_at": "2026-11-26T00:00:00",
-  "last_real_count": 483,
+  "updated_at": "2026-11-27T13:21:26.148548+00:00",
+  "last_real_observed_at": "2026-11-27T00:00:00",
+  "last_real_count": 513,
   "new_real_this_run": 30,
   "guard_version": "1",
   "source": "backend/stall_guard.py issue #12"
