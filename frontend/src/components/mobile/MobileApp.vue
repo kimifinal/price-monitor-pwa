@@ -16,7 +16,9 @@ import ProductDetail from './ProductDetail.vue'
 import { loadMvmCatalog } from '../../lib/mvm.js'
 import { loadCatalog } from '../../lib/catalog.js'
 // #55 特價紀錄: the sku's costco-history record for the detail's 賣場 row.
-import { recordBySku } from '../../lib/history.js'
+// #56 線上序列: the MVM online series for the detail's 線上 row (null when the
+// sku has no 檔期 → the row keeps its "待補" placeholder, never a faked curve).
+import { recordBySku, onlineRecordBySku } from '../../lib/history.js'
 
 // 5-tab 底部導航. 特價 = the MVM 檔期 view; 全部 = the 全庫 catalog view; the
 // rest are placeholders.
@@ -33,6 +35,9 @@ const selectedProduct = ref(null)
 // #55 特價紀錄: the sku's costco-history record for the detail's 賣場 row. null
 // when offline or the sku has no history → the 賣場 row reads "尚無歷史".
 const selectedHistory = ref(null)
+// #56 線上序列: the sku's MVM online series for the detail's 線上 row. null when
+// the sku has no 檔期 → the 線上 row keeps its "待補" placeholder.
+const selectedOnline = ref(null)
 // Where to return when clicking "完成" back in the detail view (default 'deal').
 const previousTab = ref('deal')
 
@@ -61,6 +66,9 @@ function openDetail(product) {
   // #55: pull the sku's costco-history record for the 特價紀錄 賣場 row (null when
   // offline / no history → the row reads "尚無歷史", never a crash).
   selectedHistory.value = recordBySku(product.sku)
+  // #56: the sku's MVM online series for the 線上 row (null when no 檔期 →
+  // "待補" placeholder, never a faked curve).
+  selectedOnline.value = onlineRecordBySku(product.sku)
   active.value = 'detail'
 }
 
@@ -107,6 +115,7 @@ function closeDetail() {
         v-if="active === 'detail' && selectedProduct"
         :product="selectedProduct"
         :history-record="selectedHistory"
+        :online-record="selectedOnline"
         @back="closeDetail"
       />
       <!-- 特價 tab: the warm MVM 檔期 view -->

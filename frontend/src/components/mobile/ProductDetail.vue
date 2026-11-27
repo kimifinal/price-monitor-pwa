@@ -42,6 +42,9 @@ const props = defineProps({
   // #55 特價紀錄: the sku's costco-history record. null when offline or the sku
   // has no history row — the 賣場 row then reads "尚無歷史" (never a crash).
   historyRecord: { type: Object, default: null },
+  // #56 線上歷史序列: the sku's MVM online series. null when the sku has no 檔期 —
+  // the 線上 row then keeps its "待補" placeholder (never a faked curve).
+  onlineRecord: { type: Object, default: null },
 })
 
 const emit = defineEmits(['back', 'notify', 'share', 'verify', 'toggle-track', 'open-web'])
@@ -49,7 +52,13 @@ const emit = defineEmits(['back', 'notify', 'share', 'verify', 'toggle-track', '
 // The pure detail model (null-safe, shape-agnostic). One recompute per prop
 // change — so the 特價紀錄 (#55) sparkline + verdict react to a new record.
 const m = computed(
-  () => buildDetailModel(props.product, { endDate: props.endDate, historyRecord: props.historyRecord }),
+  () =>
+    buildDetailModel(props.product, {
+      endDate: props.endDate,
+      historyRecord: props.historyRecord,
+      // #56: the MVM online series for the 線上 row (null when no 檔期).
+      onlineRecord: props.onlineRecord,
+    }),
 )
 
 // Display text (money reuses the TWD SSOT via lib/detail.money).
@@ -293,8 +302,10 @@ function openWeb() {
           <p v-else class="detail-promo-empty" data-promo-empty>尚無歷史</p>
         </div>
 
-        <!-- 線上 row: 當前線上價 + an honest placeholder — NO series yet (#56), so
-             never a faked curve. -->
+        <!-- 線上 row (#56): when the MVM 檔期 carries a REAL online series, mirror
+             the 賣場 row (spark + verdict + 特價幾次 / 一年最低 / 現價 / 省 / 檔期) so
+             the online curve renders. Otherwise the honest 當前線上價 + a "待補"
+             placeholder stands — never a faked curve (gate 19). -->
         <div class="detail-promo-row" data-promo-online>
           <div class="detail-promo-head">
             <span class="detail-promo-chip detail-promo-chip--online">線上</span>
@@ -303,8 +314,56 @@ function openWeb() {
               class="detail-promo-now"
               data-promo-online-now
             >{{ promo.online.money }}</span>
+            <span
+              v-if="promo.online.hasSeries"
+              class="detail-promo-verdict"
+              :data-verdict="promo.online.verdict.key"
+            >{{ promo.online.verdict.label }}</span>
           </div>
-          <p class="detail-promo-note" data-promo-online-note>{{ promo.online.note }}</p>
+          <template v-if="promo.online.hasSeries">
+            <svg
+              class="detail-promo-spark"
+              data-promo-online-spark
+              viewBox="0 0 100 28"
+              preserveAspectRatio="none"
+              role="img"
+              aria-label="線上價格走勢"
+            >
+              <path
+                class="detail-promo-spark-line"
+                :data-verdict="promo.online.verdict.key"
+                :d="promo.online.spark"
+                fill="none"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                vector-effect="non-scaling-stroke"
+              />
+            </svg>
+            <div class="detail-promo-metrics">
+              <div class="detail-promo-metric">
+                <span class="detail-promo-metric-label">特價</span>
+                <span class="detail-promo-metric-value" data-promo-online-drops>{{ promo.online.drops }} 次</span>
+              </div>
+              <div class="detail-promo-metric">
+                <span class="detail-promo-metric-label">一年最低</span>
+                <span class="detail-promo-metric-value" data-promo-online-low>{{ promo.online.lowText }}</span>
+              </div>
+              <div class="detail-promo-metric">
+                <span class="detail-promo-metric-label">現價</span>
+                <span class="detail-promo-metric-value" data-promo-online-nowprice>{{ promo.online.nowText }}</span>
+              </div>
+              <div v-if="promo.online.saveText" class="detail-promo-metric">
+                <span class="detail-promo-metric-label">省</span>
+                <span class="detail-promo-metric-value" data-promo-online-save>{{ promo.online.saveText }}</span>
+              </div>
+              <div v-if="promo.online.end" class="detail-promo-metric">
+                <span class="detail-promo-metric-label">檔期</span>
+                <span class="detail-promo-metric-value" data-promo-online-end>{{ promo.online.end }}</span>
+              </div>
+            </div>
+          </template>
+          <p v-else class="detail-promo-note" data-promo-online-note>{{ promo.online.note }}</p>
         </div>
       </section>
     </main>
