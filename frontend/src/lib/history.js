@@ -143,3 +143,16 @@ export function recordBySku(sku) {
   if (sku == null) return null
   return historyBySku().get(String(sku)) ?? null
 }
+
+/**
+ * #56 線上歷史序列: the sku's online price series for the 特價紀錄 線上 row.
+ * Built ONCE from the baked MVM 檔期 snapshot (build-time import, like
+ * catalog.js / mvm.js), keyed by sku, so the online curve is fully OFFLINE with
+ * zero network. A sku with no MVM 檔期 row returns null → the 線上 row keeps its
+ * honest "待補" placeholder (never a faked curve). Re-exported from mvm.js (the
+ * MVM SSOT) so the detail view imports both history maps from one place.
+ * @param {string|number} [sku]
+ * @returns {object|null} an online record (series / current / low / high /
+ *   drop_pct_from_high / at_all_time_low / points / hasSeries), or null
+ */
+export { onlineRecordBySku } from './mvm.js'

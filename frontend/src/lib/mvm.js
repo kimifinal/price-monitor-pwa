@@ -241,6 +241,44 @@ export function periodShort(tab) {
   return p.replace(/^\d{4}\s*\//, '')
 }
 
+// ---------------------------------------------------------------------------
+// #56: 線上 (online) 歷史價格序列 — derived from the MVM 檔期 catalog.
+// Each MVM product contributes two observed points (原價 at the 檔期 start, 促價
+// at the 檔期 end) so the detail 線上 row can render a real curve instead of the
+// "待補" placeholder. SKUs with no MVM data get null → the placeholder stands.
+// ---------------------------------------------------------------------------
+
+// 檔期 start "YYYY/MM/DD" (or "M/D" taking the period's leading year) → MDY,
+// mirroring parsePeriodEnd on the leading half so dates stay single-sourced.
+function parsePeriodStart(period) {
+  if (!period || typeof period !== 'string') return null
+  const first = String(period.split('~')[0].trim())
+  const full = /^(\d{4})\s*\/\s*(\d{1,2})\s*\/\s*(\d{1,2})$/.exec(first)
+  if (full) return toMDY(+full[1], +full[2], +full[3])
+  const md = /^(\d{1,2})\s*\/\s*(\d{1,2})$/.exec(first)
+  if (md) return toMDY(startYearOf(period) || new Date().getFullYear(), +md[1], +md[2])
+  return null
+}
+function toIso(mdy) {
+  if (!mdy) return null
+  return `${mdy.year}-${pad2(mdy.month)}-${pad2(mdy.day)}`
+}
+
+/**
+ * The 檔期 start + end as ISO "YYYY-MM-DD" (e.g. "2026-10-26" / "2026-11-22"),
+ * reusing the period parse so online-series dates match 特價/折扣 logic. A side
+ * that can't be parsed is null.
+ * @param {object} [tab]
+ * @returns {{start:(string|null),end:(string|null)}}
+ */
+export function periodStartEnd(tab) {
+  const p = tab && typeof tab === 'object' ? tab.period : undefined
+  return {
+    start: toIso(parsePeriodStart(p)),
+    end: toIso(parsePeriodEnd(p, new Date().getFullYear())),
+  }
+}
+
 /**
  * The MVM 檔期 section header: `N 筆 · 檔期名 · MM/DD ~ MM/DD · 剩 K 天` (or
  * `N 筆 · 檔期名 · 敬請期待` when no date). Count prefers
@@ -347,4 +385,89 @@ export function priceLine(product, tabPriceType = '') {
     return `賣場 ${money(a)} · 賣場 ${money(b)}`
   }
   return `賣場 ${money(orig)} · 線上 ${money(promo)}`
+}
+
+// ---------------------------------------------------------------------------
+// #56: 線上 (online) 歷史價格序列 per sku — built from the MVM 檔期 catalog so
+// the detail 線上 row can render a real curve (原價 → 促價) instead of the "待補"
+// placeholder. Each MVM product contributes two observed points: 原價 at the 檔期
+// start and 促價 at the 檔期 end (ISO dates via periodStartEnd). A sku absent from
+// MVM yields no points → null, so the placeholder (hasSeries:false) stands for
+// it; we never fabricate a point.
+// ---------------------------------------------------------------------------
+
+function isPrice(v) {
+  return typeof v === 'number' && Number.isFinite(v)
+}
+
+let _onlineBySku = null
+function buildOnlineRecordBySku() {
+  if (_onlineBySku) return _onlineBySku
+  const map = new Map()
+  const catalog = loadMvmCatalog()
+  const tabs = Array.isArray(catalog.tabs) ? catalog.tabs : []
+  for (const tab of tabs) {
+    if (!tab || typeof tab !== 'object') continue
+    const { start, end } = periodStartEnd(tab)
+    const products = Array.isArray(tab.products) ? tab.products : []
+    for (const prod of products) {
+      if (!prod || prod.sku == null) continue
+      const key = String(prod.sku)
+      let rec = map.get(key)
+      if (!rec) {
+        rec = { series: [], priceTypes: new Set() }
+        map.set(key, rec)
+      }
+      // 原價 at the 檔期 start, 促價 at the 檔期 end — only when the figure is a
+      // real price (null / 特例 skipped, so no fabricated point).
+      if (start && isPrice(prod.orig)) {
+        rec.series.push({ observed_at: start, price: prod.orig, source: 'online', kind: 'orig' })
+      }
+      if (end && isPrice(prod.promo)) {
+        rec.series.push({ observed_at: end, price: prod.promo, source: 'online', kind: 'promo' })
+      }
+      if (prod.type) rec.priceTypes.add(String(prod.type))
+    }
+  }
+  const out = new Map()
+  for (const [key, rec] of map) {
+    const series = rec.series
+    if (series.length === 0) continue // no MVM points → placeholder, not a fake curve
+    series.sort((a, b) => (a.observed_at < b.observed_at ? -1 : a.observed_at > b.observed_at ? 1 : 0))
+    const prices = series.map((p) => p.price)
+    const high = Math.max(...prices)
+    const low = Math.min(...prices)
+    const current = series[series.length - 1].price
+    const dropPctFromHigh = high > 0 ? Math.round(((high - current) / high) * 1000) / 10 : 0
+    out.set(key, {
+      source: 'online',
+      hasSeries: true,
+      series,
+      points: series.length,
+      current,
+      low,
+      high,
+      // snake_case to match detail.js's online-row reader + the #56 metric shape
+      // (current / low / high / drop_pct_from_high / at_all_time_low).
+      drop_pct_from_high: dropPctFromHigh,
+      at_all_time_low: current <= low * 1.001,
+      priceTypes: [...rec.priceTypes],
+      note: '線上歷史序列（MVM 檔期 原價→促價）',
+    })
+  }
+  _onlineBySku = out
+  return out
+}
+
+/**
+ * The 線上 (online) price record for a sku, derived from the MVM 檔期 catalog, or
+ * null when the sku has no MVM data (the placeholder stands). The result is
+ * memoized so repeated lookups are O(1).
+ * @param {string|number|null} sku
+ * @returns {object|null} an online record { source, hasSeries, series, points,
+ *   current, low, high, drop_pct_from_high, at_all_time_low, priceTypes, note } or null
+ */
+export function onlineRecordBySku(sku) {
+  if (sku == null) return null
+  return buildOnlineRecordBySku().get(String(sku)) || null
 }

@@ -198,23 +198,71 @@ function verdictUi(key, dropPct) {
  *     save: number|null, saveText: string, end: string
  *   },
  *   online: {
- *     now: number|null, money: string, hasSeries: boolean, note: string
+ *     now: number|null, money: string, hasSeries: boolean, note: string,
+ *     // when hasSeries (#56, a real MVM online series): series + spark + verdict
+ *     // + drops + low/lowText + nowText + save/saveText + end (mirrors 賣場)
  *   }
  * }}
  */
-export function promoRecord(p, record = null, endDate = '') {
+export function promoRecord(p, record = null, endDate = '', onlineRecord = null) {
   const item = p && typeof p === 'object' ? p : {}
   const { now: onlineNow, orig } = priceOf(item)
 
   // The 檔期 "到" chip (MVM 檔期 end). Catalog items carry no 檔期, so '' hides it.
   const end = endDateChip(endDate)
 
-  // 線上 row: ONLY the 當前線上價 + an honest placeholder — no series, no curve.
-  const online = {
-    now: onlineNow,
-    money: money(onlineNow),
-    hasSeries: false,
-    note: '線上歷史序列待補（#56）',
+  // 線上 row (#56): when the MVM 檔期 carries a REAL online series (an
+  // onlineRecord with hasSeries + a non-empty series), MIRROR the 賣場 row —
+  // spark + verdict + 特價幾次 / 一年最低 / 現價 / 省 / 檔期 — so the online curve
+  // renders. When there is no online series (a non-MVM sku, or a record without a
+  // series), keep the honest 當前線上價 + a "待補" placeholder — NEVER a faked curve
+  // (gate 19: a missing figure reads N/A, never a bogus $0 / dash).
+  let online
+  const onlineHasSeries =
+    !!onlineRecord &&
+    onlineRecord.hasSeries === true &&
+    Array.isArray(onlineRecord.series) &&
+    onlineRecord.series.length > 0
+  if (onlineHasSeries) {
+    const os = onlineRecord.series
+    const oNow = num(onlineRecord.current)
+    const oLow = num(onlineRecord.low)
+    const oHigh = num(onlineRecord.high)
+    const oDrops = countDrops(os)
+    // Reuse priceVerdict (SSOT classification) — map the record's snake_case
+    // fields onto the camelCase metrics shape it expects, exactly like 賣場.
+    const oMetrics = {
+      points: onlineRecord.points != null ? onlineRecord.points : os.length,
+      dropPctFromHigh: onlineRecord.drop_pct_from_high,
+      atAllTimeLow: onlineRecord.at_all_time_low,
+    }
+    const oV = priceVerdict(oMetrics)
+    const oSave = oHigh != null && oNow != null && oHigh > oNow ? Math.round(oHigh - oNow) : null
+    online = {
+      source: 'online',
+      hasSeries: true,
+      hasHistory: true,
+      series: os,
+      spark: sparkPath(os),
+      verdict: verdictUi(oV.verdict, oV.dropPct),
+      drops: oDrops,
+      now: oNow,
+      nowText: money(oNow),
+      low: oLow,
+      lowText: money(oLow),
+      save: oSave,
+      saveText: oSave != null ? money(oSave) : '',
+      end,
+      money: money(oNow),
+      note: '',
+    }
+  } else {
+    online = {
+      now: onlineNow,
+      money: money(onlineNow),
+      hasSeries: false,
+      note: '線上歷史序列待補（#56）',
+    }
   }
 
   // No record (offline / sku not tracked) → a 尚無歷史 賣場 row (never a throw).
@@ -298,8 +346,10 @@ export function costcoUrl(p) {
  * The unified detail model ProductDetail.vue renders. Pure + null-safe.
  *
  * @param {object} p        a catalog OR MVM item
- * @param {object} [ctx]    { endDate?: string, historyRecord?: object } — the active
- *                           檔期 range chip + the sku's costco-history record (#55)
+ * @param {object} [ctx]    { endDate?: string, historyRecord?: object, onlineRecord?: object }
+ *                           — the active 檔期 range chip (#55), the sku's
+ *                           costco-history record (#55), and the sku's MVM online
+ *                           series (#56; null when the sku has no 檔期)
  * @returns {{
  *   sku: string, name: string,
  *   store: { now:number|null, orig:number|null, note:string },
@@ -343,8 +393,10 @@ export function buildDetailModel(p, ctx = {}) {
     endDate: endDateChip(ctx.endDate),
     // #55: 特價紀錄 replaces 規格摘要. ctx.historyRecord is the sku's costco-history
     // record (null when offline / not found → "尚無歷史"); ctx.endDate is the MVM
-    // 檔期 period chip (catalog items pass none).
-    promo: promoRecord(item, ctx.historyRecord, ctx.endDate),
+    // 檔期 period chip (catalog items pass none). #56: ctx.onlineRecord is the
+    // sku's MVM online series (null when the sku has no 檔期 → the 線上 row keeps
+    // its "待補" placeholder).
+    promo: promoRecord(item, ctx.historyRecord, ctx.endDate, ctx.onlineRecord),
     webUrl: costcoUrl(item),
   }
 }
