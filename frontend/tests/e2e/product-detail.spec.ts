@@ -10,14 +10,16 @@ test('navigating to product detail view from catalog card and clicking CTAs', as
   await expect(mobileSwitch).toBeVisible()
   await mobileSwitch.click()
 
-  // Switch to 全部 tab to see catalog cards
-  const allTab = page.locator('.m-nav-item', { hasText: '全部' })
-  if (await allTab.isVisible()) {
-    await allTab.click()
+  // #56: open a 特價 (MVM 檔期) card. The 特價 tab is MVM-only, so every card
+  // there carries a real 線上 series — the detail's 線上 row renders a real
+  // spark + verdict (no longer the #55 待補 placeholder).
+  const dealTab = page.locator('.m-nav-item', { hasText: '特價' })
+  if (await dealTab.isVisible()) {
+    await dealTab.click()
   }
 
-  // Find a product card
-  const card = page.locator('.m-cat-card, .m-card').first()
+  // Find an MVM product card in the 特價 tab
+  const card = page.locator('.m-card').first()
   await expect(card).toBeVisible()
 
   // Click card to open detail view
@@ -34,15 +36,17 @@ test('navigating to product detail view from catalog card and clicking CTAs', as
   await expect(detail.locator('[data-detail-name]')).toBeVisible()
   await expect(detail.locator('[data-detail-sku]')).toBeVisible()
 
-  // #55 特價紀錄 replaced 規格摘要: the promo section renders (賣場 row + 線上
-  // placeholder) and the old 規格摘要 section is gone.
+  // #55 特價紀錄 replaced 規格摘要: the promo section renders and the old 規格摘要
+  // section is gone.
   const promo = detail.locator('[data-section-promo]')
   await expect(promo).toBeVisible()
   await expect(promo).toContainText('特價紀錄')
   expect(await detail.locator('[data-section-specs]').count()).toBe(0)
   expect(await detail.locator('.detail-specs').count()).toBe(0)
-  // the 線上 row shows an honest placeholder — no faked curve (series pending #56)
-  await expect(detail.locator('[data-promo-online-note]')).toContainText('待補')
+  // #56: the 線上 row now shows a real series (a spark, never a faked curve) for
+  // this MVM sku, and the #55 待補 placeholder is gone.
+  await expect(detail.locator('[data-promo-online-spark]')).toHaveCount(1)
+  await expect(detail.locator('[data-promo-online-note]')).toHaveCount(0)
   // 390px: no horizontal overflow / clipping
   const scrollW = await page.evaluate(() => document.documentElement.scrollWidth)
   expect(scrollW).toBeLessThanOrEqual(391)
