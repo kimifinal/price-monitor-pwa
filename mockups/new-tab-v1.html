@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=480, initial-scale=1.0, viewport-fit=cover" />
+  <title>好市多新品 — 新品（行動端 Explore，mockup v1）</title>
+  <style>
+    /* ============================================================
+     * Issue #48 — 行動端 App 新品分頁 mockup v1（self-contained, 480px）
+     * 定位：Discover 探索驅動（非 省 $X 導向）。原「首頁」分頁改版為「新品」，
+     *        依 costco-history.json 的 first_seen（30 天窗）排序。
+     * 風格：純白 + 米色底、品牌紅主色、暖色標籤、高轉換電商、無 AI 美感
+     * tokens mirror frontend/src/style.css 的 .mobile-app warm scope（hex=現 live）
+     * 守衛：inline SVG（禁 emoji）、44px 觸控、prefers-reduced-motion、
+     *        無漸層/glass/emoji/icon-tile/fake-stat、真實品項數據（first_seen 30d）
+     * 卡片語意：上線時間 + 新到貨 + 歷史最低 + 省錢（drop>0 才顯示），
+     *        取代 特價 頁的「省 $X 紅白主標籤 / 通路對比」。
+     * ============================================================ */
+    :root {
+      --m-bg:        #f4efe9;
+      --m-card:      #ffffff;
+      --m-soft:      #fbf5ec;
+      --m-nav-bg:    #ffffff;
+      --m-ink:       #2b2622;
+      --m-ink-2:     #5f5850;
+      --m-ink-3:     #7a7368;
+      --m-muted:     #8a8378;
+      --m-hairline:  #ece5db;
+      --m-brand:     #c8102e;
+      --m-brand-ink: #ffffff;
+      --m-price:     #e5342a;
+      --m-good:      #2e8b57;
+      --m-warm:      #f6b24a;
+      /* 上線時間：暖金膠囊（日曆語意） */
+      --m-online-bg:  #fff4d6;
+      --m-online-ink: #8a6a15;
+      --m-online-bd:  #f0e0a8;
+      /* 新到貨：品牌紅柔底（鮮度信号，新品頁主視覺） */
+      --m-new-bg:     #fdecea;
+      --m-new-ink:    #c8102e;
+      --m-new-bd:     #f4cdc9;
+      /* 歷史最低：暖金高亮 */
+      --m-low-bg:     #fff4d6;
+      --m-low-ink:    #8a6a15;
+      --m-low-bd:     #f0e0a8;
+      /* 省錢膠囊：中性暖灰（drop>0 時次級顯示，非主標籤） */
+      --m-save-bg:    #f2ede6;
+      --m-save-ink:   #5f5850;
+      --m-shadow:     rgba(43, 38, 34, 0.05);
+      --m-shadow-md:  0 4px 16px rgba(43, 38, 34, 0.08);
+      --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+      --sp-5: 20px; --sp-6: 24px; --sp-8: 32px;
+      --radius: 10px; --radius-lg: 16px; --radius-xl: 24px; --radius-pill: 999px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      --font-mono: "SF Mono", "JetBrains Mono", "Cascadia Code", monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--m-bg);
+      color: var(--m-ink);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100dvh;
+    }
+
+    .home {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--m-bg);
+      overflow-x: hidden;
+    }
+
+    /* ============ 1. Header（sticky） ============ */
+    .home-header {
+      position: sticky; top: 0; z-index: 20;
+      background: var(--m-nav-bg);
+      border-bottom: 1px solid var(--m-hairline);
+      padding: var(--sp-3) var(--sp-4);
+      padding-top: max(var(--sp-3), env(safe-area-inset-top, 0px));
+    }
+    .home-top {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2);
+      margin-bottom: var(--sp-3);
+    }
+    .brand { display: inline-flex; align-items: center; gap: var(--sp-2); }
+    .brand-mark {
+      width: 32px; height: 32px; border-radius: 9px;
+      background: var(--m-brand); color: var(--m-brand-ink);
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .brand-mark svg { width: 18px; height: 18px; }
+    .brand-name { font-size: 1.02rem; font-weight: 800; letter-spacing: -0.01em; color: var(--m-ink); }
+    .home-actions { display: inline-flex; align-items: center; gap: var(--sp-1); }
+    .icon-btn {
+      position: relative;
+      width: 44px; height: 44px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: none; background: none; color: var(--m-ink-2);
+      border-radius: var(--radius-pill); cursor: pointer; padding: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+    .icon-btn:hover { background: var(--m-soft); }
+    .icon-btn:active { transform: scale(0.95); }
+    .icon-btn:focus-visible { outline: 2px solid var(--m-brand); outline-offset: 2px; }
+    .icon-btn svg { width: 22px; height: 22px; }
+    .icon-btn .dot {
+      position: absolute; top: 9px; right: 10px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--m-price); border: 1.5px solid var(--m-nav-bg);
+    }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--m-soft); color: var(--m-ink-2);
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid var(--m-hairline);
+    }
+    .avatar svg { width: 20px; height: 20px; }
+
+    /* search row */
+    .home-search {
+      display: flex; align-items: center; gap: var(--sp-2);
+    }
+    .search-field {
+      flex: 1; min-width: 0;
+      display: flex; align-items: center; gap: var(--sp-2);
+      background: var(--m-soft);
+      border: 1px solid var(--m-hairline);
+      border-radius: var(--radius-pill);
+      padding: 0 var(--sp-3);
+      height: 44px;
+    }
+    .search-field:focus-within { border-color: var(--m-brand); box-shadow: 0 0 0 3px rgba(200,16,46,0.12); }
+    .search-field svg { width: 20px; height: 20px; color: var(--m-muted); flex: 0 0 auto; }
+    .search-input {
+      flex: 1; min-width: 0; border: none; background: none; outline: none;
+      font-family: var(--font-sans); font-size: 0.92rem; color: var(--m-ink);
+      padding: 0;
+    }
+    .search-input::placeholder { color: var(--m-muted); }
+    .scan-btn {
+      flex: 0 0 auto;
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 1px solid var(--m-hairline); background: var(--m-card);
+      color: var(--m-brand); display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.15s, transform 0.1s;
+    }
+    .scan-btn:hover { background: var(--m-soft); }
+    .scan-btn:active { transform: scale(0.95); }
+    .scan-btn:focus-visible { outline: 2px solid var(--m-brand); outline-offset: 2px; }
+    .scan-btn svg { width: 20px; height: 20px; }
+
+    /* ============ 2. 時段 chips（水平卷動） ============ */
+    .home-period {
+      display: flex; gap: var(--sp-2);
+      padding: var(--sp-3) var(--sp-4) 0;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .home-period::-webkit-scrollbar { display: none; }
+    .period-chip {
+      flex: 0 0 auto;
+      border: 1px solid var(--m-hairline); background: var(--m-card);
+      color: var(--m-ink-2);
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 600;
+      padding: 8px 15px; min-height: 36px;
+      border-radius: var(--radius-pill); cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .period-chip:hover { background: var(--m-soft); }
+    .period-chip:active { transform: scale(0.97); }
+    .period-chip:focus-visible { outline: 2px solid var(--m-brand); outline-offset: 2px; }
+    .period-chip.is-active {
+      background: var(--m-brand); color: var(--m-brand-ink); border-color: var(--m-brand);
+    }
+
+    /* ============ 3. 類別 filter chips（水平卷動） ============ */
+    .home-filters {
+      display: flex; gap: var(--sp-2);
+      padding: var(--sp-3) var(--sp-4) 0;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .home-filters::-webkit-scrollbar { display: none; }
+    .chip {
+      flex: 0 0 auto;
+      border: 1px solid var(--m-hairline); background: var(--m-card);
+      color: var(--m-ink-2);
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500;
+      padding: 7px 14px; min-height: 34px;
+      border-radius: var(--radius-pill); cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .chip:hover { background: var(--m-soft); }
+    .chip:active { transform: scale(0.97); }
+    .chip:focus-visible { outline: 2px solid var(--m-brand); outline-offset: 2px; }
+    .chip.is-active {
+      background: var(--m-ink); color: #fff; border-color: var(--m-ink);
+    }
+
+    /* ============ 4. 分節標題 + 篩選 ============ */
+    .home-list {
+      flex: 1;
+      padding: 0 var(--sp-4) var(--sp-8);
+      display: flex; flex-direction: column; gap: var(--sp-3);
+    }
+    .list-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--sp-3) 0 var(--sp-1);
+    }
+    .list-meta-title {
+      font-size: 0.95rem; font-weight: 700; color: var(--m-ink);
+      display: inline-flex; align-items: baseline; gap: var(--sp-2);
+    }
+    .list-meta-title .cnt {
+      font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+      font-size: 1.1rem; font-weight: 800; color: var(--m-brand);
+    }
+    .list-meta-sub { font-size: 0.72rem; color: var(--m-muted); font-weight: 500; }
+    .filter-btn {
+      flex: 0 0 auto;
+      width: 40px; height: 40px; border-radius: var(--radius-pill);
+      border: 1px solid var(--m-hairline); background: var(--m-card);
+      color: var(--m-ink-2); cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .filter-btn:hover { background: var(--m-soft); }
+    .filter-btn:active { transform: scale(0.95); }
+    .filter-btn:focus-visible { outline: 2px solid var(--m-brand); outline-offset: 2px; }
+    .filter-btn svg { width: 20px; height: 20px; }
+
+    /* ============ 5. 商品卡列 ============ */
+    .pcard {
+      display: flex; gap: var(--sp-3);
+      background: var(--m-card);
+      border: 1px solid var(--m-hairline);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-3);
+      box-shadow: var(--m-shadow);
+      transition: box-shadow 0.15s, transform 0.1s;
+      position: relative;
+    }
+    .pcard:hover { box-shadow: var(--m-shadow-md); }
+    .pcard:active { transform: scale(0.995); }
+
+    /* 左：縮圖佔位（MVM JSON 無圖 → 誠實佔位 + 類別 icon + SKU） */
+    .pcard-img {
+      flex: 0 0 92px; width: 92px; height: 92px;
+      border-radius: var(--radius);
+      background: var(--m-soft);
+      border: 1px solid var(--m-hairline);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 4px; color: var(--m-muted);
+    }
+    .pcard-img svg { width: 30px; height: 30px; opacity: 0.55; }
+    .pcard-img .cap {
+      font-size: 0.62rem; color: var(--m-muted);
+      font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+    }
+
+    .pcard-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+    .pcard-top {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-2);
+    }
+    .pcard-cat {
+      flex: 0 0 auto;
+      font-size: 0.7rem; font-weight: 600; color: var(--m-ink-2);
+      background: var(--m-soft); border: 1px solid var(--m-hairline);
+      border-radius: var(--radius-pill); padding: 2px 9px;
+    }
+    .pcard-fav {
+      flex: 0 0 auto; width: 32px; height: 32px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: none; background: none; cursor: pointer; padding: 0;
+      color: var(--m-muted); border-radius: var(--radius-pill);
+      transition: background 0.15s, color 0.15s, transform 0.1s;
+    }
+    .pcard-fav:hover { background: var(--m-soft); }
+    .pcard-fav:active { transform: scale(0.9); }
+    .pcard-fav:focus-visible { outline: 2px solid var(--m-brand); outline-offset: 2px; }
+    .pcard-fav svg { width: 22px; height: 22px; }
+    .pcard-fav.is-on { color: var(--m-price); }
+    .pcard-fav.is-on svg { fill: var(--m-price); }
+
+    .pcard-name {
+      font-size: 0.92rem; font-weight: 600; color: var(--m-ink);
+      line-height: 1.35; margin: var(--sp-2) 0 0;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden; min-height: 2.5em;
+    }
+
+    /* 標籤行：上線時間 + 新到貨 + 歷史最低 + 省錢 */
+    .pcard-tags {
+      display: flex; flex-wrap: wrap; gap: 5px;
+      margin-top: var(--sp-2);
+    }
+    .tag {
+      font-size: 0.72rem; font-weight: 600;
+      padding: 3px 9px; border-radius: var(--radius-pill);
+      line-height: 1; white-space: nowrap;
+    }
+    /* 上線時間（日曆語意，暖金） */
+    .tag--online {
+      background: var(--m-online-bg); color: var(--m-online-ink);
+      border: 1px solid var(--m-online-bd);
+      display: inline-flex; align-items: center; gap: 3px;
+    }
+    .tag--online svg { width: 11px; height: 11px; }
+    /* 新到貨（鮮度，品牌紅柔底） */
+    .tag--new {
+      background: var(--m-new-bg); color: var(--m-new-ink);
+      border: 1px solid var(--m-new-bd);
+    }
+    /* 歷史最低（暖金高亮） */
+    .tag--low {
+      background: var(--m-low-bg); color: var(--m-low-ink);
+      border: 1px solid var(--m-low-bd);
+    }
+    /* 省錢（drop>0 才顯示，中性暖灰次級） */
+    .tag--save {
+      background: var(--m-save-bg); color: var(--m-save-ink);
+    }
+
+    /* 價格行（現價大字，無 通路對比） */
+    .pcard-price {
+      display: flex; align-items: baseline; gap: var(--sp-2);
+      margin-top: auto; padding-top: var(--sp-2);
+    }
+    .pcard-now {
+      font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+      font-size: 1.35rem; font-weight: 800; color: var(--m-price); line-height: 1;
+    }
+    .pcard-was {
+      font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+      font-size: 0.8rem; color: var(--m-muted); text-decoration: line-through;
+    }
+
+    /* ============ 6. 底部導覽列（fixed, 5 tab，特價/新品/追蹤/全部/我的） ============ */
+    .home-tabs {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 30;
+      max-width: 480px; margin: 0 auto;
+      display: flex; align-items: stretch;
+      background: var(--m-nav-bg);
+      border-top: 1px solid var(--m-hairline);
+      padding: var(--sp-2) 4px;
+      padding-bottom: max(var(--sp-2), env(safe-area-inset-bottom, 0px));
+    }
+    .tab {
+      flex: 1;
+      border: none; background: none; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      padding: 4px 0; min-height: 52px;
+      color: var(--m-muted);
+      font-family: var(--font-sans); font-size: 0.68rem; font-weight: 500;
+      position: relative;
+      transition: color 0.15s;
+    }
+    .tab svg { width: 22px; height: 22px; }
+    .tab:active { transform: scale(0.95); }
+    .tab:focus-visible { outline: 2px solid var(--m-brand); outline-offset: -3px; border-radius: 8px; }
+    .tab.is-active { color: var(--m-brand); font-weight: 700; }
+    .tab .tdot {
+      position: absolute; top: 2px; left: 50%; transform: translateX(-3px);
+      width: 6px; height: 6px; border-radius: 50%; background: var(--m-price);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0.001ms !important; animation-duration: 0.001ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="home">
+
+    <!-- ============ 1. Header ============ -->
+    <header class="home-header">
+      <div class="home-top">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+              <circle cx="7" cy="7" r="1.5" fill="currentColor" stroke="none" />
+            </svg>
+          </span>
+          <span class="brand-name">好市多新品</span>
+        </div>
+        <div class="home-actions">
+          <button class="icon-btn" type="button" aria-label="通知">
+            <span class="dot" aria-hidden="true"></span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+          </button>
+          <button class="icon-btn avatar-wrap" type="button" aria-label="個人中心">
+            <span class="avatar" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+              </svg>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- search -->
+      <div class="home-search">
+        <div class="search-field">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" />
+          </svg>
+          <input class="search-input" type="search" placeholder="搜尋商品或條碼" aria-label="搜尋商品或條碼" />
+        </div>
+        <button class="scan-btn" type="button" aria-label="掃描條碼">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" />
+            <path d="M7 8v8M10.5 8v8M14 8v8M17.5 8v8" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ============ 2. 時段 chips（取代 檔期 chips） ============ -->
+    <div class="home-period" role="tablist" aria-label="上線時段">
+      <button class="period-chip" role="tab" type="button">近 7 天</button>
+      <button class="period-chip" role="tab" type="button">近 14 天</button>
+      <button class="period-chip is-active" role="tab" type="button" aria-selected="true">近 30 天</button>
+      <button class="period-chip" role="tab" type="button">全部</button>
+    </div>
+
+    <!-- ============ 3. 類別 filter chips ============ -->
+    <div class="home-filters" role="list" aria-label="類別篩選">
+      <button class="chip is-active" type="button">全部</button>
+      <button class="chip" type="button">家電</button>
+      <button class="chip" type="button">3C</button>
+      <button class="chip" type="button">食品</button>
+      <button class="chip" type="button">家清</button>
+      <button class="chip" type="button">個護</button>
+      <button class="chip" type="button">生鮮</button>
+      <button class="chip" type="button">保健</button>
+      <button class="chip" type="button">美妝</button>
+    </div>
+
+    <!-- ============ 4. 分節標題 + 篩選 ============ -->
+    <main class="home-list" aria-label="新品">
+      <div class="list-meta">
+        <span class="list-meta-title">
+          <span class="cnt">53</span> 筆 · 新品 · 近 30 天
+        </span>
+        <button class="filter-btn" type="button" aria-label="篩選">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 6h16M7 12h10M10 18h4" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- 卡 1 · 163993 · 3C · 上線 11/25（2 天前，新到貨） -->
+      <article class="pcard">
+        <div class="pcard-img" aria-label="商品圖片待補">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
+          <span class="cap">163993</span>
+        </div>
+        <div class="pcard-body">
+          <div class="pcard-top">
+            <span class="pcard-cat">3C</span>
+            <button class="pcard-fav is-on" type="button" aria-label="加入收藏"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.55-7-9.8A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 7 3.2C19 15.45 12 20 12 20Z" /></svg></button>
+          </div>
+          <h3 class="pcard-name">Backbone Eagle Business 台製挺腰工學椅 企業款 簡約灰</h3>
+          <div class="pcard-tags">
+            <span class="tag tag--online"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>11/25 上線</span>
+            <span class="tag tag--new">新到貨</span>
+            <span class="tag tag--low">歷史最低</span>
+          </div>
+          <div class="pcard-price">
+            <span class="pcard-now">$2,799</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 卡 2 · 111557 · 家電 · 上線 11/19（8 天前，新到貨） -->
+      <article class="pcard">
+        <div class="pcard-img" aria-label="商品圖片待補">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
+          <span class="cap">111557</span>
+        </div>
+        <div class="pcard-body">
+          <div class="pcard-top">
+            <span class="pcard-cat">家電</span>
+            <button class="pcard-fav" type="button" aria-label="加入收藏"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.55-7-9.8A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 7 3.2C19 15.45 12 20 12 20Z" /></svg></button>
+          </div>
+          <h3 class="pcard-name">惠而浦 20 公升微電腦觸控式微波爐 WMWE200S</h3>
+          <div class="pcard-tags">
+            <span class="tag tag--online"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>11/19 上線</span>
+            <span class="tag tag--new">新到貨</span>
+            <span class="tag tag--low">歷史最低</span>
+          </div>
+          <div class="pcard-price">
+            <span class="pcard-now">$2,499</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 卡 3 · 150426 · 3C · 上線 11/19（8 天前，新到貨） -->
+      <article class="pcard">
+        <div class="pcard-img" aria-label="商品圖片待補">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
+          <span class="cap">150426</span>
+        </div>
+        <div class="pcard-body">
+          <div class="pcard-top">
+            <span class="pcard-cat">3C</span>
+            <button class="pcard-fav" type="button" aria-label="加入收藏"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.55-7-9.8A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 7 3.2C19 15.45 12 20 12 20Z" /></svg></button>
+          </div>
+          <h3 class="pcard-name">圖拉斯 MiniMag 5000mAh 超薄 MagSafe 磁吸行動電源 MS19</h3>
+          <div class="pcard-tags">
+            <span class="tag tag--online"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>11/19 上線</span>
+            <span class="tag tag--new">新到貨</span>
+            <span class="tag tag--low">歷史最低</span>
+          </div>
+          <div class="pcard-price">
+            <span class="pcard-now">$845</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 卡 4 · 162395 · 家電 · 上線 11/19（8 天前，新到貨 + drop 9.6% 省 $1,300） -->
+      <article class="pcard">
+        <div class="pcard-img" aria-label="商品圖片待補">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
+          <span class="cap">162395</span>
+        </div>
+        <div class="pcard-body">
+          <div class="pcard-top">
+            <span class="pcard-cat">家電</span>
+            <button class="pcard-fav is-on" type="button" aria-label="加入收藏"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.55-7-9.8A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 7 3.2C19 15.45 12 20 12 20Z" /></svg></button>
+          </div>
+          <h3 class="pcard-name">戴森 雙錐無纏結吸塵器 V10 SV55-A</h3>
+          <div class="pcard-tags">
+            <span class="tag tag--online"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>11/19 上線</span>
+            <span class="tag tag--new">新到貨</span>
+            <span class="tag tag--save">省 $1,300</span>
+          </div>
+          <div class="pcard-price">
+            <span class="pcard-now">$12,199</span>
+            <span class="pcard-was">$13,499</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 卡 5 · 136403 · 家電 · 上線 11/12（15 天前，僅上線時間，無 新到貨） -->
+      <article class="pcard">
+        <div class="pcard-img" aria-label="商品圖片待補">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
+          <span class="cap">136403</span>
+        </div>
+        <div class="pcard-body">
+          <div class="pcard-top">
+            <span class="pcard-cat">家電</span>
+            <button class="pcard-fav" type="button" aria-label="加入收藏"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.55-7-9.8A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 7 3.2C19 15.45 12 20 12 20Z" /></svg></button>
+          </div>
+          <h3 class="pcard-name">惠而浦 190 公升直立式冷凍櫃 WUFZ1860W</h3>
+          <div class="pcard-tags">
+            <span class="tag tag--online"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>11/12 上線</span>
+            <span class="tag tag--low">歷史最低</span>
+          </div>
+          <div class="pcard-price">
+            <span class="pcard-now">$12,999</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 卡 6 · 144030 · 家電 · 上線 11/12（15 天前，僅上線時間，無 新到貨） -->
+      <article class="pcard">
+        <div class="pcard-img" aria-label="商品圖片待補">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
+          <span class="cap">144030</span>
+        </div>
+        <div class="pcard-body">
+          <div class="pcard-top">
+            <span class="pcard-cat">家電</span>
+            <button class="pcard-fav" type="button" aria-label="加入收藏"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.55-7-9.8A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 7 3.2C19 15.45 12 20 12 20Z" /></svg></button>
+          </div>
+          <h3 class="pcard-name">Denon 3.1.2 聲道 Dolby Atmos Soundbar 重低音組合 DHT-S517</h3>
+          <div class="pcard-tags">
+            <span class="tag tag--online"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>11/12 上線</span>
+            <span class="tag tag--low">歷史最低</span>
+          </div>
+          <div class="pcard-price">
+            <span class="pcard-now">$14,999</span>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <!-- ============ 6. 底部導覽列（特價/新品/追蹤/全部/我的，新品 active） ============ -->
+    <nav class="home-tabs" aria-label="主導覽">
+      <button class="tab" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><circle cx="7" cy="7" r="1.3" fill="currentColor" stroke="none" /></svg>
+        特價
+      </button>
+      <button class="tab is-active" type="button" aria-current="page">
+        <span class="tdot" aria-hidden="true"></span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z" /></svg>
+        新品
+      </button>
+      <button class="tab" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01" /></svg>
+        追蹤
+      </button>
+      <button class="tab" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></svg>
+        全部
+      </button>
+      <button class="tab" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" /></svg>
+        我的
+      </button>
+    </nav>
+
+  </div>
+</body>
+</html>
