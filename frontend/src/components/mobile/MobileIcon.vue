@@ -42,6 +42,9 @@ const PATHS = {
   globe:
     'M12 2a10 10 0 1 0 0.01 0M2 12h20M12 2c-5 5-5 15 0 20M12 2c5 5 5 15 0 20',
   external: 'M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3',
+  // #48 — 新品分頁 glyph: a 4-point "spark" (freshness / new-arrival). Single
+  // <path> line-icon, no emoji (gate 30a).
+  spark: 'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z',
 }
 
 const d = computed(() => PATHS[props.name] || PATHS.tag)
