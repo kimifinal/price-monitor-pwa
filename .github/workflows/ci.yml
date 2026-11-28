@@ -143,39 +143,67 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          # Unique per attempt: re-running this job no longer stacks a second
+          # "github-pages" artifact on the same run, which previously made
+          # deploy-pages abort with "Multiple artifacts named github-pages" and
+          # silently left the OLD build live (issue #62). deploy below must use
+          # the same name.
+          name: github-pages-${{ github.run_attempt }}
           path: frontend/dist
       - name: Deploy Pages
-        # ISSUE #16: best-effort — a transient GitHub artifact-metadata hiccup
-        # must not RED CI; the AC3 "Verify live Pages URL" check below is the
-        # real blocking gate (a genuinely unreachable page still REDs via AC3).
-        continue-on-error: true
+        # ISSUE #16 / #62: best-effort — a transient GitHub artifact-metadata
+        # hiccup must not RED CI; the AC3 CONTENT check below (live bundle hash
+        # must equal THIS build, issue #62) is the real blocking gate, not a
+        # bare 200.
+        continue-on-error: true   # transient hiccups absorbed; the AC3 CONTENT check below is the real gate
         uses: actions/deploy-pages@v4
-      # AC3 (issue #6): a live-URL reachability HEAD check of the freshly
-      # deployed Pages site — now BLOCKING (Pages is live; AC2 done). A non-200
-      # means the deploy did not reach Pages and fails the pipeline.
-      - name: Verify live Pages URL (AC3 reachability — blocking)
-        working-directory: frontend
+        with:
+          # MUST match the per-attempt upload name above (issue #62).
+          artifact_name: github-pages-${{ github.run_attempt }}
+      # AC3 (issue #6 / #62): a CONTENT-FRESHNESS check of the freshly deployed
+      # Pages site — BLOCKING. A 200 is NOT enough: a stale (old) build also
+      # returns 200, which is exactly the "deploy fake-success" bug (#62) where a
+      # re-run left the OLD build live. So AC3 gates on the live site referencing
+      # THIS build's main bundle hash, not mere reachability.
+      - name: Verify live Pages serves THIS build (AC3 content — blocking)
         run: |
+          set -e
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY##*/}"
-          SITE="https://${OWNER}.github.io/${REPO}/index.html"
-          echo "Probing deployed site: $SITE"
-          # A non-200 / connection failure FAILS this step => CI red until the
-          # deploy actually reaches Pages. GH Pages first activation can lag a
-          # couple of minutes, so retry a few times; 200 on any attempt passes,
-          # no 200 after the retries fails the pipeline (a real gate).
-          # ISSUE #16: because Deploy Pages is now best-effort, this reachability
-          # probe is the real deploy gate — widen the window so a slow Pages
-          # propagation (2-3 min) still resolves to 200, without weakening the
-          # "must actually be reachable" guarantee.
+          URL="https://${OWNER}.github.io/${REPO}/index.html"
+          echo "AC3 target: $URL"
+          # This build's main bundle: Vite emits dist/assets/index-<hash>.js and
+          # references it from index.html. The live site must reference the SAME
+          # hash. A 200 is NOT enough (a stale build also returns 200), so AC3
+          # gates on content freshness, not reachability (issue #62).
+          LOCAL_HASH=$(grep -oE 'index-[A-Za-z0-9_-]+\.js' frontend/dist/index.html | head -1 || true)
+          echo "AC3 this-build bundle: ${LOCAL_HASH:-<none>}"
+          # GitHub Pages can lag a few minutes after the deploy publishes;
+          # retry so a slow propagation doesn't false-red.
           for i in 1 2 3 4 5 6 7 8 9 10; do
-            code=$(curl -fsSL --max-time 30 -o /dev/null -w "%{http_code}" "$SITE" || echo "000")
-            echo "attempt $i: http=$code"
-            [ "$code" = "200" ] && exit 0
+            echo "--- AC3 attempt $i ---"
+            LIVE=$(curl -fsSL --max-time 30 "$URL" 2>/dev/null || true)
+            LIVE_HASH=$(printf '%s' "$LIVE" | grep -oE 'index-[A-Za-z0-9_-]+\.js' | head -1 || true)
+            echo "AC3 live bundle: ${LIVE_HASH:-<none>}"
+            if [ -n "$LOCAL_HASH" ]; then
+              if [ "$LIVE_HASH" = "$LOCAL_HASH" ]; then
+                echo "AC3 PASS: live Pages serves this build ($LIVE_HASH)"
+                exit 0
+              fi
+              echo "AC3 mismatch: live ${LIVE_HASH:-<none>} != this build $LOCAL_HASH (stale or not yet propagated)"
+            else
+              # Could not extract the local hash — degrade to reachability.
+              if [ -n "$LIVE_HASH" ]; then
+                echo "AC3 PASS (degraded): live Pages reachable"
+                exit 0
+              fi
+            fi
+            echo "AC3 not ready yet, waiting 20s…"
             sleep 20
           done
-          echo "❌ live URL not reachable after retries (Pages not deployed?)"
+          echo "AC3 FAIL: live Pages did not serve this build ($LOCAL_HASH) after retries"
           exit 1
+        timeout-minutes: 12
 
   # ---- Backend: install -> test -> (deploy API in prod) ----
   backend:
