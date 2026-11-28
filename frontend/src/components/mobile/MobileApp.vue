@@ -11,6 +11,7 @@
 import { ref, computed } from 'vue'
 import MobileIcon from './MobileIcon.vue'
 import MvmMobileCatalog from './MvmMobileCatalog.vue'
+import NewArrivalsMobile from './NewArrivalsMobile.vue'
 import CatalogMobile from './CatalogMobile.vue'
 import ProductDetail from './ProductDetail.vue'
 import { loadMvmCatalog } from '../../lib/mvm.js'
@@ -22,9 +23,11 @@ import { recordBySku, onlineRecordBySku } from '../../lib/history.js'
 
 // 5-tab 底部導航. 特價 = the MVM 檔期 view; 全部 = the 全庫 catalog view; the
 // rest are placeholders.
+// #48: 分頁對調 — 移除 'home'（其「全部商品」語意已折入 'all'），在 'deal' 後
+// 插入 'new'（新品，探索導向）。順序：特價 / 新品 / 追蹤 / 全部 / 我的。
 const TABS = [
-  { key: 'home', label: '首頁', icon: 'home' },
   { key: 'deal', label: '特價', icon: 'tag' },
+  { key: 'new', label: '新品', icon: 'spark' },
   { key: 'watch', label: '追蹤', icon: 'heart' },
   { key: 'all', label: '全部', icon: 'grid' },
   { key: 'me', label: '我的', icon: 'user' },
@@ -126,9 +129,11 @@ function closeDetail() {
         :source-date="mvm.sourceDate"
         @navigate="openDetail"
       />
+      <!-- 新品 tab (#48): 探索導向的新品 list (period + category filters). -->
+      <NewArrivalsMobile v-else-if="active === 'new'" />
       <!-- 全部 tab: the warm 全庫 catalog view (#50) — 賣場/線上 toggle + 10,049 items -->
       <CatalogMobile v-else-if="active === 'all'" :catalog="catalog" @navigate="openDetail" />
-      <!-- 首頁 / 追蹤 / 我的: honest placeholders -->
+      <!-- 追蹤 / 我的: honest placeholders -->
       <section
         v-else
         class="m-placeholder"
